@@ -1,7 +1,7 @@
 // ignore_for_file: unused_local_variable
 
 import 'package:flutter/material.dart';
-import 'package:care_patient/color.dart';
+import 'package:care_patient/class/color.dart';
 
 class ReviewPage extends StatefulWidget {
   const ReviewPage({super.key});

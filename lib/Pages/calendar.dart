@@ -1,11 +1,10 @@
 // ignore_for_file: unused_import
 
-import 'package:care_patient/color.dart';
+import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 
 class CalendarUI extends StatefulWidget {
   const CalendarUI({Key? key}) : super(key: key);

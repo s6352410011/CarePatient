@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:care_patient/color.dart';
+import 'package:care_patient/class/color.dart';
 
 class HistoryWorkPage extends StatefulWidget {
   const HistoryWorkPage({Key? key}) : super(key: key);

@@ -4,7 +4,7 @@ import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
 import 'package:care_patient/Pages/review_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:care_patient/color.dart'; // นำเข้าไลบรารีที่เกี่ยวข้อง
+import 'package:care_patient/class/color.dart'; // นำเข้าไลบรารีที่เกี่ยวข้อง
 
 class HomeCaregiverUI extends StatelessWidget {
   @override

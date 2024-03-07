@@ -1,4 +1,4 @@
-import 'package:care_patient/color.dart';
+import 'package:care_patient/class/color.dart';
 import 'package:care_patient/forgotPassword.dart';
 import 'package:care_patient/home_CaregiverUI.dart';
 import 'package:care_patient/home_PatientUI.dart';
@@ -87,9 +87,12 @@ class _LoginUIState extends State<LoginUI> {
           child: Column(
             children: <Widget>[
               SizedBox(height: 80),
-              Image.asset(
-                'assets/images/logo_cp.png',
-                height: MediaQuery.of(context).size.height * 0.15,
+              FadeInUp(
+                duration: Duration(milliseconds: 1000),
+                child: Image.asset(
+                  'assets/images/logo_cp.png',
+                  height: MediaQuery.of(context).size.height * 0.15,
+                ),
               ),
               SizedBox(height: 10),
               Padding(
@@ -212,42 +215,66 @@ class _LoginUIState extends State<LoginUI> {
                     SizedBox(
                       height: 30,
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_emailController.text.isNotEmpty &&
-                            _passwordController.text.isNotEmpty) {
-                          // เรียกใช้งาน signInWithEmailPassword เมื่อทั้ง Email และ Password ไม่ว่าง
-                          dynamic result = await AuthenticationService()
-                              .signInWithEmailPassword(_emailController.text,
-                                  _passwordController.text);
-                          if (result != null) {
-                            // การเข้าสู่ระบบสำเร็จ
-                            print("Sign in successful");
-                            // การเข้าสู่ระบบสำเร็จ ให้ตรวจสอบ _selectedOption เพื่อเปิดหน้าจอที่ถูกต้อง
-                            if (_selectedOption == 0) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeMainCareUI(),
-                                ),
-                              );
+                    FadeInUp(
+                      duration: Duration(milliseconds: 1900),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_emailController.text.isNotEmpty &&
+                              _passwordController.text.isNotEmpty) {
+                            // เรียกใช้งาน signInWithEmailPassword เมื่อทั้ง Email และ Password ไม่ว่าง
+                            dynamic result = await AuthenticationService()
+                                .signInWithEmailPassword(_emailController.text,
+                                    _passwordController.text);
+                            if (result != null) {
+                              // การเข้าสู่ระบบสำเร็จ
+                              print("Sign in successful");
+                              // การเข้าสู่ระบบสำเร็จ ให้ตรวจสอบ _selectedOption เพื่อเปิดหน้าจอที่ถูกต้อง
+                              if (_selectedOption == 0) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeMainCareUI(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeMainPatientUI(),
+                                  ),
+                                );
+                              }
                             } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeMainPatientUI(),
-                                ),
+                              // ไม่สามารถเข้าสู่ระบบได้
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Error'),
+                                    content: Text(
+                                      'Invalid email or password. Please try again.',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             }
                           } else {
-                            // ไม่สามารถเข้าสู่ระบบได้
+                            // แสดง AlertDialog เมื่อ Email หรือ Password ไม่ถูกต้อง
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: Text('Error'),
                                   content: Text(
-                                    'Invalid email or password. Please try again.',
+                                    'Please enter both email and password.',
                                   ),
                                   actions: [
                                     TextButton(
@@ -261,49 +288,28 @@ class _LoginUIState extends State<LoginUI> {
                               },
                             );
                           }
-                        } else {
-                          // แสดง AlertDialog เมื่อ Email หรือ Password ไม่ถูกต้อง
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Error'),
-                                content: Text(
-                                  'Please enter both email and password.',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(200, 50),
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        backgroundColor: AllColor.pr,
-                        foregroundColor: AllColor.pr,
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(200, 50),
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          backgroundColor: AllColor.pr,
+                          foregroundColor: AllColor.pr,
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          side: BorderSide(
+                            color: Color.fromARGB(255, 136, 226, 176),
+                            width: 2,
+                          ),
                         ),
-                        side: BorderSide(
-                          color: Color.fromARGB(255, 136, 226, 176),
-                          width: 2,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Login",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                        child: Center(
+                          child: Text(
+                            "Login",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

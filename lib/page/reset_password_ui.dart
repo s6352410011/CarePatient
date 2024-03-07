@@ -1,6 +1,6 @@
-import 'package:care_patient/color.dart';
+import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
-import 'package:care_patient/color.dart';
+import 'package:care_patient/class/color.dart';
 
 class ResetPassword extends StatelessWidget {
   const ResetPassword({Key? key}) : super(key: key);
