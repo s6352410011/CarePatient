@@ -44,54 +44,18 @@ class _LoginUIState extends State<LoginUI> {
 
   @override
   Widget build(BuildContext context) {
-    var fadeInUp = FadeInUp(
-      duration: Duration(milliseconds: 1800),
-      child: ElevatedButton(
-        onPressed: () {
-          // โค้ดเข้าสู่ระบบด้วย Facebook
-        },
-        style: ElevatedButton.styleFrom(
-          minimumSize: Size(200, 50),
-          padding: EdgeInsets.symmetric(vertical: 16.0),
-          backgroundColor: Colors.blue, // สีพื้นหลังของปุ่ม
-          foregroundColor: Colors.white, // สีของข้อความบนปุ่ม
-          elevation: 5, // เงาของปุ่ม
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: Colors.blue), // สีเส้นขอบของปุ่ม
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.facebook,
-              color: Colors.white,
-            ),
-            SizedBox(width: 8), // ระยะห่างระหว่างไอคอนกับข้อความ
-            Text(
-              "Login with Facebook",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Container(
           child: Column(
             children: <Widget>[
-              SizedBox(height: 80),
+              SizedBox(height: 50),
               FadeInUp(
-                duration: Duration(milliseconds: 1000),
+                duration: Duration(milliseconds: 1900),
                 child: Image.asset(
                   'assets/images/logo_cp.png',
-                  height: MediaQuery.of(context).size.height * 0.15,
+                  height: MediaQuery.of(context).size.height * 0.20,
                 ),
               ),
               SizedBox(height: 10),
@@ -120,7 +84,7 @@ class _LoginUIState extends State<LoginUI> {
                         child: Column(
                           children: <Widget>[
                             Container(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(1.0),
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
@@ -138,7 +102,7 @@ class _LoginUIState extends State<LoginUI> {
                               ),
                             ),
                             Container(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(1.0),
                               child: TextField(
                                 controller: _passwordController,
                                 obscureText: true,
@@ -154,7 +118,7 @@ class _LoginUIState extends State<LoginUI> {
                       ),
                     ),
                     SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                     FadeInUp(
                       duration: Duration(milliseconds: 1900),
@@ -213,7 +177,7 @@ class _LoginUIState extends State<LoginUI> {
                       ),
                     ),
                     SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                     FadeInUp(
                       duration: Duration(milliseconds: 1900),
@@ -290,17 +254,13 @@ class _LoginUIState extends State<LoginUI> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          minimumSize: Size(200, 50),
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          minimumSize: Size(200, 10),
+                          padding: EdgeInsets.symmetric(vertical: 15.0),
                           backgroundColor: AllColor.pr,
                           foregroundColor: AllColor.pr,
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
-                          ),
-                          side: BorderSide(
-                            color: Color.fromARGB(255, 136, 226, 176),
-                            width: 2,
                           ),
                         ),
                         child: Center(
@@ -329,17 +289,13 @@ class _LoginUIState extends State<LoginUI> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          minimumSize: Size(200, 50),
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          minimumSize: Size(200, 10),
+                          padding: EdgeInsets.symmetric(vertical: 15.0),
                           backgroundColor: Color.fromARGB(255, 55, 233, 180),
                           foregroundColor: Color.fromARGB(255, 136, 138, 137),
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
-                          ),
-                          side: BorderSide(
-                            color: Color.fromARGB(255, 136, 226, 176),
-                            width: 2,
                           ),
                         ),
                         child: Center(
@@ -354,7 +310,7 @@ class _LoginUIState extends State<LoginUI> {
                       ),
                     ),
                     SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     FadeInUp(
                       duration: Duration(milliseconds: 1800),
@@ -367,7 +323,7 @@ class _LoginUIState extends State<LoginUI> {
                       ),
                     ),
                     SizedBox(
-                      height: 30,
+                      height: 20,
                     ),
                     FadeInUp(
                       duration: Duration(milliseconds: 1800),
@@ -380,7 +336,7 @@ class _LoginUIState extends State<LoginUI> {
                                 await _authenticationService.signInWithGoogle();
                             if (user != null) {
                               // Navigate to home screen
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => HomeMainCareUI()),
@@ -388,7 +344,7 @@ class _LoginUIState extends State<LoginUI> {
                             }
                           } else {
                             // Navigate to home screen
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => HomeMainCareUI()),
@@ -396,15 +352,13 @@ class _LoginUIState extends State<LoginUI> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          minimumSize: Size(200, 50),
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          minimumSize: Size(200, 10),
+                          padding: EdgeInsets.symmetric(vertical: 10.0),
                           backgroundColor: Colors.red, // สีพื้นหลังของปุ่ม
                           foregroundColor: Colors.white, // สีของข้อความบนปุ่ม
                           elevation: 5, // เงาของปุ่ม
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(
-                                color: Colors.red), // สีเส้นขอบของปุ่ม
+                            borderRadius: BorderRadius.circular(10)
                           ),
                         ),
                         child: Row(
@@ -428,46 +382,6 @@ class _LoginUIState extends State<LoginUI> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10), // ระยะห่างด้านบนของปุ่ม
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1800),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // โค้ดเข้าสู่ระบบด้วย Facebook
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(200, 50),
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          backgroundColor: Colors.blue, // สีพื้นหลังของปุ่ม
-                          foregroundColor: Colors.white, // สีของข้อความบนปุ่ม
-                          elevation: 5, // เงาของปุ่ม
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(
-                                color: Colors.blue), // สีเส้นขอบของปุ่ม
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.facebook,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                                width: 8), // ระยะห่างระหว่างไอคอนกับข้อความ
-                            Text(
-                              "Login with Facebook",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
                     SizedBox(
                       height: 30,
                     ),
@@ -503,88 +417,4 @@ class _LoginUIState extends State<LoginUI> {
       ),
     );
   }
-
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text("Google SignIn"),
-  //     ),
-  //     body: _user != null ? _userInfo() : _googleSignInButton(),
-  //   );
-  // }
-
-  // Widget _googleSignInButton() {
-  //   return Center(
-  //     child: SizedBox(
-  //       height: 50,
-  //       child: SignInButton(
-  //         Buttons.google,
-  //         text: "Sign up with Google",
-  //         onPressed: _handleGoogleSignIn,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _userInfo() {
-  //   return SizedBox(
-  //     width: MediaQuery.of(context).size.width,
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       crossAxisAlignment: CrossAxisAlignment.center,
-  //       mainAxisSize: MainAxisSize.max,
-  //       children: [
-  //         Container(
-  //           height: 100,
-  //           width: 100,
-  //           decoration: BoxDecoration(
-  //             image: DecorationImage(
-  //               image: NetworkImage(_user!.photoURL!),
-  //             ),
-  //           ),
-  //         ),
-  //         Text(_user!.email!),
-  //         Text(_user!.displayName ?? ""),
-  //         MaterialButton(
-  //           color: Colors.red,
-  //           child: const Text("Sign Out"),
-  //           onPressed: _auth.signOut,
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // void _handleGoogleSignIn() {
-  //   try {
-  //     GoogleAuthProvider _googleAuthProvider = GoogleAuthProvider();
-  //     _auth.signInWithProvider(_googleAuthProvider).then((userCredential) {
-  //       // ตรวจสอบว่า User ได้ login สำเร็จหรือไม่
-  //       if (userCredential.user != null) {
-  //         // เปลี่ยนหน้าไปยัง HomeCaregiverUI
-  //         Navigator.pushReplacement(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => HomeCaregiverUI()),
-  //         );
-  //       }
-  //     });
-  //   } catch (error) {
-  //     print(error);
-  //   }
-  // }
-
-  // Future<void> signInWithGoogle() async {
-  //   try {
-  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-  //     final GoogleSignInAuthentication googleAuth =
-  //         await googleUser!.authentication;
-  //     final AuthCredential credential = GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-  //     await FirebaseAuth.instance.signInWithCredential(credential);
-  //   } catch (e) {
-  //     print('Error signing in with Google: $e');
-  //   }
-  // }
 }

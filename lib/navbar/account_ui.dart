@@ -155,52 +155,7 @@ class _AccountUIState extends State<AccountUI> {
               ),
             ),
             SizedBox(height: 10),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     showDialog(
-            //       context: context,
-            //       builder: (BuildContext context) {
-            //         return AlertDialog(
-            //           title: Text('ต้องการออกจากระบบหรือไม่?'),
-            //           actions: [
-            //             TextButton(
-            //               onPressed: () {
-            //                 Navigator.of(context).pop();
-            //               },
-            //               child: Text('Cancel'),
-            //             ),
-            //             TextButton(
-            //               onPressed: () {
-            //                 Navigator.pushReplacement(
-            //                   context,
-            //                   MaterialPageRoute(
-            //                     builder: (context) => LoginUI(),
-            //                   ),
-            //                 );
-            //               },
-            //               child: Text('OK'),
-            //             ),
-            //           ],
-            //         );
-            //       },
-            //     );
-            //   },
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Colors.red,
-            //     fixedSize: Size(200, 50),
-            //   ),
-            //   child: Row(
-            //     mainAxisSize: MainAxisSize.min,
-            //     children: [
-            //       Icon(
-            //         Icons.logout,
-            //         color: Colors.white,
-            //       ),
-            //       SizedBox(width: 5),
-            //       Text('Logout', style: TextStyle(color: Colors.white)),
-            //     ],
-            //   ),
-            // ),
+
           ],
         ),
       ),
