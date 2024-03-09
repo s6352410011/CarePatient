@@ -1,5 +1,5 @@
 import 'package:care_patient/login_ui.dart';
-import 'package:care_patient/firebase_options.dart';
+import 'package:care_patient/class/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:firebase_core/firebase_core.dart';
