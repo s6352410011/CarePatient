@@ -1,6 +1,6 @@
 import 'package:care_patient/Pages/account_setting_ui.dart';
+import 'package:care_patient/Password_Page/reset_password.dart';
 import 'package:care_patient/login_ui.dart';
-import 'package:care_patient/Pages/reset_password_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
@@ -122,7 +122,7 @@ class _AccountUIState extends State<AccountUI> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ResetPassword()),
+                  MaterialPageRoute(builder: (context) => ResetPasswordUI()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -155,7 +155,6 @@ class _AccountUIState extends State<AccountUI> {
               ),
             ),
             SizedBox(height: 10),
-
           ],
         ),
       ),
