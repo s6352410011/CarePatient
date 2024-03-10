@@ -1,4 +1,5 @@
-import 'package:care_patient/Password/forgot_password.dart';
+import 'package:care_patient/Password_Page/forgot_password.dart';
+import 'package:care_patient/class/color.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
@@ -21,6 +22,9 @@ class _RegisterUIState extends State<RegisterUI> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  bool _obscureTextPassword = true; // เพิ่มตัวแปรสำหรับรหัสผ่าน
+  bool _obscureTextConfirmPassword = true; // เพิ่มตัวแปรสำหรับการยืนยันรหัสผ่าน
 
   bool isDataComplete = false;
   bool rememberMe = false;
@@ -115,14 +119,14 @@ class _RegisterUIState extends State<RegisterUI> {
         } else {
           return Scaffold(
             backgroundColor: Colors.white,
-            body: Padding(
-              padding: const EdgeInsets.all(0),
-              child: Container(
-                child: SingleChildScrollView(
+            body: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 150),
+                    children: [
+                      SizedBox(height: 30),
                       Container(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -132,7 +136,7 @@ class _RegisterUIState extends State<RegisterUI> {
                               child: Image.asset(
                                 'assets/images/logo_cp.png',
                                 height:
-                                    MediaQuery.of(context).size.height * 0.15,
+                                    MediaQuery.of(context).size.height * 0.20,
                               ),
                             ),
                           ],
@@ -141,94 +145,86 @@ class _RegisterUIState extends State<RegisterUI> {
                       SizedBox(
                         height: 30,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(30.0),
-                        child: FadeInUp(
-                          duration: Duration(milliseconds: 1800),
-                          child: Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Color.fromRGBO(143, 148, 251, 1),
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1800),
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(8.0),
+                                child: TextField(
+                                  controller: _emailController,
+                                  onChanged: (_) {
+                                    checkDataCompletion();
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: 'Email : ',
+                                  ),
+                                ),
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color.fromRGBO(143, 148, 251, .2),
-                                  blurRadius: 20.0,
-                                  offset: Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: Color.fromRGBO(143, 148, 251, 1),
-                                      ),
-                                    ),
-                                  ),
-                                  child: TextField(
-                                    controller: _emailController,
-                                    onChanged: (_) {
-                                      checkDataCompletion();
-                                    },
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Email or Phone number",
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey[700],
+                              Container(
+                                padding: EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                  controller: _passwordController,
+                                  onChanged: (_) {
+                                    checkDataCompletion();
+                                  },
+                                  obscureText: _obscureTextPassword,
+                                  decoration: InputDecoration(
+                                    labelText: 'Password : ',
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _obscureTextPassword =
+                                              !_obscureTextPassword;
+                                        });
+                                      },
+                                      child: Icon(
+                                        _obscureTextPassword
+                                            ? Icons.visibility_off
+                                            : Icons
+                                                .visibility, // แสดง icon ตามสถานะของ _obscureTextPassword
                                       ),
                                     ),
                                   ),
                                 ),
-                                Container(
-                                  padding: EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: Color.fromRGBO(143, 148, 251, 1),
-                                      ),
-                                    ),
-                                  ),
-                                  child: TextField(
-                                    controller: _passwordController,
-                                    onChanged: (_) {
-                                      checkDataCompletion();
-                                    },
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Password",
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey[700],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: TextField(
-                                    controller: _confirmPasswordController,
-                                    onChanged: (_) {
-                                      checkDataCompletion();
-                                    },
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Confirm password",
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey[700],
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                  controller: _confirmPasswordController,
+                                  onChanged: (_) {
+                                    checkDataCompletion();
+                                  },
+                                  obscureText: _obscureTextConfirmPassword,
+                                  decoration: InputDecoration(
+                                    labelText: 'Confirm Password : ',
+                                    // เพิ่มเงื่อนไขการตรวจสอบและข้อความแจ้งเมื่อรหัสผ่านไม่ตรงกัน
+                                    errorText: _confirmPasswordController
+                                                .text.isNotEmpty &&
+                                            _passwordController.text !=
+                                                _confirmPasswordController.text
+                                        ? 'Passwords do not match'
+                                        : null,
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _obscureTextConfirmPassword =
+                                              !_obscureTextConfirmPassword;
+                                        });
+                                      },
+                                      child: Icon(
+                                        _obscureTextConfirmPassword
+                                            ? Icons.visibility_off
+                                            : Icons
+                                                .visibility, // แสดง icon ตามสถานะของ _obscureText
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -238,7 +234,7 @@ class _RegisterUIState extends State<RegisterUI> {
                           title: Text(
                             'ยอมรับนโยบายความเป็นส่วนตัว',
                             style: TextStyle(
-                              color: Color.fromRGBO(143, 148, 251, 1),
+                              color: Colors.black,
                             ),
                           ),
                           value: rememberMe,
@@ -249,11 +245,11 @@ class _RegisterUIState extends State<RegisterUI> {
                             });
                           },
                           controlAffinity: ListTileControlAffinity.leading,
-                          activeColor: Color.fromRGBO(143, 148, 251, 1),
+                          activeColor: AllColor.sc,
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 10,
                       ),
                       FadeInUp(
                         duration: Duration(milliseconds: 1800),
@@ -264,9 +260,9 @@ class _RegisterUIState extends State<RegisterUI> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text("Success"),
+                                    title: Text("สำเร็จเรียบร้อย"),
                                     content: Text(
-                                        "Registration completed successfully"),
+                                        "ทำการมัครให้ให้ท่านเสร็จเรียบร้อยแล้วครับ/ค่ะ"),
                                     actions: [
                                       TextButton(
                                         onPressed: () async {
@@ -290,9 +286,9 @@ class _RegisterUIState extends State<RegisterUI> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text("Alert"),
+                                    title: Text("แจ้งเตือน"),
                                     content: Text(
-                                        "Please accept the privacy policy"),
+                                        "โปรดกดเช็คในช่องยอมรับนโยบายความเป็นส่วนตัวด้วยครับ/ค่ะ"),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
@@ -309,23 +305,30 @@ class _RegisterUIState extends State<RegisterUI> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Color.fromARGB(255, 136, 226, 176), // สีปุ่มแดง
+                            backgroundColor: AllColor.sc, // สีปุ่ม
                             fixedSize: Size(200, 50),
                           ),
-                          child: Text("Register"),
+                          child: Center(
+                            child: Text(
+                              "Register",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(
                         height: 30,
                       ),
                       FadeInUp(
-                        duration: Duration(milliseconds: 2000),
+                        duration: Duration(milliseconds: 1800),
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: () {
-                              // Navigate to the login page
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -336,14 +339,15 @@ class _RegisterUIState extends State<RegisterUI> {
                             child: Text(
                               "Forgot Password?",
                               style: TextStyle(
-                                color: Color.fromARGB(255, 39, 19, 48),
+                                color: AllColor.pr,
+                                fontSize: 16,
                               ),
                             ),
                           ),
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 150,
                       ),
                       FadeInUp(
                         duration: Duration(milliseconds: 1800),
@@ -361,10 +365,11 @@ class _RegisterUIState extends State<RegisterUI> {
                             },
                             child: Text.rich(
                               TextSpan(
-                                text: "Have already an account?",
+                                text: "Have already an account?  ",
                                 style: TextStyle(
-                                  color: Colors.black, // set black color
-                                ),
+                                    color: Colors.black, // set black color
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
                                 children: [
                                   TextSpan(
                                     text: " Login here",

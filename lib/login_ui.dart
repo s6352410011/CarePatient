@@ -1,5 +1,5 @@
 import 'package:care_patient/class/color.dart';
-import 'package:care_patient/Password/forgot_password.dart';
+import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
 import 'package:care_patient/Patient_Page/home_PatientUI.dart';
 import 'package:care_patient/register.dart';
@@ -14,6 +14,8 @@ class LoginUI extends StatefulWidget {
   @override
   State<LoginUI> createState() => _LoginUIState();
 }
+
+bool _obscureTextPassword = true; // เพิ่มตัวแปรสำหรับรหัสผ่าน
 
 TextEditingController _emailController = TextEditingController();
 TextEditingController _passwordController = TextEditingController();
@@ -49,7 +51,7 @@ class _LoginUIState extends State<LoginUI> {
       body: SingleChildScrollView(
         child: Container(
           child: Column(
-            children: <Widget>[
+            children: [
               SizedBox(height: 50),
               FadeInUp(
                 duration: Duration(milliseconds: 1900),
@@ -67,49 +69,42 @@ class _LoginUIState extends State<LoginUI> {
                       duration: Duration(milliseconds: 1900),
                       child: Container(
                         padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Color.fromRGBO(143, 148, 251, 1),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromRGBO(143, 148, 251, .2),
-                              blurRadius: 20.0,
-                              offset: Offset(0, 10),
-                            ),
-                          ],
-                        ),
                         child: Column(
                           children: <Widget>[
                             Container(
                               padding: EdgeInsets.all(1.0),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: Color.fromRGBO(143, 148, 251, 1),
-                                  ),
-                                ),
-                              ),
                               child: TextField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Email",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
+                                  labelText: 'Email : ',
                                 ),
                               ),
+                            ),
+                            SizedBox(
+                              height: 20,
                             ),
                             Container(
                               padding: EdgeInsets.all(1.0),
                               child: TextField(
                                 controller: _passwordController,
-                                obscureText: true,
+                                obscureText:
+                                    _obscureTextPassword, // ใช้ตัวแปรเพื่อควบคุมการแสดงรหัสผ่าน
                                 decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
+                                  labelText: 'Password : ',
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _obscureTextPassword =
+                                            !_obscureTextPassword; // เปลี่ยนสถานะของรหัสผ่านที่มองเห็นได้
+                                      });
+                                    },
+                                    child: Icon(
+                                      _obscureTextPassword
+                                          ? Icons.visibility_off
+                                          : Icons
+                                              .visibility, // แสดง icon ตามสถานะของ _obscureTextPassword
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -364,9 +359,8 @@ class _LoginUIState extends State<LoginUI> {
                           children: [
                             Image.network(
                               'http://pngimg.com/uploads/google/google_PNG19635.png',
-                              // width: 50,
-                              // height: 30,
-                              height: MediaQuery.of(context).size.height * 0.05,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.035,
                             ),
                             SizedBox(
                                 width: 8), // ระยะห่างระหว่างไอคอนกับข้อความ

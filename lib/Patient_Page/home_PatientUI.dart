@@ -4,7 +4,7 @@ import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/account_ui.dart';
 import 'package:care_patient/navbar/messenger_ui.dart';
 import 'package:care_patient/navbar/notifications_ui.dart';
-import 'package:care_patient/navbar/progressive_ui.dart';
+import 'package:care_patient/Progressive_Page/progressive_ui.dart';
 
 class HomeMainPatientUI extends StatefulWidget {
   const HomeMainPatientUI({Key? key}) : super(key: key);

@@ -11,9 +11,6 @@ class ForgotPasswordUI extends StatefulWidget {
 }
 
 class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
-  String newPassword = '';
-  String confirmPassword = '';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,6 +67,46 @@ class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
                         color: Colors.white, // สีของข้อความ
                         fontSize: 16,
                         fontWeight: FontWeight.bold, // ตัวหนา
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                FadeInUp(
+                  duration: Duration(milliseconds: 1800),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigate to the login page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginUI(),
+                          ),
+                        );
+                      },
+                      child: Text.rich(
+                        TextSpan(
+                          text: "Have already an account?  ",
+                          style: TextStyle(
+                              color: Colors.black, // set black color
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                          children: [
+                            TextSpan(
+                              text: " Login here",
+                              style: TextStyle(
+                                color: Color.fromRGBO(
+                                    44, 146, 172, 1), // set blue color
+                                decoration:
+                                    TextDecoration.underline, // add underline
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
