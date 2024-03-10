@@ -1,4 +1,4 @@
-import 'package:care_patient/navbar/patient_ui.dart';
+import 'package:care_patient/Patient_Page/patient_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/account_ui.dart';

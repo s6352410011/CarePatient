@@ -1,4 +1,4 @@
-import 'package:care_patient/forgotPassword.dart';
+import 'package:care_patient/Password/forgot_password.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
@@ -309,7 +309,8 @@ class _RegisterUIState extends State<RegisterUI> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 136, 226, 176), // สีปุ่มแดง
+                            backgroundColor:
+                                Color.fromARGB(255, 136, 226, 176), // สีปุ่มแดง
                             fixedSize: Size(200, 50),
                           ),
                           child: Text("Register"),

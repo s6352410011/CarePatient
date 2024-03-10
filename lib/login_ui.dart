@@ -1,7 +1,7 @@
 import 'package:care_patient/class/color.dart';
-import 'package:care_patient/forgotPassword.dart';
+import 'package:care_patient/Password/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
-import 'package:care_patient/home_PatientUI.dart';
+import 'package:care_patient/Patient_Page/home_PatientUI.dart';
 import 'package:care_patient/register.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
@@ -257,7 +257,6 @@ class _LoginUIState extends State<LoginUI> {
                           minimumSize: Size(200, 10),
                           padding: EdgeInsets.symmetric(vertical: 15.0),
                           backgroundColor: AllColor.pr,
-                          foregroundColor: AllColor.pr,
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -268,6 +267,7 @@ class _LoginUIState extends State<LoginUI> {
                             "Login",
                             style: TextStyle(
                               color: Colors.white,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -291,8 +291,7 @@ class _LoginUIState extends State<LoginUI> {
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(200, 10),
                           padding: EdgeInsets.symmetric(vertical: 15.0),
-                          backgroundColor: Color.fromARGB(255, 55, 233, 180),
-                          foregroundColor: Color.fromARGB(255, 136, 138, 137),
+                          backgroundColor: AllColor.sc,
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -303,6 +302,7 @@ class _LoginUIState extends State<LoginUI> {
                             "Register",
                             style: TextStyle(
                               color: Colors.white,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -318,7 +318,7 @@ class _LoginUIState extends State<LoginUI> {
                         "— OR LOGIN WITH —",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 20,
                         ),
                       ),
                     ),
@@ -354,8 +354,7 @@ class _LoginUIState extends State<LoginUI> {
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(200, 10),
                           padding: EdgeInsets.symmetric(vertical: 10.0),
-                          backgroundColor: Colors.red, // สีพื้นหลังของปุ่ม
-                          foregroundColor: Colors.white, // สีของข้อความบนปุ่ม
+                          backgroundColor: Colors.black, // สีพื้นหลังของปุ่ม
                           elevation: 5, // เงาของปุ่ม
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
@@ -363,17 +362,18 @@ class _LoginUIState extends State<LoginUI> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              'assets/images/g.png',
-                              height: 30,
-                              width: 30,
+                            Image.network(
+                              'http://pngimg.com/uploads/google/google_PNG19635.png',
+                              // width: 50,
+                              // height: 30,
+                              height: MediaQuery.of(context).size.height * 0.05,
                             ),
                             SizedBox(
                                 width: 8), // ระยะห่างระหว่างไอคอนกับข้อความ
                             Text(
                               "Login with Google",
                               style: TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -401,7 +401,7 @@ class _LoginUIState extends State<LoginUI> {
                             "Forgot Password?",
                             style: TextStyle(
                               color: AllColor.pr,
-                              // color: Color.fromARGB(255, 39, 19, 48),
+                              fontSize: 16,
                             ),
                           ),
                         ),

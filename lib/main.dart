@@ -28,6 +28,15 @@ class Main extends StatelessWidget {
       theme: ThemeData(
         canvasColor: AllColor
             .pr, // กำหนดสีพื้นหลังที่ต้องการให้กับ Bottom Navigation Bar
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide(
+              color: Colors.red,
+              width: 3.0,
+            ),
+          ),
+        ),
       ),
       home: LoginUI(),
     );
