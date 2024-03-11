@@ -1,6 +1,6 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:animate_do/animate_do.dart';
 
 class ResetPasswordUI extends StatefulWidget {
   @override
@@ -41,7 +41,8 @@ class _ResetPasswordUIState extends State<ResetPasswordUI> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                // หรือแทนด้วย Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
               },
               child: Text('OK'),
             ),
@@ -98,8 +99,8 @@ class _ResetPasswordUIState extends State<ResetPasswordUI> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
-                      style: TextStyle(fontSize: 20), // เพิ่มขนาดของตัวอักษร
-                      controller: _emailController, // กำหนด controller
+                      style: TextStyle(fontSize: 20),
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email : ',
                       ),
@@ -107,23 +108,22 @@ class _ResetPasswordUIState extends State<ResetPasswordUI> {
                   ),
                 ),
                 SizedBox(height: 30),
-                // ปรับแต่งสีของปุ่มและข้อความ
                 FadeInUp(
                   duration: Duration(milliseconds: 1900),
                   child: ElevatedButton(
                     onPressed: _isResettingPassword ? null : _resetPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // สีของปุ่ม
-                      minimumSize: Size(200, 50), // กำหนดขนาดของปุ่ม
+                      backgroundColor: Colors.blue,
+                      minimumSize: Size(200, 50),
                     ),
                     child: _isResettingPassword
                         ? CircularProgressIndicator()
                         : Text(
                             'Reset Password',
                             style: TextStyle(
-                              color: Colors.white, // สีของข้อความ
+                              color: Colors.white,
                               fontSize: 16,
-                              fontWeight: FontWeight.bold, // ตัวหนา
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                   ),
