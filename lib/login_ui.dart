@@ -1,3 +1,5 @@
+import 'package:care_patient/Caregiver_Page/FormC_Page/fg_info_ui.dart';
+import 'package:care_patient/Patient_Page/FormP_Page/fg_info_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
@@ -192,14 +194,14 @@ class _LoginUIState extends State<LoginUI> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => HomeMainCareUI(),
+                                    builder: (context) => CFormInfoUI(),
                                   ),
                                 );
                               } else {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => HomeMainPatientUI(),
+                                    builder: (context) => PFormInfoUI(),
                                   ),
                                 );
                               }
