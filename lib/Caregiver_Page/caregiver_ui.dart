@@ -1,5 +1,9 @@
 import 'package:care_patient/Calendar_Page/calendar.dart';
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
+>>>>>>> 188cc23b9a66c3add5d4964704ee47d95f826196
 =======
 import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
 >>>>>>> 188cc23b9a66c3add5d4964704ee47d95f826196
