@@ -12,10 +12,10 @@ class _PatientPageState extends State<PatientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ข้อมูลผู้ป่วย'),
+        title: const Text('ข้อมูลผู้ดูแล'),
       ),
       body: const Center(
-        child: Text('ข้อมูลผู้ป่วย'),
+        child: Text('ข้อมูลผู้ดูแล'),
       ),
     );
   }

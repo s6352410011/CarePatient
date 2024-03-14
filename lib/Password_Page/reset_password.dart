@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:care_patient/class/AuthenticationService.dart';
 
 class ResetPasswordUI extends StatefulWidget {
   @override
@@ -9,6 +10,7 @@ class ResetPasswordUI extends StatefulWidget {
 
 class _ResetPasswordUIState extends State<ResetPasswordUI> {
   final TextEditingController _emailController = TextEditingController();
+  final AuthenticationService _authenticationService = AuthenticationService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool _isResettingPassword = false;
@@ -111,7 +113,12 @@ class _ResetPasswordUIState extends State<ResetPasswordUI> {
                 FadeInUp(
                   duration: Duration(milliseconds: 1900),
                   child: ElevatedButton(
-                    onPressed: _isResettingPassword ? null : _resetPassword,
+                    onPressed: _isResettingPassword
+                        ? null
+                        : () async {
+                            await _authenticationService.signOut();
+                            _resetPassword();
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       minimumSize: Size(200, 50),

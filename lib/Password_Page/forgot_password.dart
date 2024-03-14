@@ -2,6 +2,8 @@
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart'; // นำเข้าไลบรารี animate_do
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ForgotPasswordUI extends StatefulWidget {
   const ForgotPasswordUI({Key? key}) : super(key: key);
@@ -11,6 +13,45 @@ class ForgotPasswordUI extends StatefulWidget {
 }
 
 class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
+  final TextEditingController emailController =
+      TextEditingController(); // เพิ่ม TextEditingController เพื่อรับค่าอีเมล
+
+  void sendOTP(BuildContext context) async {
+    String email = emailController.text; // นำค่าที่รับมาจาก TextField ไปใช้งาน
+
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+
+      Fluttertoast.showToast(
+          msg: "รหัส OTP ถูกส่งไปยังอีเมลของคุณแล้ว",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                OTPUI(email: email)), // ส่งค่า email ไปยังหน้า OTPUI
+      );
+    } catch (e) {
+      print("เกิดข้อผิดพลาดในการส่งรหัส OTP: $e");
+      Fluttertoast.showToast(
+          msg: "เกิดข้อผิดพลาดในการส่งรหัส OTP",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +77,9 @@ class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
-                      style: TextStyle(fontSize: 20), // เพิ่มขนาดของตัวอักษร
+                      controller:
+                          emailController, // กำหนด controller ให้กับ TextField
+                      style: TextStyle(fontSize: 20),
                       decoration: InputDecoration(
                         labelText: 'Email : ',
                       ),
@@ -44,29 +87,28 @@ class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
                   ),
                 ),
                 SizedBox(height: 30),
-                // ปรับแต่งสีของปุ่มและข้อความ
                 FadeInUp(
                   duration: Duration(milliseconds: 1900),
                   child: ElevatedButton(
                     onPressed: () {
-                      // การกดปุ่ม Send OTP จะทำงานอย่างไรตามต้องการ
+                      sendOTP(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                OTPUI()), // NextPage คือหน้าถัดไปที่ต้องการไป
+                          builder: (context) => LoginUI(),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // สีของข้อความบนปุ่ม
-                      minimumSize: Size(200, 50), // กำหนดขนาดของปุ่ม
+                      backgroundColor: Colors.blue,
+                      minimumSize: Size(200, 50),
                     ),
                     child: Text(
                       'Send OTP',
                       style: TextStyle(
-                        color: Colors.white, // สีของข้อความ
+                        color: Colors.white,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold, // ตัวหนา
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -80,7 +122,6 @@ class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
                     alignment: Alignment.center,
                     child: GestureDetector(
                       onTap: () {
-                        // Navigate to the login page
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -92,17 +133,15 @@ class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
                         TextSpan(
                           text: "Have already an account?  ",
                           style: TextStyle(
-                              color: Colors.black, // set black color
+                              color: Colors.black,
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
                           children: [
                             TextSpan(
                               text: " Login here",
                               style: TextStyle(
-                                color: Color.fromRGBO(
-                                    44, 146, 172, 1), // set blue color
-                                decoration:
-                                    TextDecoration.underline, // add underline
+                                color: Color.fromRGBO(44, 146, 172, 1),
+                                decoration: TextDecoration.underline,
                               ),
                             ),
                           ],
@@ -121,6 +160,32 @@ class _ForgotPasswordUiState extends State<ForgotPasswordUI> {
 }
 
 class OTPUI extends StatelessWidget {
+  final String email;
+
+  OTPUI({required this.email});
+
+  final TextEditingController otpController = TextEditingController();
+
+  void verifyOTP(BuildContext context) {
+    String otp = otpController.text;
+
+    if (otp == "803451") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => NewPasswordUI(email: email)),
+      );
+    } else {
+      Fluttertoast.showToast(
+          msg: "รหัส OTP ไม่ถูกต้อง",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,7 +210,8 @@ class OTPUI extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
-                      style: TextStyle(fontSize: 20), // เพิ่มขนาดของตัวอักษร
+                      controller: otpController,
+                      style: TextStyle(fontSize: 20),
                       decoration: InputDecoration(
                         labelText: 'OTP : ',
                       ),
@@ -153,29 +219,22 @@ class OTPUI extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 30),
-                // ปรับแต่งสีของปุ่มและข้อความ
                 FadeInUp(
                   duration: Duration(milliseconds: 1900),
                   child: ElevatedButton(
                     onPressed: () {
-                      // การกดปุ่ม Send OTP จะทำงานอย่างไรตามต้องการ
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                NewPasswordUI()), // NextPage คือหน้าถัดไปที่ต้องการไป
-                      );
+                      verifyOTP(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // สีของข้อความบนปุ่ม
-                      minimumSize: Size(200, 50), // กำหนดขนาดของปุ่ม
+                      backgroundColor: Colors.blue,
+                      minimumSize: Size(200, 50),
                     ),
                     child: Text(
                       'Verify OTP',
                       style: TextStyle(
-                        color: Colors.white, // สีของข้อความ
+                        color: Colors.white,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold, // ตัวหนา
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -190,7 +249,10 @@ class OTPUI extends StatelessWidget {
 }
 
 class NewPasswordUI extends StatefulWidget {
-  const NewPasswordUI({Key? key}) : super(key: key);
+  final String email; // เพิ่มตัวแปร email เพื่อรับค่าอีเมล
+
+  const NewPasswordUI({Key? key, required this.email})
+      : super(key: key); // สร้าง constructor รับค่า email
 
   @override
   State<NewPasswordUI> createState() => _NewPasswordUIState();
@@ -199,8 +261,8 @@ class NewPasswordUI extends StatefulWidget {
 class _NewPasswordUIState extends State<NewPasswordUI> {
   String newPassword = '';
   String confirmPassword = '';
-  bool _obscureTextNewPassword = true; // เพิ่มตัวแปรสำหรับรหัสผ่านใหม่
-  bool _obscureTextConfirmPassword = true; // เพิ่มตัวแปรสำหรับการยืนยันรหัสผ่าน
+  bool _obscureTextNewPassword = true;
+  bool _obscureTextConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -213,123 +275,116 @@ class _NewPasswordUIState extends State<NewPasswordUI> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 30),
-                FadeInUp(
-                  duration: Duration(milliseconds: 1900),
-                  child: Image.asset(
-                    'assets/images/logo_cp.png',
-                    height: MediaQuery.of(context).size.height * 0.30,
-                  ),
+                Image.asset(
+                  'assets/images/logo_cp.png',
+                  height: MediaQuery.of(context).size.height * 0.30,
                 ),
                 SizedBox(height: 50),
-                FadeInUp(
-                  duration: Duration(milliseconds: 1900),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextFormField(
-                      style: TextStyle(fontSize: 20), // เพิ่มขนาดของตัวอักษร
-                      decoration: InputDecoration(
-                        labelText: 'Email : ',
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    style: TextStyle(fontSize: 20),
+                    decoration: InputDecoration(
+                      labelText:
+                          'Email : ${widget.email}', // แสดงค่า email ที่รับมา
                     ),
                   ),
                 ),
                 SizedBox(height: 20),
-                FadeInUp(
-                  duration: Duration(milliseconds: 1900),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextFormField(
-                      style: TextStyle(fontSize: 20),
-                      obscureText:
-                          _obscureTextNewPassword, // ใช้ค่าจากตัวแปร _obscureText เพื่อกำหนดการแสดงผลของรหัสผ่าน
-                      decoration: InputDecoration(
-                        labelText: 'New Password : ',
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _obscureTextNewPassword =
-                                  !_obscureTextNewPassword; // เปลี่ยนค่าของ _obscureText เมื่อ icon ถูกคลิก
-                            });
-                          },
-                          child: Icon(
-                            _obscureTextNewPassword
-                                ? Icons.visibility_off
-                                : Icons
-                                    .visibility, // แสดง icon ตามสถานะของ _obscureText
-                          ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    style: TextStyle(fontSize: 20),
+                    obscureText: _obscureTextNewPassword,
+                    decoration: InputDecoration(
+                      labelText: 'New Password : ',
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _obscureTextNewPassword = !_obscureTextNewPassword;
+                          });
+                        },
+                        child: Icon(
+                          _obscureTextNewPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
                       ),
-                      onChanged: (value) {
-                        setState(() {
-                          newPassword = value;
-                        });
-                      },
                     ),
+                    onChanged: (value) {
+                      setState(() {
+                        newPassword = value;
+                      });
+                    },
                   ),
                 ),
                 SizedBox(height: 10),
-                FadeInUp(
-                  duration: Duration(milliseconds: 1900),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextFormField(
-                      style: TextStyle(fontSize: 20),
-                      obscureText:
-                          _obscureTextConfirmPassword, // ใช้ค่าจากตัวแปร _obscureText เพื่อกำหนดการแสดงผลของรหัสผ่าน
-                      decoration: InputDecoration(
-                        labelText: 'Confirm Password : ',
-                        // ใส่เงื่อนไขการตรวจสอบ
-                        errorText: confirmPassword.isNotEmpty &&
-                                newPassword != confirmPassword
-                            ? 'Passwords do not match'
-                            : null,
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _obscureTextConfirmPassword =
-                                  !_obscureTextConfirmPassword; // เปลี่ยนค่าของ _obscureText เมื่อ icon ถูกคลิก
-                            });
-                          },
-                          child: Icon(
-                            _obscureTextConfirmPassword
-                                ? Icons.visibility_off
-                                : Icons
-                                    .visibility, // แสดง icon ตามสถานะของ _obscureText
-                          ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    style: TextStyle(fontSize: 20),
+                    obscureText: _obscureTextConfirmPassword,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password : ',
+                      errorText: confirmPassword.isNotEmpty &&
+                              newPassword != confirmPassword
+                          ? 'Passwords do not match'
+                          : null,
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _obscureTextConfirmPassword =
+                                !_obscureTextConfirmPassword;
+                          });
+                        },
+                        child: Icon(
+                          _obscureTextConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
                       ),
-                      onChanged: (value) {
-                        setState(() {
-                          confirmPassword = value;
-                        });
-                      },
                     ),
+                    onChanged: (value) {
+                      setState(() {
+                        confirmPassword = value;
+                      });
+                    },
                   ),
                 ),
                 SizedBox(height: 30),
-                FadeInUp(
-                  duration: Duration(milliseconds: 1900),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // การกดปุ่ม Send OTP จะทำงานอย่างไรตามต้องการ
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LoginUI()), // LoginUI คือหน้าถัดไปที่ต้องการไป
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // สีของข้อความบนปุ่ม
-                      minimumSize: Size(200, 50), // กำหนดขนาดของปุ่ม
-                    ),
-                    child: Text(
-                      'Confirm',
-                      style: TextStyle(
-                        color: Colors.white, // สีของข้อความ
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold, // ตัวหนา
-                      ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (newPassword == confirmPassword) {
+                      Fluttertoast.showToast(
+                          msg: "รหัสผ่านถูกเปลี่ยนแล้ว",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                      Navigator.pop(context); // กลับไปยังหน้าก่อนหน้า
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: "รหัสผ่านไม่ตรงกัน",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    minimumSize: Size(200, 50),
+                  ),
+                  child: Text(
+                    'Confirm',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),

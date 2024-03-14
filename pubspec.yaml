@@ -44,6 +44,8 @@ dependencies:
   shared_preferences: ^2.0.12
   provider: ^6.1.2
   firebase_database: ^10.4.7
+  fluttertoast: ^8.2.4
+  email_auth: ^1.1.1
   # flutter_facebook_auth: ^6.1.1
   
   # The following adds the Cupertino Icons font to your application.
