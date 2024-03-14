@@ -1,12 +1,5 @@
 import 'package:care_patient/Calendar_Page/calendar.dart';
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
->>>>>>> 188cc23b9a66c3add5d4964704ee47d95f826196
-=======
-import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
->>>>>>> 188cc23b9a66c3add5d4964704ee47d95f826196
+import 'package:care_patient/Caregiver_Page/data_patient_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
 import 'package:care_patient/Pages/review_ui.dart';
@@ -190,7 +183,7 @@ class HomeCaregiverUI extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ReviewPage()),
+              MaterialPageRoute(builder: (context) => DataPatientUI()),
             );
           },
           child: Card(
@@ -236,7 +229,7 @@ class HomeCaregiverUI extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ReviewPage()),
+              MaterialPageRoute(builder: (context) => DataPatientUI()),
             );
           },
           child: Card(
