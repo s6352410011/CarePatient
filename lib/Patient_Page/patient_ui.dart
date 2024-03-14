@@ -1,5 +1,5 @@
-import 'package:care_patient/Pages/calendar.dart';
-import 'package:care_patient/Pages/data_patient_ui.dart';
+import 'package:care_patient/Calendar_Page/calendar.dart';
+import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
 import 'package:care_patient/Pages/review_ui.dart';
