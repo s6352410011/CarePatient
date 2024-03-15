@@ -39,7 +39,7 @@ class Main extends StatelessWidget {
           ),
         ),
       ),
-      home: PFormInfoUI(),
+      home: LoginUI(),
     );
   }
 }

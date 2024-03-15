@@ -17,15 +17,13 @@ class LoginUI extends StatefulWidget {
   State<LoginUI> createState() => _LoginUIState();
 }
 
-bool _obscureTextPassword = true; // เพิ่มตัวแปรสำหรับรหัสผ่าน
-
-TextEditingController _emailController = TextEditingController();
-TextEditingController _passwordController = TextEditingController();
-int? _selectedOption = 0;
-
 class _LoginUIState extends State<LoginUI> {
   final AuthenticationService _authenticationService = AuthenticationService();
+  bool _obscureTextPassword = true; // เพิ่มตัวแปรสำหรับรหัสผ่าน
 
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  int? _selectedOption = 0;
   @override
   void initState() {
     super.initState();
@@ -44,6 +42,21 @@ class _LoginUIState extends State<LoginUI> {
       context,
       MaterialPageRoute(builder: (context) => HomeMainCareUI()),
     );
+  }
+
+  String? validateEmail(String? value) {
+    const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
+        r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
+        r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
+        r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
+        r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
+        r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
+        r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
+    final regex = RegExp(pattern);
+
+    return value!.isEmpty || !regex.hasMatch(value)
+        ? 'Enter a valid email address'
+        : null;
   }
 
   @override
@@ -67,51 +80,40 @@ class _LoginUIState extends State<LoginUI> {
                 padding: EdgeInsets.all(30.0),
                 child: Column(
                   children: <Widget>[
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1900),
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child: Column(
+                        children: <Widget>[
+                          FadeInUp(
+                            duration: Duration(milliseconds: 1900),
+                            child: Container(
                               padding: EdgeInsets.all(1.0),
                               child: TextField(
+                                keyboardType: TextInputType.emailAddress,
                                 controller: _emailController,
                                 decoration: InputDecoration(
                                   labelText: 'Email : ',
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Container(
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          FadeInUp(
+                            duration: Duration(milliseconds: 1900),
+                            child: Container(
                               padding: EdgeInsets.all(1.0),
                               child: TextField(
                                 controller: _passwordController,
-                                obscureText:
-                                    _obscureTextPassword, // ใช้ตัวแปรเพื่อควบคุมการแสดงรหัสผ่าน
+                                obscureText: true,
                                 decoration: InputDecoration(
                                   labelText: 'Password : ',
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _obscureTextPassword =
-                                            !_obscureTextPassword; // เปลี่ยนสถานะของรหัสผ่านที่มองเห็นได้
-                                      });
-                                    },
-                                    child: Icon(
-                                      _obscureTextPassword
-                                          ? Icons.visibility_off
-                                          : Icons
-                                              .visibility, // แสดง icon ตามสถานะของ _obscureTextPassword
-                                    ),
-                                  ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(
@@ -180,16 +182,36 @@ class _LoginUIState extends State<LoginUI> {
                       duration: Duration(milliseconds: 1900),
                       child: ElevatedButton(
                         onPressed: () async {
+                          final emailError =
+                              validateEmail(_emailController.text);
+                          if (emailError != null) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Error'),
+                                  content: Text(emailError),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            return;
+                          }
+
                           if (_emailController.text.isNotEmpty &&
                               _passwordController.text.isNotEmpty) {
-                            // เรียกใช้งาน signInWithEmailPassword เมื่อทั้ง Email และ Password ไม่ว่าง
-                            dynamic result = await AuthenticationService()
+                            dynamic result = await _authenticationService
                                 .signInWithEmailPassword(_emailController.text,
                                     _passwordController.text);
                             if (result != null) {
-                              // การเข้าสู่ระบบสำเร็จ
                               print("Sign in successful");
-                              // การเข้าสู่ระบบสำเร็จ ให้ตรวจสอบ _selectedOption เพื่อเปิดหน้าจอที่ถูกต้อง
                               if (_selectedOption == 0) {
                                 Navigator.push(
                                   context,
@@ -206,7 +228,6 @@ class _LoginUIState extends State<LoginUI> {
                                 );
                               }
                             } else {
-                              // ไม่สามารถเข้าสู่ระบบได้
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -228,7 +249,6 @@ class _LoginUIState extends State<LoginUI> {
                               );
                             }
                           } else {
-                            // แสดง AlertDialog เมื่อ Email หรือ Password ไม่ถูกต้อง
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -310,7 +330,7 @@ class _LoginUIState extends State<LoginUI> {
                       height: 20,
                     ),
                     FadeInUp(
-                      duration: Duration(milliseconds: 1800),
+                      duration: Duration(milliseconds: 1900),
                       child: Text(
                         "— OR LOGIN WITH —",
                         style: TextStyle(
@@ -323,36 +343,76 @@ class _LoginUIState extends State<LoginUI> {
                       height: 20,
                     ),
                     FadeInUp(
-                      duration: Duration(milliseconds: 1800),
+                      duration: Duration(milliseconds: 1900),
                       child: ElevatedButton(
                         onPressed: () async {
                           final bool isLoggedIn =
                               await _authenticationService.isLoggedIn();
                           if (!isLoggedIn) {
-                            final User? user =
+                            final user =
                                 await _authenticationService.signInWithGoogle();
                             if (user != null) {
-                              // Navigate to home screen
+                              // Check if user selected an option
+                              if (_selectedOption == 0) {
+                                // Navigate to caregiver form page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CFormInfoUI(),
+                                  ),
+                                );
+                              } else if (_selectedOption == 1) {
+                                // Navigate to patient form page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PFormInfoUI(),
+                                  ),
+                                );
+                              } else {
+                                // If no option is selected, default to caregiver form page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CFormInfoUI(),
+                                  ),
+                                );
+                              }
+                            }
+                          } else {
+                            // Check if user selected an option
+                            if (_selectedOption == 0) {
+                              // Navigate to caregiver home page
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HomeMainCareUI()),
+                                  builder: (context) => HomeMainCareUI(),
+                                ),
+                              );
+                            } else if (_selectedOption == 1) {
+                              // Navigate to patient home page
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomeMainPatientUI(),
+                                ),
+                              );
+                            } else {
+                              // If no option is selected, default to caregiver home page
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomeMainCareUI(),
+                                ),
                               );
                             }
-                          } else {
-                            // Navigate to home screen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomeMainCareUI()),
-                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(200, 10),
                           padding: EdgeInsets.symmetric(vertical: 10.0),
-                          backgroundColor: Colors.black, // สีพื้นหลังของปุ่ม
-                          elevation: 5, // เงาของปุ่ม
+                          backgroundColor: Colors.black,
+                          elevation: 5,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                         ),
@@ -365,7 +425,8 @@ class _LoginUIState extends State<LoginUI> {
                                   MediaQuery.of(context).size.height * 0.035,
                             ),
                             SizedBox(
-                                width: 8), // ระยะห่างระหว่างไอคอนกับข้อความ
+                              width: 8,
+                            ),
                             Text(
                               "Login with Google",
                               style: TextStyle(
@@ -381,7 +442,7 @@ class _LoginUIState extends State<LoginUI> {
                       height: 30,
                     ),
                     FadeInUp(
-                      duration: Duration(milliseconds: 2000),
+                      duration: Duration(milliseconds: 1900),
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(

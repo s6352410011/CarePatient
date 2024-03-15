@@ -3,10 +3,10 @@ import 'package:care_patient/class/color.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:email_validator/email_validator.dart';
 
 enum UserType { caregiver, patient }
 
@@ -28,8 +28,9 @@ class _RegisterUIState extends State<RegisterUI> {
 
   bool isDataComplete = false;
   bool rememberMe = false;
+  bool isValid = false;
+
   UserType selectedUserType = UserType.caregiver; // Default selected type
-  final AuthenticationService _authenticationService = AuthenticationService();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('registerusers');
@@ -43,20 +44,27 @@ class _RegisterUIState extends State<RegisterUI> {
     if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
       if (password == confirmPassword) {
         try {
-          // สร้างผู้ใช้ใน Firebase Authentication
-          UserCredential userCredential =
-              await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
+          // ตรวจสอบว่ามีผู้ใช้งานอีเมลนี้อยู่แล้วหรือไม่
+          bool isExistingUser = await _checkExistingUser(email);
+          if (!isExistingUser) {
+            // สร้างผู้ใช้ใน Firebase Authentication
+            UserCredential userCredential =
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
 
-          // เพิ่มข้อมูลผู้ใช้ลงใน Firebase Firestore
-          await _usersCollection.doc(userCredential.user!.uid).set({
-            'email': email,
-            'password': password,
-          });
+            // เพิ่มข้อมูลผู้ใช้ลงใน Firebase Firestore
+            await _usersCollection.doc(userCredential.user!.uid).set({
+              'email': email,
+              'password': password,
+            });
 
-          print('User registered successfully: ${userCredential.user!.uid}');
+            print('User registered successfully: ${userCredential.user!.uid}');
+          } else {
+            _showAlertDialogSignUp("Email exists",
+                "The email is already registered. Please use a different email.");
+          }
         } catch (e) {
           print('Error registering user: $e');
           _showAlertDialogSignUp(
@@ -69,6 +77,26 @@ class _RegisterUIState extends State<RegisterUI> {
     } else {
       _showAlertDialogSignUp("Missing Information",
           "Please enter email, password, and confirm password");
+    }
+  }
+
+  Future<bool> _checkExistingUser(String email) async {
+    try {
+      // ค้นหาผู้ใช้ที่ใช้อีเมลเดียวกันใน Firebase Firestore
+      QuerySnapshot querySnapshot = await _usersCollection
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      // ถ้ามีผู้ใช้งานในระบบแล้ว
+      if (querySnapshot.docs.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Error checking existing user: $e');
+      return false;
     }
   }
 
@@ -105,6 +133,12 @@ class _RegisterUIState extends State<RegisterUI> {
     } catch (e) {
       print("Error initializing Firebase: $e");
     }
+  }
+
+  void _checkEmailValidaty() {
+    setState(() {
+      isValid = EmailValidator.validate(_emailController.text.trim());
+    });
   }
 
   @override
@@ -153,13 +187,16 @@ class _RegisterUIState extends State<RegisterUI> {
                             children: <Widget>[
                               Container(
                                 padding: EdgeInsets.all(8.0),
-                                child: TextField(
+                                child: TextFormField(
+                                  keyboardType: TextInputType.emailAddress,
                                   controller: _emailController,
                                   onChanged: (_) {
                                     checkDataCompletion();
                                   },
                                   decoration: InputDecoration(
                                     labelText: 'Email : ',
+                                    errorText:
+                                        validateEmail(_emailController.text),
                                   ),
                                 ),
                               ),
@@ -256,32 +293,77 @@ class _RegisterUIState extends State<RegisterUI> {
                         child: ElevatedButton(
                           onPressed: () async {
                             if (isDataComplete && rememberMe) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("สำเร็จเรียบร้อย"),
-                                    content: Text(
-                                        "ทำการมัครให้ให้ท่านเสร็จเรียบร้อยแล้วครับ/ค่ะ"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () async {
-                                          _signUp();
-                                          // After successful registration, navigate to the Login UI
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => LoginUI(),
+                              if (_passwordController.text.length >= 6) {
+                                // Check email validity using EmailValidator
+                                bool isEmailValid = EmailValidator.validate(
+                                    _emailController.text.trim());
+                                if (isEmailValid) {
+                                  // Check if email exists
+                                  bool isExistingUser =
+                                      await _checkExistingUser(
+                                          _emailController.text.trim());
+                                  if (!isExistingUser) {
+                                    // If email does not exist, proceed with registration
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text("สำเร็จเรียบร้อย"),
+                                          content: Text(
+                                              "ทำการมัครให้ให้ท่านเสร็จเรียบร้อยแล้วครับ/ค่ะ"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () async {
+                                                Navigator.of(context).pop();
+                                                // Proceed with registration - No need to call _signUp() here again
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        LoginUI(),
+                                                  ),
+                                                );
+                                              },
+                                              child: Text("OK"),
                                             ),
-                                          );
-                                        },
-                                        child: Text("OK"),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
+                                          ],
+                                        );
+                                      },
+                                    );
+                                    // Call _signUp() here if needed, but in this case, it's not necessary
+                                  } else {
+                                    // If email exists, show alert
+                                    _showAlertDialogSignUp("Email exists",
+                                        "The email is already registered. Please use a different email.");
+                                  }
+                                } else {
+                                  // If email is invalid, show alert
+                                  _showAlertDialogSignUp("Invalid Email",
+                                      "Please enter a valid email address.");
+                                }
+                              } else {
+                                // If password length is less than 6 characters, show alert
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Password Length Error"),
+                                      content: Text(
+                                          "Password must be at least 6 characters long"),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("OK"),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
                             } else if (!rememberMe) {
+                              // If rememberMe is false, show alert
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -301,6 +383,7 @@ class _RegisterUIState extends State<RegisterUI> {
                                 },
                               );
                             } else {
+                              // If data is incomplete, show alert
                               showAlert1();
                             }
                           },
@@ -423,5 +506,20 @@ class _RegisterUIState extends State<RegisterUI> {
         );
       },
     );
+  }
+
+  String? validateEmail(String? value) {
+    const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
+        r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
+        r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
+        r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
+        r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
+        r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
+        r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
+    final regex = RegExp(pattern);
+
+    return value!.isEmpty || !regex.hasMatch(value)
+        ? 'Enter a valid email address'
+        : null;
   }
 }
