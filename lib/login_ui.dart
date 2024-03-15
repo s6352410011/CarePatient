@@ -1,5 +1,6 @@
-import 'package:care_patient/Caregiver_Page/FormC_Page/fg_info_ui.dart';
-import 'package:care_patient/Patient_Page/FormP_Page/fg_info_ui.dart';
+import 'package:care_patient/Caregiver_Page/FormC_Page/f_work_ui.dart';
+import 'package:care_patient/Caregiver_Page/FormC_Page/f_info_ui.dart';
+import 'package:care_patient/Patient_Page/FormP_Page/f_info_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
@@ -103,12 +104,26 @@ class _LoginUIState extends State<LoginUI> {
                           FadeInUp(
                             duration: Duration(milliseconds: 1900),
                             child: Container(
-                              padding: EdgeInsets.all(1.0),
-                              child: TextField(
+                              padding: EdgeInsets.all(8.0),
+                              child: TextFormField(
                                 controller: _passwordController,
-                                obscureText: true,
+                                obscureText: _obscureTextPassword,
                                 decoration: InputDecoration(
                                   labelText: 'Password : ',
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _obscureTextPassword =
+                                            !_obscureTextPassword;
+                                      });
+                                    },
+                                    child: Icon(
+                                      _obscureTextPassword
+                                          ? Icons.visibility_off
+                                          : Icons
+                                              .visibility, // แสดง icon ตามสถานะของ _obscureTextPassword
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -358,7 +373,7 @@ class _LoginUIState extends State<LoginUI> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CFormInfoUI(),
+                                    builder: (context) => CFormWorkUI(),
                                   ),
                                 );
                               } else if (_selectedOption == 1) {
