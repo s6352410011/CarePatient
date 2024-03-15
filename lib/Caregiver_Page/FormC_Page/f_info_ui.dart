@@ -1,5 +1,4 @@
 import 'package:care_patient/Caregiver_Page/FormC_Page/f_work_ui.dart';
-import 'package:care_patient/Patient_Page/FormP_Page/f_medical_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -197,7 +196,9 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 },
                 decoration: InputDecoration(
                   labelText: 'เบอร์โทรศัพท์',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
@@ -284,7 +285,10 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                       missingFields += 'ที่อยู่, ';
                     }
                     if (_phoneNumber == null || _phoneNumber == '') {
-                      missingFields += 'เบอร์โทรศัพท์';
+                      missingFields += 'เบอร์โทรศัพท์, ';
+                    }
+                    if (_selectedFile == null || _selectedFile == '') {
+                      missingFields += 'รูปภาพ, ';
                     }
 
                     if (missingFields != '') {

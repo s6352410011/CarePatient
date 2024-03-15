@@ -196,7 +196,9 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 },
                 decoration: InputDecoration(
                   labelText: 'เบอร์โทรศัพท์',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
@@ -283,7 +285,10 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                       missingFields += 'ที่อยู่, ';
                     }
                     if (_phoneNumber == null || _phoneNumber == '') {
-                      missingFields += 'เบอร์โทรศัพท์';
+                      missingFields += 'เบอร์โทรศัพท์, ';
+                    }
+                    if (_selectedFile == null || _selectedFile == '') {
+                      missingFields += 'รูปภาพ, ';
                     }
 
                     if (missingFields != '') {
