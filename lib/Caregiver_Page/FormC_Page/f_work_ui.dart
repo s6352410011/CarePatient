@@ -3,7 +3,7 @@ import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 
 class CFormWorkUI extends StatefulWidget {
-  const CFormWorkUI({Key? key}) : super(key: key);
+  const CFormWorkUI({super.key});
 
   @override
   State<CFormWorkUI> createState() => _CFormWorkUIState();
@@ -30,7 +30,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false, // กำหนดให้ไม่แสดงปุ่ม back
-        title: Text(
+        title: const Text(
           'แบบฟอร์มลงทะเบียน',
           style: TextStyle(
             color: AllColor.bg,
@@ -46,14 +46,14 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'ประวัติการทำงาน :',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // ทักษะและความสามารถที่เกี่ยวข้อง
             TextField(
               onChanged: (value) {
@@ -61,12 +61,12 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                   _relatedSkills = value;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'ทักษะและความสามารถที่เกี่ยวข้อง',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // ความถนัดและความสามารถเฉพาะ
             TextField(
               onChanged: (value) {
@@ -74,12 +74,12 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                   _specificSkills = value;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'ความถนัดและความสามารถเฉพาะ',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // ประสบการณ์การดูแล
             TextField(
               onChanged: (value) {
@@ -87,12 +87,12 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                   _careExperience = value;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'ประสบการณ์การดูแล',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // เขตที่คุณสามารถไปดูแล
             TextField(
               onChanged: (value) {
@@ -100,18 +100,18 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                   _workArea = value;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'เขตที่คุณสามารถไปดูแล',
                 border: OutlineInputBorder(),
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // วันที่สามารถทำงานได้
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
+                const Column(
                   children: [
                     Text(
                       'วันที่คุณสามารถรับงานได้ :',
@@ -122,14 +122,14 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Wrap(
                   spacing: 8.0,
                   children: [
                     FilterChip(
-                      label: Text('ทุกวัน'),
+                      label: const Text('ทุกวัน'),
                       selected: _allDaysSelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -146,7 +146,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       },
                     ),
                     FilterChip(
-                      label: Text('จันทร์'),
+                      label: const Text('จันทร์'),
                       selected: _mondaySelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -170,7 +170,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       },
                     ),
                     FilterChip(
-                      label: Text('อังคาร'),
+                      label: const Text('อังคาร'),
                       selected: _tuesdaySelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -193,7 +193,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       },
                     ),
                     FilterChip(
-                      label: Text('พุธ'),
+                      label: const Text('พุธ'),
                       selected: _wednesdaySelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -216,7 +216,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       },
                     ),
                     FilterChip(
-                      label: Text('พฤหัสบดี'),
+                      label: const Text('พฤหัสบดี'),
                       selected: _thursdaySelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -239,7 +239,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       },
                     ),
                     FilterChip(
-                      label: Text('ศุกร์'),
+                      label: const Text('ศุกร์'),
                       selected: _fridaySelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -262,7 +262,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       },
                     ),
                     FilterChip(
-                      label: Text('เสาร์'),
+                      label: const Text('เสาร์'),
                       selected: _saturdaySelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -285,7 +285,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       },
                     ),
                     FilterChip(
-                      label: Text('อาทิตย์'),
+                      label: const Text('อาทิตย์'),
                       selected: _sundaySelected,
                       onSelected: (isSelected) {
                         setState(() {
@@ -311,7 +311,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // ปุ่มยืนยัน
             Center(
               child: ElevatedButton(
@@ -335,7 +335,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('แจ้งเตือน'),
+                          title: const Text('แจ้งเตือน'),
                           content:
                               Text('กรุณากรอกข้อมูลให้ครบถ้วน: $missingFields'),
                           actions: [
@@ -343,7 +343,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('ตกลง'),
+                              child: const Text('ตกลง'),
                             ),
                           ],
                         );
@@ -363,15 +363,15 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('แจ้งเตือน'),
-                          content: Text(
+                          title: const Text('แจ้งเตือน'),
+                          content: const Text(
                               'กรุณาเลือกวันที่ต้องการความดูแลอย่างน้อย 1 วัน'),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('ตกลง'),
+                              child: const Text('ตกลง'),
                             ),
                           ],
                         );
@@ -384,88 +384,94 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                         bool _acceptedPolicy =
                             false; // ตัวแปรเก็บสถานะการยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว
 
-                        return AlertDialog(
-                          title: Center(child: Text('ข้อตกลง')),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'ข้อตกลงการรักษาความลับของผู้ป่วยเป็นส่วนสำคัญในการให้บริการด้านสุขภาพ และเป็นปัจจัยหลักในการสร้างความเชื่อมั่นกับผู้รับบริการ ต่อไปนี้คือตัวอย่างข้อความที่สามารถนำไปใช้:',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              Row(
+                        return StatefulBuilder(
+                          builder: (context, setState) {
+                            return AlertDialog(
+                              title: const Center(child: Text('ข้อตกลง')),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Checkbox(
-                                    value: _acceptedPolicy,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _acceptedPolicy = value ?? false;
-                                      });
-                                    },
-                                    activeColor: Colors
-                                        .green, // สีเมื่อ checkbox ถูกเลือก
-                                    checkColor:
-                                        Colors.white, // สีติ๊กของ checkbox
-                                  ),
-                                  Text(
-                                    'ตกลงยอมรับเงื่อนไข',
+                                  const Text(
+                                    'ข้อตกลงการรักษาความลับของผู้ป่วยเป็นส่วนสำคัญในการให้บริการด้านสุขภาพ และเป็นปัจจัยหลักในการสร้างความเชื่อมั่นกับผู้รับบริการ ต่อไปนี้คือตัวอย่างข้อความที่สามารถนำไปใช้:',
                                     style: TextStyle(fontSize: 16),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        checkColor:
+                                            Colors.white, // Color of the check
+                                        activeColor: Colors
+                                            .green, // Background color when checked
+                                        value: _acceptedPolicy,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            _acceptedPolicy = value!;
+                                          });
+                                        },
+                                      ),
+                                      const Text(
+                                        'ตกลงยอมรับเงื่อนไข',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                          actions: [
-                            Center(
-                              child: Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      if (_acceptedPolicy) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                HomeMainCareUI(),
+                              actions: [
+                                Center(
+                                  child: Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          if (_acceptedPolicy) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const HomeMainCareUI(),
+                                              ),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'กรุณายอมรับเงื่อนไข',
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          backgroundColor: Colors.green,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical:
+                                                  15), // เพิ่มเฉพาะ padding ในแนวตั้ง
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                           ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'กรุณายอมรับเงื่อนไข',
-                                              style: TextStyle(fontSize: 14),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    child: Text('ยืนยัน',
-                                        style: TextStyle(fontSize: 16)),
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.green,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical:
-                                              15), // เพิ่มเฉพาะ padding ในแนวตั้ง
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: const Text('ยืนยัน',
+                                            style: TextStyle(fontSize: 16)),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
+                              ],
+                            );
+                          },
                         );
                       },
                     );
                   }
                 },
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text('ยืนยัน'),
@@ -474,7 +480,8 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: AllColor.pr,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
