@@ -1,4 +1,4 @@
-import 'package:care_patient/Pages/account_setting_ui.dart';
+import 'package:care_patient/navbar/Account_Page/account_setting_ui.dart';
 import 'package:care_patient/Password_Page/reset_password.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';

@@ -208,7 +208,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Text(
                     'วันที่ต้องการความดูแล',
                     style: TextStyle(
