@@ -140,6 +140,7 @@ class _RegisterUIState extends State<RegisterUI> {
       isValid = EmailValidator.validate(_emailController.text.trim());
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -314,6 +315,7 @@ class _RegisterUIState extends State<RegisterUI> {
                                           actions: [
                                             TextButton(
                                               onPressed: () async {
+                                                _signUp();
                                                 Navigator.of(context).pop();
                                                 // Proceed with registration - No need to call _signUp() here again
                                                 Navigator.pushReplacement(

@@ -1,4 +1,3 @@
-import 'package:care_patient/Patient_Page/FormP_Page/f_info_ui.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:care_patient/class/firebase_options.dart';
 import 'package:flutter/material.dart';

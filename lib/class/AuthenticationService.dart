@@ -4,12 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
+
   // Method to sign in with Google
   Future<User?> signInWithGoogle() async {
     final GoogleSignInAccount? googleSignInAccount =
@@ -93,16 +95,31 @@ class AuthenticationService {
     }
   }
 
-
-
   Future<bool> _checkIfEmailExists(String email) async {
     QuerySnapshot querySnapshot = await _firestore
-        .collection('users')
+        .collection('registerusers')
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
 
     return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<bool> checkPhoneNumberExistsInFirestore(String phoneNumber) async {
+    try {
+      // Query Firestore to check if phone number exists
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('registerusers')
+          .where('phoneNumber', isEqualTo: phoneNumber)
+          .get();
+
+      // If the query returns documents, it means the phone number exists
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      // Handle any errors that may occur during the process
+      print('Error checking phone number in Firestore: $e');
+      return false; // Return false in case of an error
+    }
   }
 }
 

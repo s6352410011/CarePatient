@@ -104,7 +104,7 @@ class _LoginUIState extends State<LoginUI> {
                           FadeInUp(
                             duration: Duration(milliseconds: 1900),
                             child: Container(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(1.0),
                               child: TextFormField(
                                 controller: _passwordController,
                                 obscureText: _obscureTextPassword,

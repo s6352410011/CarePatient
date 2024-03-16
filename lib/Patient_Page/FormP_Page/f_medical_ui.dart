@@ -1,9 +1,11 @@
+import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
 import 'package:care_patient/Patient_Page/patient_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:care_patient/Patient_Page/home_PatientUI.dart';
 
 class PFormMedicalUI extends StatefulWidget {
   const PFormMedicalUI({Key? key}) : super(key: key);
@@ -642,7 +644,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomePatientUI(),
+                        builder: (context) => HomeMainPatientUI(),
                       ),
                     );
                   }
