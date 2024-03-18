@@ -383,7 +383,6 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       builder: (BuildContext context) {
                         bool _acceptedPolicy =
                             false; // ตัวแปรเก็บสถานะการยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว
-
                         return StatefulBuilder(
                           builder: (context, setState) {
                             return AlertDialog(
@@ -392,8 +391,11 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Text(
-                                    'ข้อตกลงการรักษาความลับของผู้ป่วยเป็นส่วนสำคัญในการให้บริการด้านสุขภาพ และเป็นปัจจัยหลักในการสร้างความเชื่อมั่นกับผู้รับบริการ ต่อไปนี้คือตัวอย่างข้อความที่สามารถนำไปใช้:',
+                                    'ข้อตกลงการรักษาความลับของผู้ป่วยเป็นส่วนสำคัญในการให้บริการด้านสุขภาพ และเป็นปัจจัยหลักในการสร้างความเชื่อมั่นกับผู้รับบริการ ต่อไปนี้คือตัวอย่างข้อความที่สามารถนำไปใช้',
                                     style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
                                   ),
                                   Row(
                                     children: [
@@ -409,9 +411,11 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                                           });
                                         },
                                       ),
-                                      const Text(
-                                        'ตกลงยอมรับเงื่อนไข',
-                                        style: TextStyle(fontSize: 16),
+                                      Expanded(
+                                        child: const Text(
+                                          'ยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
                                       ),
                                     ],
                                   ),
