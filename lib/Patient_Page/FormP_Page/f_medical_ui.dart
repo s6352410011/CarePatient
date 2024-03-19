@@ -1,5 +1,3 @@
-import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
-import 'package:care_patient/Patient_Page/patient_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -208,7 +206,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Text(
                     'วันที่ต้องการความดูแล',
                     style: TextStyle(
@@ -641,11 +639,100 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                     );
                   } else {
                     // ถ้าข้อมูลถูกกรอกครบทุกช่อง ให้เรียกหน้าแบบฟอร์มการแพทย์ต่อไป
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeMainPatientUI(),
-                      ),
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        bool _acceptedPolicy =
+                            false; // ตัวแปรเก็บสถานะการยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว
+                        return StatefulBuilder(
+                          builder: (context, setState) {
+                            return AlertDialog(
+                              title: const Center(child: Text('ข้อตกลง')),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    'ข้อตกลงการรักษาความลับของผู้ป่วยเป็นส่วนสำคัญในการให้บริการด้านสุขภาพ และเป็นปัจจัยหลักในการสร้างความเชื่อมั่นกับผู้รับบริการ ต่อไปนี้คือตัวอย่างข้อความที่สามารถนำไปใช้',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        checkColor:
+                                            Colors.white, // Color of the check
+                                        activeColor: Colors
+                                            .green, // Background color when checked
+                                        value: _acceptedPolicy,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            _acceptedPolicy = value!;
+                                          });
+                                        },
+                                      ),
+                                      Expanded(
+                                        child: const Text(
+                                          'ยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                Center(
+                                  child: Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          if (_acceptedPolicy) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const HomeMainPatientUI(),
+                                              ),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'กรุณายอมรับเงื่อนไข',
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          backgroundColor: Colors.green,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical:
+                                                  15), // เพิ่มเฉพาะ padding ในแนวตั้ง
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        child: const Text('ยืนยัน',
+                                            style: TextStyle(fontSize: 16)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     );
                   }
                 },

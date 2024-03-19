@@ -6,6 +6,7 @@ import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
 import 'package:care_patient/Patient_Page/home_PatientUI.dart';
 import 'package:care_patient/register.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -227,20 +228,51 @@ class _LoginUIState extends State<LoginUI> {
                                     _passwordController.text);
                             if (result != null) {
                               print("Sign in successful");
-                              if (_selectedOption == 0) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CFormInfoUI(),
-                                  ),
-                                );
+                              // ตรวจสอบว่าผู้ใช้มีข้อมูล phoneNumber ในฐานข้อมูลหรือไม่
+                              // โดยใช้ชื่อของ collection และ document ID ที่เหมาะสมของฐานข้อมูลของคุณ
+                              DocumentSnapshot<
+                                  Map<String,
+                                      dynamic>> snapshot = await FirebaseFirestore
+                                  .instance
+                                  .collection('registerusers')
+                                  .doc(result
+                                      .uid) // ใช้ UID ของผู้ใช้เป็น Document ID
+                                  .get();
+                              if (snapshot.exists &&
+                                  snapshot.data()!['phoneNumber'] != null) {
+                                // ถ้ามี phoneNumber ในฐานข้อมูล
+                                if (_selectedOption == 0) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainCareUI(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainPatientUI(),
+                                    ),
+                                  );
+                                }
                               } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PFormInfoUI(),
-                                  ),
-                                );
+                                // ถ้าไม่มี phoneNumber ในฐานข้อมูล
+                                if (_selectedOption == 0) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CFormInfoUI(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PFormInfoUI(),
+                                    ),
+                                  );
+                                }
                               }
                             } else {
                               showDialog(
