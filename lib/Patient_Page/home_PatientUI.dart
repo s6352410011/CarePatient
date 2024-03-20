@@ -1,4 +1,6 @@
 import 'package:care_patient/Patient_Page/patient_ui.dart';
+import 'package:care_patient/chat/%E0%B8%B5user_tile.dart';
+import 'package:care_patient/chat/chat_home.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/Account_Page/account_ui.dart';
@@ -20,7 +22,7 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
     ProgressiveUI(),
     NotificationsUI(),
     HomePatientUI(),
-    MessengerUI(),
+    ChatHome(),
     AccountUI(),
   ];
 

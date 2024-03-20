@@ -143,3 +143,48 @@ void showEmailAlreadyInUseDialog(BuildContext context) {
     },
   );
 }
+
+class RegisteredUsersList extends StatefulWidget {
+  @override
+  _RegisteredUsersListState createState() => _RegisteredUsersListState();
+}
+
+class _RegisteredUsersListState extends State<RegisteredUsersList> {
+  List<User?> _registeredUsers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRegisteredUsers();
+  }
+
+  Future<void> _loadRegisteredUsers() async {
+    List<User?> users = FirebaseAuth.instance.currentUser != null
+        ? [FirebaseAuth.instance.currentUser]
+        : [];
+
+    setState(() {
+      _registeredUsers = users;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Registered Users'),
+      ),
+      body: ListView.builder(
+        itemCount: _registeredUsers.length,
+        itemBuilder: (context, index) {
+          User? user = _registeredUsers[index];
+          return ListTile(
+            title: Text(user?.email ?? 'Unknown'),
+            subtitle: Text(user?.uid ?? ''),
+            // Add more user information if needed
+          );
+        },
+      ),
+    );
+  }
+}
