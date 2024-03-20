@@ -1,5 +1,5 @@
 import 'package:care_patient/class/color.dart';
-import 'package:care_patient/navbar/account_ui.dart';
+import 'package:care_patient/navbar/Account_Page/account_ui.dart';
 import 'package:care_patient/Caregiver_Page/caregiver_ui.dart';
 import 'package:care_patient/navbar/messenger_ui.dart';
 import 'package:care_patient/navbar/notifications_ui.dart';
