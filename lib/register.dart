@@ -101,23 +101,25 @@ class _RegisterUIState extends State<RegisterUI> {
   }
 
   void _showAlertDialogSignUp(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -140,7 +142,6 @@ class _RegisterUIState extends State<RegisterUI> {
       isValid = EmailValidator.validate(_emailController.text.trim());
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
