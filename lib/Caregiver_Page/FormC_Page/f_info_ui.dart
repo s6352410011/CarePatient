@@ -227,8 +227,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     setState(() {
                       // ตัดชื่อไฟล์ให้เหลือแค่ email ของผู้ใช้
                       _selectedFile =
-                          // _email!.substring(0, _email!.indexOf('@')) + '_C.jpg';
-                          _email!.substring(0, _email!.indexOf('@')) + '.jpg';
+                          _email!.substring(0, _email!.indexOf('@')) + '_C.jpg';
                     });
                   } else {
                     // ถ้าผู้ใช้ยกเลิกการเลือกไฟล์
