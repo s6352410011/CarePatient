@@ -1,6 +1,6 @@
-import 'package:care_patient/Caregiver_Page/FormC_Page/f_work_ui.dart';
-import 'package:care_patient/Caregiver_Page/FormC_Page/f_info_ui.dart';
-import 'package:care_patient/Patient_Page/FormP_Page/f_info_ui.dart';
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
+import 'package:care_patient/Patient_Page/FormPatient_Page/form_generalPatient_info_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
@@ -60,7 +60,6 @@ class _LoginUIState extends State<LoginUI> {
         ? 'Enter a valid email address'
         : null;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -406,7 +405,7 @@ class _LoginUIState extends State<LoginUI> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CFormWorkUI(),
+                                    builder: (context) => CFormInfoUI(),
                                   ),
                                 );
                               } else if (_selectedOption == 1) {

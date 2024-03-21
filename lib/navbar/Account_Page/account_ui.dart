@@ -2,7 +2,6 @@ import 'package:care_patient/navbar/Account_Page/account_setting_ui.dart';
 import 'package:care_patient/Password_Page/reset_password.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:care_patient/class/color.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

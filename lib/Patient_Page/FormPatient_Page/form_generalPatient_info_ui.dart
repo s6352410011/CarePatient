@@ -1,4 +1,4 @@
-import 'package:care_patient/Patient_Page/FormP_Page/f_medical_ui.dart';
+import 'package:care_patient/Patient_Page/FormPatient_Page/form_HistoryMedical_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';

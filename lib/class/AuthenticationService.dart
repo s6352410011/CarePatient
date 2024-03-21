@@ -1,3 +1,4 @@
+import 'package:care_patient/class/user_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +31,10 @@ class AuthenticationService {
       if (user != null) {
         await _setLoggedIn(true);
       }
-
+      UserData.email = user?.email;
+      UserData.username = user?.displayName;
+      UserData.uid = user?.uid;
+      UserData.imageUrl = user?.photoURL;
       return user;
     }
     return null;

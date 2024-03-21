@@ -57,7 +57,6 @@ class _RegisterUIState extends State<RegisterUI> {
             // เพิ่มข้อมูลผู้ใช้ลงใน Firebase Firestore
             await _usersCollection.doc(userCredential.user!.uid).set({
               'email': email,
-              'password': password,
             });
 
             print('User registered successfully: ${userCredential.user!.uid}');

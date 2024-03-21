@@ -1,5 +1,6 @@
-import 'package:care_patient/Caregiver_Page/FormC_Page/f_work_ui.dart';
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
 import 'package:care_patient/class/color.dart';
+import 'package:care_patient/class/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -207,6 +208,11 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 'E-mail: $_email',
                 style: TextStyle(fontSize: 16),
               ),
+              Text(
+                'E-mail: ${UserData.uid}',
+                style: TextStyle(fontSize: 16),
+              ),
+              Image.network(UserData.imageUrl!),
               SizedBox(height: 10),
               // แนบไฟล์รูป
               Text(
