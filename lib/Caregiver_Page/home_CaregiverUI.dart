@@ -1,3 +1,4 @@
+import 'package:care_patient/chat/chat_home.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/Account_Page/account_ui.dart';
 import 'package:care_patient/Caregiver_Page/caregiver_ui.dart';
@@ -22,7 +23,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
     ProgressiveUI(),
     NotificationsUI(),
     HomeCaregiverUI(),
-    MessengerUI(),
+    ChatHome(),
     AccountUI(),
   ];
 

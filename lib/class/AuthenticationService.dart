@@ -13,6 +13,10 @@ class AuthenticationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
 
+  User? chat() {
+    return _auth.currentUser;
+  }
+
   // Method to sign in with Google
   Future<User?> signInWithGoogle() async {
     final GoogleSignInAccount? googleSignInAccount =
