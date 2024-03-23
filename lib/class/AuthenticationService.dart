@@ -13,9 +13,9 @@ class AuthenticationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
 
-  User? chat() {
-    return _auth.currentUser;
-  }
+  // User? chat() {
+  //   return _auth.currentUser;
+  // }
 
   // Method to sign in with Google
   Future<User?> signInWithGoogle() async {
@@ -60,12 +60,13 @@ class AuthenticationService {
     return prefs.getBool('isLoggedIn') ?? false;
   }
 
-  // Method สำหรับ SignUp
+  // Method สำหรับ SignUp **register
   Future signUpWithEmailPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
+      UserData.uid = user?.uid;
       return user;
     } catch (e) {
       print(e.toString());
@@ -73,12 +74,13 @@ class AuthenticationService {
     }
   }
 
-  // Method สำหรับ SignIn
+  // Method สำหรับ SignIn **loging ด้วย เมลล์
   Future signInWithEmailPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
+      UserData.uid = user?.uid;
       return user;
     } catch (e) {
       print(e.toString());
@@ -152,47 +154,47 @@ void showEmailAlreadyInUseDialog(BuildContext context) {
   );
 }
 
-class RegisteredUsersList extends StatefulWidget {
-  @override
-  _RegisteredUsersListState createState() => _RegisteredUsersListState();
-}
+// class RegisteredUsersList extends StatefulWidget {
+//   @override
+//   _RegisteredUsersListState createState() => _RegisteredUsersListState();
+// }
 
-class _RegisteredUsersListState extends State<RegisteredUsersList> {
-  List<User?> _registeredUsers = [];
+// class _RegisteredUsersListState extends State<RegisteredUsersList> {
+//   List<User?> _registeredUsers = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadRegisteredUsers();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadRegisteredUsers();
+//   }
 
-  Future<void> _loadRegisteredUsers() async {
-    List<User?> users = FirebaseAuth.instance.currentUser != null
-        ? [FirebaseAuth.instance.currentUser]
-        : [];
+//   Future<void> _loadRegisteredUsers() async {
+//     List<User?> users = FirebaseAuth.instance.currentUser != null
+//         ? [FirebaseAuth.instance.currentUser]
+//         : [];
 
-    setState(() {
-      _registeredUsers = users;
-    });
-  }
+//     setState(() {
+//       _registeredUsers = users;
+//     });
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Registered Users'),
-      ),
-      body: ListView.builder(
-        itemCount: _registeredUsers.length,
-        itemBuilder: (context, index) {
-          User? user = _registeredUsers[index];
-          return ListTile(
-            title: Text(user?.email ?? 'Unknown'),
-            subtitle: Text(user?.uid ?? ''),
-            // Add more user information if needed
-          );
-        },
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Registered Users'),
+//       ),
+//       body: ListView.builder(
+//         itemCount: _registeredUsers.length,
+//         itemBuilder: (context, index) {
+//           User? user = _registeredUsers[index];
+//           return ListTile(
+//             title: Text(user?.email ?? 'Unknown'),
+//             subtitle: Text(user?.uid ?? ''),
+//             // Add more user information if needed
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

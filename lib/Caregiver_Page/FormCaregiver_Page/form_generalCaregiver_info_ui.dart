@@ -212,7 +212,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 'E-mail: ${UserData.uid}',
                 style: TextStyle(fontSize: 16),
               ),
-              Image.network(UserData.imageUrl!),
+              // Image.network(UserData.imageUrl!),
               SizedBox(height: 10),
               // แนบไฟล์รูป
               Text(
