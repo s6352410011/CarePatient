@@ -6,6 +6,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 // เรียกใช้ FirebaseAuth
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -28,6 +30,11 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
   String? _phoneNumber = '';
   String? _email = ''; // Fetch from Firebase
   String? _selectedFile = '';
+  final Future<FirebaseApp> firebase = Firebase.initializeApp();
+  CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('forms');
+  CollectionReference _generalCollection =
+      FirebaseFirestore.instance.collection('general');
 
   @override
   void initState() {
@@ -212,7 +219,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 'E-mail: ${UserData.uid}',
                 style: TextStyle(fontSize: 16),
               ),
-              Image.network(UserData.imageUrl!),
               SizedBox(height: 10),
               // แนบไฟล์รูป
               Text(
@@ -319,12 +325,26 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                       );
                     } else {
                       // ถ้าข้อมูลถูกกรอกครบทุกช่อง ให้เรียกหน้าแบบฟอร์มการแพทย์ต่อไป
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CFormWorkUI(),
-                        ),
-                      );
+                      // ทำการเพิ่มข้อมูลลงใน Firestore
+                      _generalCollection.doc('data').set({
+                        'username': _email,
+                        'name': _name,
+                        'gender': _gender,
+                        'birthdate': _selectedDate,
+                        'address': _address,
+                        'phoneNumber': _phoneNumber,
+                        'profilePicture': _selectedFile,
+                      }).then((value) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CFormWorkUI(),
+                          ),
+                        );
+                      }).catchError((error) {
+                        print("Failed to add user: $error");
+                        // Handle errors here
+                      });
                     }
                   },
                   child: Row(

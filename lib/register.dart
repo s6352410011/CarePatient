@@ -33,7 +33,7 @@ class _RegisterUIState extends State<RegisterUI> {
   UserType selectedUserType = UserType.caregiver; // Default selected type
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   CollectionReference _usersCollection =
-      FirebaseFirestore.instance.collection('registerusers');
+      FirebaseFirestore.instance.collection('forms');
 
   void _signUp() async {
     String email = _emailController.text.trim();
@@ -55,11 +55,12 @@ class _RegisterUIState extends State<RegisterUI> {
             );
 
             // เพิ่มข้อมูลผู้ใช้ลงใน Firebase Firestore
-            await _usersCollection.doc(userCredential.user!.uid).set({
+            await _usersCollection.doc(userCredential.user!.email).set({
               'email': email,
             });
 
-            print('User registered successfully: ${userCredential.user!.uid}');
+            print(
+                'User registered successfully: ${userCredential.user!.email}');
           } else {
             _showAlertDialogSignUp("Email exists",
                 "The email is already registered. Please use a different email.");
