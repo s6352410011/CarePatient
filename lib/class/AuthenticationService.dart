@@ -13,9 +13,9 @@ class AuthenticationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
 
-  // User? chat() {
-  //   return _auth.currentUser;
-  // }
+  User? chat() {
+    return _auth.currentUser;
+  }
 
   // Method to sign in with Google
   Future<User?> signInWithGoogle() async {
@@ -66,7 +66,7 @@ class AuthenticationService {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
-          UserData.uid = user?.uid;
+      UserData.uid = user?.uid;
       return user;
     } catch (e) {
       print(e.toString());
@@ -80,7 +80,7 @@ class AuthenticationService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
-            UserData.uid = user?.uid;
+      UserData.uid = user?.uid;
       return user;
     } catch (e) {
       print(e.toString());
