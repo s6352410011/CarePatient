@@ -1,3 +1,4 @@
+import 'package:care_patient/Calendar_Page/calendar.dart';
 import 'package:care_patient/Patient_Page/home_PatientUI.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:care_patient/class/firebase_options.dart';
@@ -39,7 +40,7 @@ class Main extends StatelessWidget {
           ),
         ),
       ),
-      home: LoginUI(),
+      home: CalendarUI(),
     );
   }
 }
