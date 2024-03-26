@@ -40,7 +40,7 @@ class Main extends StatelessWidget {
           ),
         ),
       ),
-      home: CalendarUI(),
+      home: LoginUI(),
     );
   }
 }
