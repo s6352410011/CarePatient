@@ -285,8 +285,11 @@ class _CalendarUIState extends State<CalendarUI> {
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    showDialog(
+                                  onPressed: () async {
+                                    _eventController.text = event;
+                                    _selectedTime =
+                                        TimeOfDay.fromDateTime(eventDateTime);
+                                    await showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return StatefulBuilder(
@@ -367,34 +370,39 @@ class _CalendarUIState extends State<CalendarUI> {
                                                 ),
                                                 TextButton(
                                                   onPressed: () {
-                                                    if (_eventController
-                                                        .text.isNotEmpty) {
-                                                      setState(() {
-                                                        final updatedEvent =
-                                                            _eventController
-                                                                .text;
-                                                        final DateTime
-                                                            updatedDateTime =
-                                                            DateTime(
-                                                          _selectedDay.year,
-                                                          _selectedDay.month,
-                                                          _selectedDay.day,
-                                                          _selectedTime?.hour ??
-                                                              eventDateTime
-                                                                  .hour,
-                                                          _selectedTime
-                                                                  ?.minute ??
-                                                              eventDateTime
-                                                                  .minute,
-                                                        );
+                                                    final updatedEvent =
+                                                        _eventController
+                                                                .text.isNotEmpty
+                                                            ? _eventController
+                                                                .text
+                                                            : event;
+                                                    final DateTime
+                                                        updatedDateTime =
+                                                        DateTime(
+                                                      _selectedDay.year,
+                                                      _selectedDay.month,
+                                                      _selectedDay.day,
+                                                      _selectedTime?.hour ??
+                                                          eventDateTime.hour,
+                                                      _selectedTime?.minute ??
+                                                          eventDateTime.minute,
+                                                    );
+                                                    setState(() {
+                                                      if (_eventController.text
+                                                              .isNotEmpty ||
+                                                          _selectedTime !=
+                                                              null) {
                                                         _events[
                                                             updatedDateTime] = [
                                                           updatedEvent
                                                         ];
-                                                        _events
-                                                            .remove(entry.key);
-                                                      });
-                                                    }
+                                                        if (updatedDateTime !=
+                                                            entry.key) {
+                                                          _events.remove(
+                                                              entry.key);
+                                                        }
+                                                      }
+                                                    });
                                                     _eventController.clear();
                                                     _selectedTime = null;
                                                     Navigator.of(context).pop();
@@ -407,6 +415,7 @@ class _CalendarUIState extends State<CalendarUI> {
                                         );
                                       },
                                     );
+                                    setState(() {});
                                   },
                                 ),
                                 IconButton(
