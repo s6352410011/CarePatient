@@ -22,7 +22,7 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
     ProgressiveUI(),
     NotificationsUI(),
     HomePatientUI(),
-    AccountUI(),
+    ChatHome(),
     AccountUI(),
   ];
 

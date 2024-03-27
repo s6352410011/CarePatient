@@ -16,6 +16,10 @@ class AuthenticationService {
   User? chat() {
     return _auth.currentUser;
   }
+    String? getCurrentUserID() {
+    User? user = _auth.currentUser;
+    return user?.uid;
+  }
 
   // Method to sign in with Google
   Future<User?> signInWithGoogle() async {

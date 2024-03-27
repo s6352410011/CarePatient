@@ -48,23 +48,32 @@ class _ChatHomeState extends State<ChatHome> {
         });
   }
 
-  Widget _buildUserListItem(Map<String, dynamic> userData) {
-    if (userData["email"] != _authService.chat()!.email) {
-      return UserTile(
-          text: userData["email"],
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                        userData["email"],
-                        userData["uid"],
-                        receiverEmail: '',
-                      )),
-            );
-          });
-    } else {
-      return Container();
-    }
+Widget _buildUserListItem(Map<String, dynamic>? userData) {
+  if (userData == null) {
+    return Container(); // หรือวิดเจ็ตเริ่มต้นอื่น ๆ เพื่อแสดงข้อความที่ข้อมูลขาดหายไป
   }
+
+  String? currentUserEmail = _authService.chat()?.email;
+  if (userData.containsKey("email") && userData["email"] != currentUserEmail) {
+    return UserTile(
+      text: userData["email"] ?? '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก email เป็น null
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              receiverEmail: userData["email"] ?? '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก email เป็น null
+              receiverID: userData["uid"] ?? '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก uid เป็น null
+            ),
+          ),
+        );
+      },
+    );
+  } else {
+    return Container();
+  }
+}
+
+
+
 }
