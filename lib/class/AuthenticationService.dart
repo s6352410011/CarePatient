@@ -16,7 +16,8 @@ class AuthenticationService {
   User? chat() {
     return _auth.currentUser;
   }
-    String? getCurrentUserID() {
+
+  String? getCurrentUserID() {
     User? user = _auth.currentUser;
     return user?.uid;
   }
@@ -37,13 +38,30 @@ class AuthenticationService {
       final User? user = authResult.user;
 
       if (user != null) {
+        // Check if the user exists in Firestore
+        final userDoc =
+            FirebaseFirestore.instance.collection('forms').doc(user.email);
+        final userDocSnapshot = await userDoc.get();
+
+        if (!userDocSnapshot.exists) {
+          // If the user does not exist, add their data to Firestore
+          await userDoc.set({
+            'email': user.email,
+            // Add other data you want to store about the user
+          });
+        }
+
+        // Set logged in status
         await _setLoggedIn(true);
+
+        // Set user data locally
+        UserData.email = user.email;
+        UserData.username = user.displayName;
+        UserData.uid = user.uid;
+        UserData.imageUrl = user.photoURL;
+
+        return user;
       }
-      UserData.email = user?.email;
-      UserData.username = user?.displayName;
-      UserData.uid = user?.uid;
-      UserData.imageUrl = user?.photoURL;
-      return user;
     }
     return null;
   }
