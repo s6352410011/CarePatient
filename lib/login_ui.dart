@@ -3,8 +3,8 @@ import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCareg
 import 'package:care_patient/Patient_Page/FormPatient_Page/form_generalPatient_info_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
-import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
-import 'package:care_patient/Patient_Page/home_PatientUI.dart';
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
+import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/register.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

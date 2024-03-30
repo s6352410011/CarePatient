@@ -1,3 +1,4 @@
+import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -70,7 +71,7 @@ class _CalendarUIState extends State<CalendarUI> {
           builder: (BuildContext context, setState) {
             return AlertDialog(
               backgroundColor: Colors.grey[200],
-              title: const Text('Add Event'),
+              title: const Text('เพิ่มกิจกรรม'),
               content: SizedBox(
                 width: 300,
                 child: Column(
@@ -79,7 +80,7 @@ class _CalendarUIState extends State<CalendarUI> {
                     TextFormField(
                       controller: _eventController,
                       decoration: const InputDecoration(
-                        hintText: 'Event Name',
+                        hintText: 'ชื่อกิจกรรม',
                       ),
                       onSaved: (value) {},
                     ),
@@ -111,8 +112,8 @@ class _CalendarUIState extends State<CalendarUI> {
                           const SizedBox(width: 5),
                           Text(
                             _selectedTime == null
-                                ? 'Select Time'
-                                : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                                ? 'เลือกเวลาเริ่มกิจกรรมของคุณ'
+                                : 'เวลา: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -129,7 +130,7 @@ class _CalendarUIState extends State<CalendarUI> {
                     _eventController.clear();
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Cancel'),
+                  child: const Text('ยกเลิก'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -137,7 +138,7 @@ class _CalendarUIState extends State<CalendarUI> {
                     _eventController.clear();
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Save'),
+                  child: const Text('บันทึก'),
                 ),
               ],
             );
@@ -172,8 +173,8 @@ class _CalendarUIState extends State<CalendarUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: const Text('Calendar'),
+        backgroundColor: AllColor.pr,
+        title: const Text('ปฏิทิน'),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addEvent,
@@ -248,7 +249,7 @@ class _CalendarUIState extends State<CalendarUI> {
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 5),
               child: Text(
-                'อีเวนต์วันที่ ${_buddhistDate(_selectedDay)}',
+                'กิจกรรมของวันที่ ${_buddhistDate(_selectedDay)}',
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -296,7 +297,7 @@ class _CalendarUIState extends State<CalendarUI> {
                                           builder: (BuildContext context,
                                               StateSetter setState) {
                                             return AlertDialog(
-                                              title: const Text('Edit Event'),
+                                              title: const Text('แก้ไขกิจกรรม'),
                                               content: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
@@ -306,7 +307,7 @@ class _CalendarUIState extends State<CalendarUI> {
                                                     decoration:
                                                         const InputDecoration(
                                                       hintText:
-                                                          'Enter your event name',
+                                                          'ป้อนชื่อกิจกรรมของคุณ',
                                                     ),
                                                     onSaved: (value) {},
                                                   ),
@@ -348,8 +349,8 @@ class _CalendarUIState extends State<CalendarUI> {
                                                             width: 5),
                                                         Text(
                                                           _selectedTime == null
-                                                              ? 'Select Time'
-                                                              : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                                                              ? 'เลื่อกเวลาที่ทำกิจกรรม'
+                                                              : 'เวลา: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
                                                           style:
                                                               const TextStyle(
                                                                   fontSize: 16),
@@ -366,7 +367,7 @@ class _CalendarUIState extends State<CalendarUI> {
                                                     _selectedTime = null;
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text('Cancel'),
+                                                  child: const Text('ยกเลิก'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () {
@@ -407,7 +408,7 @@ class _CalendarUIState extends State<CalendarUI> {
                                                     _selectedTime = null;
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text('Save'),
+                                                  child: const Text('บันทึก'),
                                                 ),
                                               ],
                                             );
@@ -425,18 +426,18 @@ class _CalendarUIState extends State<CalendarUI> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: const Text("Confirm"),
+                                          title: const Text("ตกลง"),
                                           content: const Text(
-                                              "Are you sure you want to delete this event?"),
+                                              "คุณต้องการลบกิจกรรมนี้ ใช่หรือไม่?"),
                                           actions: <Widget>[
                                             TextButton(
-                                              child: const Text("Cancel"),
+                                              child: const Text("ไม่ใช่"),
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
                                             ),
                                             TextButton(
-                                              child: const Text("Confirm"),
+                                              child: const Text("ใช่"),
                                               onPressed: () {
                                                 setState(() {
                                                   _events[entry.key]!

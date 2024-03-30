@@ -1,4 +1,4 @@
-import 'package:care_patient/Caregiver_Page/home_CaregiverUI.dart';
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 

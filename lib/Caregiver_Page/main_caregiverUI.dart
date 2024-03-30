@@ -1,10 +1,8 @@
 import 'package:care_patient/chat/chat_home.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/Account_Page/account_ui.dart';
-import 'package:care_patient/Caregiver_Page/caregiver_ui.dart';
-import 'package:care_patient/navbar/messenger_ui.dart';
+import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
 import 'package:care_patient/navbar/notifications_ui.dart';
-import 'package:care_patient/Progressive_Page/progressive_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,23 +15,16 @@ class HomeMainCareUI extends StatefulWidget {
 }
 
 class _HomeMainCareUIState extends State<HomeMainCareUI> {
-  int _selectedIndex = 2; // กำหนดค่าเริ่มต้นเป็น 2 เพื่อเลือกหน้า "Home"
+  int _selectedIndex = 1; // กำหนดค่าเริ่มต้นเป็น 1 เพื่อเลือกหน้า "Home"
 
   final List<Widget> _pages = [
-    ProgressiveUI(),
     NotificationsUI(),
     HomeCaregiverUI(),
     ChatHome(),
     AccountUI(),
   ];
 
-  final List<String> _titles = [
-    'Working',
-    'Notifications',
-    'Home',
-    'Messages',
-    'Account',
-  ];
+  final List<String> _titles = ['Notifications', 'Home', 'Messages', 'Account'];
 
   Color _backgroundColor = AllColor.pr;
   Color _textColor = Colors.white;
@@ -65,10 +56,6 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business_center),
-            label: 'Working',
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
             label: 'Notifications',

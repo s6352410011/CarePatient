@@ -1,5 +1,6 @@
 import 'package:care_patient/Calendar_Page/calendar.dart';
-import 'package:care_patient/Patient_Page/home_PatientUI.dart';
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
+import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:care_patient/class/firebase_options.dart';
 import 'package:flutter/material.dart';
