@@ -1,6 +1,3 @@
-import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
-import 'package:care_patient/class/color.dart';
-import 'package:care_patient/class/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,10 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
 
-// เรียกใช้ FirebaseAuth
 FirebaseAuth auth = FirebaseAuth.instance;
-// ดึงข้อมูลผู้ใช้ปัจจุบัน
 User? user = auth.currentUser;
 
 class CFormInfoUI extends StatefulWidget {
@@ -22,34 +18,26 @@ class CFormInfoUI extends StatefulWidget {
 }
 
 class _CFormInfoUIState extends State<CFormInfoUI> {
-  // Variables to store user input
   String? _name = '';
   String? _gender = '';
   String? _selectedDate;
   String? _address = '';
   String? _phoneNumber = '';
-  String? _email = ''; // Fetch from Firebase
+  String? _email = '';
   String? _selectedFile = '';
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('forms');
-  CollectionReference _generalCollection =
-      FirebaseFirestore.instance.collection('general');
 
   @override
   void initState() {
     super.initState();
-    // Fetch user email from Firebase Authentication
     _fetchUserEmail();
   }
 
-  // Function to fetch user email from Firebase Authentication
   Future<void> _fetchUserEmail() async {
-    // Get current user from FirebaseAuth
     User? user = FirebaseAuth.instance.currentUser;
-    // Check if user is not null
     if (user != null) {
-      // Set the email to the _email variable
       setState(() {
         _email = user.email;
       });
@@ -98,17 +86,16 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // กำหนดให้ไม่แสดงปุ่ม back
+        automaticallyImplyLeading: false,
         title: Text(
           'แบบฟอร์มลงทะเบียน',
           style: TextStyle(
-            color: AllColor.bg,
             fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
         ),
         centerTitle: true,
-        backgroundColor: AllColor.pr, // กำหนดสีพื้นหลังของ AppBar เป็นสีเขียว
+        backgroundColor: Colors.green,
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
@@ -116,7 +103,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // หัวข้อใหญ่
               Text(
                 'ข้อมูลทั่วไป',
                 style: TextStyle(
@@ -125,7 +111,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 ),
               ),
               SizedBox(height: 20),
-              // ชื่อ - นามสกุล
               TextField(
                 onChanged: (value) {
                   setState(() {
@@ -138,7 +123,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 ),
               ),
               SizedBox(height: 10),
-              // เพศ
               Text('เพศ', style: TextStyle(fontSize: 16)),
               Row(
                 children: [
@@ -165,7 +149,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 ],
               ),
               SizedBox(height: 30),
-              // วัน/เดือน/ปีเกิด
               Row(
                 children: [
                   _buildDatePickerButton(context),
@@ -177,7 +160,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 ],
               ),
               SizedBox(height: 30),
-              // ที่อยู่
               TextField(
                 onChanged: (value) {
                   setState(() {
@@ -190,7 +172,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 ),
               ),
               SizedBox(height: 10),
-              // เบอร์โทรศัพท์
               TextFormField(
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -210,17 +191,11 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 ),
               ),
               SizedBox(height: 10),
-              // E-mail
               Text(
                 'E-mail: $_email',
                 style: TextStyle(fontSize: 16),
               ),
-              Text(
-                'E-mail: ${UserData.uid}',
-                style: TextStyle(fontSize: 16),
-              ),
               SizedBox(height: 10),
-              // แนบไฟล์รูป
               Text(
                 'แนบรูปภาพ : ',
                 style: TextStyle(
@@ -237,12 +212,11 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
 
                   if (result != null) {
                     setState(() {
-                      // ตัดชื่อไฟล์ให้เหลือแค่ email ของผู้ใช้
+                      // _selectedFile = result.files.single.path!;
                       _selectedFile =
                           _email!.substring(0, _email!.indexOf('@')) + '_C.jpg';
                     });
                   } else {
-                    // ถ้าผู้ใช้ยกเลิกการเลือกไฟล์
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -262,26 +236,26 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     );
                   }
                 },
-                icon: Icon(Icons.attach_file_rounded), // ไอคอนแนบไฟล์
-                label: Text('เลือกไฟล์ $_selectedFile'), // ข้อความปุ่ม
+                icon: Icon(Icons.attach_file),
+                label: Text('เลือกไฟล์ $_selectedFile'),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, // สีข้อความบนปุ่ม
-                  backgroundColor: AllColor.sc, // สีปุ่ม
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.orange,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 15,
-                  ), // ขนาดการเรียงรูปและข้อความ
+                  ),
                 ),
               ),
-
-              SizedBox(height: 20),
-              // ปุ่มถัดไป
+              SizedBox(
+                height: 20,
+              ),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     String? missingFields = '';
 
                     if (_name == null || _name == '') {
@@ -302,9 +276,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     if (_selectedFile == null || _selectedFile == '') {
                       missingFields += 'รูปภาพ, ';
                     }
-
                     if (missingFields != '') {
-                      // แสดงข้อความแจ้งเตือนถ้ามีข้อมูลที่ไม่ถูกกรอก
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -324,16 +296,21 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                         },
                       );
                     } else {
-                      // ถ้าข้อมูลถูกกรอกครบทุกช่อง ให้เรียกหน้าแบบฟอร์มการแพทย์ต่อไป
-                      // ทำการเพิ่มข้อมูลลงใน Firestore
-                      _generalCollection.doc('data').set({
-                        'username': _email,
-                        'name': _name,
-                        'gender': _gender,
-                        'birthdate': _selectedDate,
-                        'address': _address,
-                        'phoneNumber': _phoneNumber,
-                        'profilePicture': _selectedFile,
+                      await firebase;
+                      await _usersCollection
+                          .doc(user!.email)
+                          .collection('general')
+                          .doc('data')
+                          .set({
+                        'general': {
+                          'name': _name,
+                          'gender': _gender,
+                          'birthDate': _selectedDate,
+                          'address': _address,
+                          'phoneNumber': _phoneNumber,
+                          'email': _email,
+                          'imagePath': _selectedFile,
+                        },
                       }).then((value) {
                         Navigator.push(
                           context,
@@ -342,8 +319,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                           ),
                         );
                       }).catchError((error) {
-                        print("Failed to add user: $error");
-                        // Handle errors here
+                        print('Failed to add user: $error');
                       });
                     }
                   },
@@ -351,20 +327,20 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text('ถัดไป'),
-                      SizedBox(width: 8), // เพิ่มระยะห่างระหว่างข้อความและไอคอน
+                      SizedBox(width: 8),
                       Icon(Icons.arrow_forward_ios_rounded),
                     ],
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: AllColor.pr,
+                    backgroundColor: Colors.green,
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
