@@ -1,10 +1,11 @@
 import 'package:care_patient/Patient_Page/FormPatient_Page/form_HistoryMedical_ui.dart';
-import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 // เรียกใช้ FirebaseAuth
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -25,8 +26,11 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
   String? _selectedDate;
   String? _address = '';
   String? _phoneNumber = '';
-  String? _email = ''; // Fetch from Firebase
+  String? _email = '';
   String? _selectedFile = '';
+  final Future<FirebaseApp> firebase = Firebase.initializeApp();
+  CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('forms');
 
   @override
   void initState() {
@@ -90,17 +94,16 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // กำหนดให้ไม่แสดงปุ่ม back
+        automaticallyImplyLeading: false,
         title: Text(
           'แบบฟอร์มลงทะเบียน',
           style: TextStyle(
-            color: AllColor.bg,
             fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
         ),
         centerTitle: true,
-        backgroundColor: AllColor.pr, // กำหนดสีพื้นหลังของ AppBar เป็นสีเขียว
+        backgroundColor: Colors.green,
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
@@ -108,7 +111,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // หัวข้อใหญ่
               Text(
                 'ข้อมูลทั่วไป',
                 style: TextStyle(
@@ -117,7 +119,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 ),
               ),
               SizedBox(height: 20),
-              // ชื่อ - นามสกุล
               TextField(
                 onChanged: (value) {
                   setState(() {
@@ -130,7 +131,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 ),
               ),
               SizedBox(height: 10),
-              // เพศ
               Text('เพศ', style: TextStyle(fontSize: 16)),
               Row(
                 children: [
@@ -157,7 +157,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 ],
               ),
               SizedBox(height: 30),
-              // วัน/เดือน/ปีเกิด
               Row(
                 children: [
                   _buildDatePickerButton(context),
@@ -169,7 +168,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 ],
               ),
               SizedBox(height: 30),
-              // ที่อยู่
               TextField(
                 onChanged: (value) {
                   setState(() {
@@ -182,7 +180,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 ),
               ),
               SizedBox(height: 10),
-              // เบอร์โทรศัพท์
               TextFormField(
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -202,13 +199,11 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 ),
               ),
               SizedBox(height: 10),
-              // E-mail
               Text(
                 'E-mail: $_email',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 10),
-              // แนบไฟล์รูป
               Text(
                 'แนบรูปภาพ : ',
                 style: TextStyle(
@@ -225,12 +220,11 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
 
                   if (result != null) {
                     setState(() {
-                      // ตัดชื่อไฟล์ให้เหลือแค่ email ของผู้ใช้
+                      // _selectedFile = result.files.single.path!;
                       _selectedFile =
-                          _email!.substring(0, _email!.indexOf('@')) + '.jpg';
+                          _email!.substring(0, _email!.indexOf('@')) + '_C.jpg';
                     });
                   } else {
-                    // ถ้าผู้ใช้ยกเลิกการเลือกไฟล์
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -250,26 +244,26 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                     );
                   }
                 },
-                icon: Icon(Icons.attach_file_rounded), // ไอคอนแนบไฟล์
-                label: Text('เลือกไฟล์ $_selectedFile'), // ข้อความปุ่ม
+                icon: Icon(Icons.attach_file),
+                label: Text('เลือกไฟล์ $_selectedFile'),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, // สีข้อความบนปุ่ม
-                  backgroundColor: AllColor.sc, // สีปุ่ม
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.orange,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 15,
-                  ), // ขนาดการเรียงรูปและข้อความ
+                  ),
                 ),
               ),
-
-              SizedBox(height: 20),
-              // ปุ่มถัดไป
+              SizedBox(
+                height: 20,
+              ),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     String? missingFields = '';
 
                     if (_name == null || _name == '') {
@@ -290,9 +284,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                     if (_selectedFile == null || _selectedFile == '') {
                       missingFields += 'รูปภาพ, ';
                     }
-
                     if (missingFields != '') {
-                      // แสดงข้อความแจ้งเตือนถ้ามีข้อมูลที่ไม่ถูกกรอก
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -312,33 +304,51 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                         },
                       );
                     } else {
-                      // ถ้าข้อมูลถูกกรอกครบทุกช่อง ให้เรียกหน้าแบบฟอร์มการแพทย์ต่อไป
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PFormMedicalUI(),
-                        ),
-                      );
+                      await firebase;
+                      await _usersCollection
+                          .doc(user!.email)
+                          .collection('general')
+                          .doc('data')
+                          .set({
+                        'general': {
+                          'name': _name,
+                          'gender': _gender,
+                          'birthDate': _selectedDate,
+                          'address': _address,
+                          'phoneNumber': _phoneNumber,
+                          'email': _email,
+                          'imagePath': _selectedFile,
+                        },
+                      }).then((value) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PFormMedicalUI(),
+                          ),
+                        );
+                      }).catchError((error) {
+                        print('Failed to add user: $error');
+                      });
                     }
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text('ถัดไป'),
-                      SizedBox(width: 8), // เพิ่มระยะห่างระหว่างข้อความและไอคอน
+                      SizedBox(width: 8),
                       Icon(Icons.arrow_forward_ios_rounded),
                     ],
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: AllColor.pr,
+                    backgroundColor: Colors.green,
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

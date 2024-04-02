@@ -1,6 +1,9 @@
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
 import 'package:care_patient/class/color.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
@@ -33,12 +36,15 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
 // ตรวจสอบว่ามีช่องใดที่ยังไม่ได้กรอกข้อมูลหรือไม่
 
   bool _allergicToMedication = false;
-
   String _historyofillness = '';
   String _historymedicine = '';
   String _needspecial = '';
   String _namerelative = '';
   String _relationship = '';
+
+  final Future<FirebaseApp> firebase = Firebase.initializeApp();
+  CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('forms');
 
   @override
   void initState() {
@@ -538,7 +544,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
             // ปุ่มถัดไป
             Center(
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   String? missingFields = '';
 
                   if (_email == null || _email == '') {
@@ -689,8 +695,48 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20),
                                       child: ElevatedButton(
-                                        onPressed: () {
+                                        onPressed: () async {
                                           if (_acceptedPolicy) {
+                                            // Code to save form data to Firebase
+                                            await firebase;
+                                            await _usersCollection
+                                                .doc(user!.email)
+                                                .collection('patient')
+                                                .doc('data')
+                                                .set({
+                                              'email': _email,
+                                              'history_medicine':
+                                                  _historymedicine,
+                                              'history_of_illness':
+                                                  _historyofillness,
+                                              'address': _address,
+                                              'phone_number': _phoneNumber,
+                                              'relative_name': _namerelative,
+                                              'special_needs': _needspecial,
+                                              'relationship': _relationship,
+                                              'allergic_to_medication':
+                                                  _allergicToMedication,
+                                              'allergic_to_medication_detail':
+                                                  _allergicToMedicationDetailController
+                                                      .text,
+                                              'all_days_selected':
+                                                  _allDaysSelected,
+                                              'monday_selected':
+                                                  _mondaySelected,
+                                              'tuesday_selected':
+                                                  _tuesdaySelected,
+                                              'wednesday_selected':
+                                                  _wednesdaySelected,
+                                              'thursday_selected':
+                                                  _thursdaySelected,
+                                              'friday_selected':
+                                                  _fridaySelected,
+                                              'saturday_selected':
+                                                  _saturdaySelected,
+                                              'sunday_selected':
+                                                  _sundaySelected,
+                                            });
+
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
