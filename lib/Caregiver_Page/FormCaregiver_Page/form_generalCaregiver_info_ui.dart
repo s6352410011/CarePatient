@@ -127,7 +127,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
               Row(
                 children: [
                   Radio(
-                    value: 'ชาย',
+                    value: 'M',
                     groupValue: _gender,
                     onChanged: (value) {
                       setState(() {
@@ -137,7 +137,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                   ),
                   Text('ชาย'),
                   Radio(
-                    value: 'หญิง',
+                    value: 'F',
                     groupValue: _gender,
                     onChanged: (value) {
                       setState(() {
@@ -189,11 +189,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'E-mail: $_email',
-                style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 10),
               Text(
@@ -302,15 +297,13 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                           .collection('general')
                           .doc('data')
                           .set({
-                        'general': {
-                          'name': _name,
-                          'gender': _gender,
-                          'birthDate': _selectedDate,
-                          'address': _address,
-                          'phoneNumber': _phoneNumber,
-                          'email': _email,
-                          'imagePath': _selectedFile,
-                        },
+                        'name': _name,
+                        'gender': _gender,
+                        'birthDate': _selectedDate,
+                        'address': _address,
+                        'phoneNumber': _phoneNumber,
+                        'email': _email,
+                        'imagePath': _selectedFile,
                       }).then((value) {
                         Navigator.push(
                           context,

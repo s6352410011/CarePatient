@@ -198,10 +198,15 @@ class _LoginUIState extends State<LoginUI> {
                       duration: Duration(milliseconds: 1900),
                       child: ElevatedButton(
                         onPressed: () async {
+                          // Validate email
                           final emailError =
                               validateEmail(_emailController.text);
                           if (emailError != null) {
+                            print("Email Error: $emailError");
+                            // Show error dialog
                             showDialog(
+                              // โค้ด showDialog อยู่นอกเครื่องหมาย await ให้เปลี่ยนเป็น await showDialog
+                              // และใส่ async ในปีกกาของฟังก์ชัน onPressed
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
@@ -221,6 +226,7 @@ class _LoginUIState extends State<LoginUI> {
                             return;
                           }
 
+                          // Check email and password
                           if (_emailController.text.isNotEmpty &&
                               _passwordController.text.isNotEmpty) {
                             dynamic result = await _authenticationService
@@ -228,20 +234,90 @@ class _LoginUIState extends State<LoginUI> {
                                     _passwordController.text);
                             if (result != null) {
                               print("Sign in successful");
-                              // ตรวจสอบว่าผู้ใช้มีข้อมูล phoneNumber ในฐานข้อมูลหรือไม่
-                              // โดยใช้ชื่อของ collection และ document ID ที่เหมาะสมของฐานข้อมูลของคุณ
-                              DocumentSnapshot<
-                                  Map<String,
-                                      dynamic>> snapshot = await FirebaseFirestore
-                                  .instance
-                                  .collection('registerusers')
-                                  .doc(result
-                                      .uid) // ใช้ UID ของผู้ใช้เป็น Document ID
-                                  .get();
-                              if (snapshot.exists &&
-                                  snapshot.data()!['phoneNumber'] != null) {
-                                // ถ้ามี phoneNumber ในฐานข้อมูล
-                                if (_selectedOption == 0) {
+
+                              if (_selectedOption == 0) {
+                                bool generalPhoneNumberExists =
+                                    await checkGeneralPhoneNumberExists(
+                                        _emailController.text);
+                                bool caregiverAcceptedPolicy =
+                                    await checkCaregiverAcceptedPolicy(
+                                        _emailController.text);
+                                bool patientAcceptedPolicy =
+                                    await checkPatientAcceptedPolicy(
+                                        _emailController.text);
+
+                                print(
+                                    "General Phone Number Exists: $generalPhoneNumberExists");
+                                print(
+                                    "Caregiver Accepted Policy: $caregiverAcceptedPolicy");
+                                print(
+                                    "Patient Accepted Policy: $patientAcceptedPolicy");
+
+                                if (!generalPhoneNumberExists) {
+                                  print("Redirecting to CFormInfoUI");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CFormInfoUI(),
+                                    ),
+                                  );
+                                } else if (caregiverAcceptedPolicy &&
+                                    patientAcceptedPolicy) {
+                                  print("Redirecting to HomeMainCareUI");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainCareUI(),
+                                    ),
+                                  );
+                                } else if (caregiverAcceptedPolicy) {
+                                  print("Redirecting to HomeMainCareUI");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainCareUI(),
+                                    ),
+                                  );
+                                } else if (patientAcceptedPolicy) {
+                                  print("Redirecting to HomeMainPatientUI");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainPatientUI(),
+                                    ),
+                                  );
+                                } else {
+                                  print("Redirecting to CFormInfoUI");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CFormInfoUI(),
+                                    ),
+                                  );
+                                }
+                              } else if (_selectedOption == 1) {
+                                bool generalPhoneNumberExists =
+                                    await checkGeneralPhoneNumberExists(
+                                        _emailController.text);
+                                bool patientAcceptedPolicy =
+                                    await checkPatientAcceptedPolicy(
+                                        _emailController.text);
+
+                                print(
+                                    "General Phone Number Exists: $generalPhoneNumberExists");
+                                print(
+                                    "Patient Accepted Policy: $patientAcceptedPolicy");
+
+                                if (!generalPhoneNumberExists) {
+                                  print("Redirecting to PFormInfoUI");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PFormInfoUI(),
+                                    ),
+                                  );
+                                } else if (patientAcceptedPolicy) {
+                                  print("Redirecting to HomeMainCareUI");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -249,23 +325,7 @@ class _LoginUIState extends State<LoginUI> {
                                     ),
                                   );
                                 } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeMainPatientUI(),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                // ถ้าไม่มี phoneNumber ในฐานข้อมูล
-                                if (_selectedOption == 0) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CFormInfoUI(),
-                                    ),
-                                  );
-                                } else {
+                                  print("Redirecting to PFormInfoUI");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -275,6 +335,8 @@ class _LoginUIState extends State<LoginUI> {
                                 }
                               }
                             } else {
+                              print(
+                                  "Sign in failed: Invalid email or password");
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -296,6 +358,8 @@ class _LoginUIState extends State<LoginUI> {
                               );
                             }
                           } else {
+                            print(
+                                "Sign in failed: Please enter both email and password");
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -401,35 +465,88 @@ class _LoginUIState extends State<LoginUI> {
                             if (user != null) {
                               // Check if user selected an option
                               if (_selectedOption == 0) {
-                                // Navigate to caregiver form page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CFormInfoUI(),
-                                  ),
-                                );
+                                bool generalPhoneNumberExists =
+                                    await checkGeneralPhoneNumberExists(
+                                        user.email!);
+                                bool caregiverAcceptedPolicy =
+                                    await checkCaregiverAcceptedPolicy(
+                                        user.email!);
+                                bool patientAcceptedPolicy =
+                                    await checkPatientAcceptedPolicy(
+                                        user.email!);
+
+                                if (!generalPhoneNumberExists) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CFormInfoUI(),
+                                    ),
+                                  );
+                                } else if (caregiverAcceptedPolicy &&
+                                    patientAcceptedPolicy) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainCareUI(),
+                                    ),
+                                  );
+                                } else if (caregiverAcceptedPolicy) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainCareUI(),
+                                    ),
+                                  );
+                                } else if (patientAcceptedPolicy) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainPatientUI(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CFormInfoUI(),
+                                    ),
+                                  );
+                                }
                               } else if (_selectedOption == 1) {
-                                // Navigate to patient form page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PFormInfoUI(),
-                                  ),
-                                );
-                              } else {
-                                // If no option is selected, default to caregiver form page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CFormInfoUI(),
-                                  ),
-                                );
+                                bool generalPhoneNumberExists =
+                                    await checkGeneralPhoneNumberExists(
+                                        user.email!);
+                                bool patientAcceptedPolicy =
+                                    await checkPatientAcceptedPolicy(
+                                        user.email!);
+
+                                if (!generalPhoneNumberExists) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PFormInfoUI(),
+                                    ),
+                                  );
+                                } else if (patientAcceptedPolicy) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainCareUI(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PFormInfoUI(),
+                                    ),
+                                  );
+                                }
                               }
                             }
                           } else {
                             // Check if user selected an option
                             if (_selectedOption == 0) {
-                              // Navigate to caregiver home page
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -437,7 +554,6 @@ class _LoginUIState extends State<LoginUI> {
                                 ),
                               );
                             } else if (_selectedOption == 1) {
-                              // Navigate to patient home page
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -445,7 +561,6 @@ class _LoginUIState extends State<LoginUI> {
                                 ),
                               );
                             } else {
-                              // If no option is selected, default to caregiver home page
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -519,5 +634,41 @@ class _LoginUIState extends State<LoginUI> {
         ),
       ),
     );
+  }
+
+  Future<bool> checkGeneralPhoneNumberExists(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('forms')
+        .doc(email)
+        .collection('general')
+        .doc('data')
+        .get();
+
+    return snapshot.exists && snapshot.data()!['phoneNumber'] != null;
+  }
+
+  Future<bool> checkCaregiverAcceptedPolicy(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('forms')
+        .doc(email)
+        .collection('caregiver')
+        .doc('data')
+        .get();
+
+    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
+  }
+
+  Future<bool> checkPatientAcceptedPolicy(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('forms')
+        .doc(email)
+        .collection('patient')
+        .doc('data')
+        .get();
+
+    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
   }
 }

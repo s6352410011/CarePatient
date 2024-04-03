@@ -24,7 +24,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
   bool _fridaySelected = false;
   bool _saturdaySelected = false;
   bool _sundaySelected = false;
-
+  bool _acceptedPolicy = false;
   String? _address = '';
   String? _phoneNumber = '';
   String? _email = ''; // Fetch from Firebase
@@ -648,8 +648,6 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        bool _acceptedPolicy =
-                            false; // ตัวแปรเก็บสถานะการยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว
                         return StatefulBuilder(
                           builder: (context, setState) {
                             return AlertDialog(
@@ -704,6 +702,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                                 .collection('patient')
                                                 .doc('data')
                                                 .set({
+                                              'acceptedPolicy': _acceptedPolicy,
                                               'email': _email,
                                               'history_medicine':
                                                   _historymedicine,

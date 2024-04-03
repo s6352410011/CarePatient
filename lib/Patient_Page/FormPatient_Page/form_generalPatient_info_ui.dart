@@ -200,11 +200,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
               ),
               SizedBox(height: 10),
               Text(
-                'E-mail: $_email',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 10),
-              Text(
                 'แนบรูปภาพ : ',
                 style: TextStyle(
                   fontSize: 18,
@@ -310,15 +305,13 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                           .collection('general')
                           .doc('data')
                           .set({
-                        'general': {
-                          'name': _name,
-                          'gender': _gender,
-                          'birthDate': _selectedDate,
-                          'address': _address,
-                          'phoneNumber': _phoneNumber,
-                          'email': _email,
-                          'imagePath': _selectedFile,
-                        },
+                        'name': _name,
+                        'gender': _gender,
+                        'birthDate': _selectedDate,
+                        'address': _address,
+                        'phoneNumber': _phoneNumber,
+                        'email': _email,
+                        'imagePath': _selectedFile,
                       }).then((value) {
                         Navigator.push(
                           context,

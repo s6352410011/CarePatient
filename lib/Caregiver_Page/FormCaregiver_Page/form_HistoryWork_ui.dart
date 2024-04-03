@@ -19,7 +19,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
   String _specificSkills = ''; // ความถนัดและความสามารถเฉพาะ
   String _careExperience = ''; // ประสบการณ์การดูแล
   String _workArea = ''; // เขตที่คุณสามารถไปดูแล
-
+  bool _acceptedPolicy = false;
   bool _allDaysSelected = false;
   bool _mondaySelected = false;
   bool _tuesdaySelected = false;
@@ -361,8 +361,6 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          bool _acceptedPolicy =
-                              false; // ตัวแปรเก็บสถานะการยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว
                           return StatefulBuilder(
                             builder: (context, setState) {
                               return AlertDialog(
@@ -415,6 +413,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                                                   .collection('caregiver')
                                                   .doc('data')
                                                   .set({
+                                                'acceptedPolicy': _acceptedPolicy,
                                                 'relatedSkills': _relatedSkills,
                                                 'specificSkills':
                                                     _specificSkills,

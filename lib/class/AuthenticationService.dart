@@ -1,3 +1,9 @@
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
+import 'package:care_patient/Patient_Page/FormPatient_Page/form_HistoryMedical_ui.dart';
+import 'package:care_patient/Patient_Page/FormPatient_Page/form_generalPatient_info_ui.dart';
+import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -5,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -46,7 +51,6 @@ class AuthenticationService {
         if (!userDocSnapshot.exists) {
           // If the user does not exist, add their data to Firestore
           await userDoc.set({
-            'email': user.email,
             // Add other data you want to store about the user
           });
         }
@@ -137,22 +141,6 @@ class AuthenticationService {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  Future<bool> checkPhoneNumberExistsInFirestore(String phoneNumber) async {
-    try {
-      // Query Firestore to check if phone number exists
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('registerusers')
-          .where('phoneNumber', isEqualTo: phoneNumber)
-          .get();
-
-      // If the query returns documents, it means the phone number exists
-      return querySnapshot.docs.isNotEmpty;
-    } catch (e) {
-      // Handle any errors that may occur during the process
-      print('Error checking phone number in Firestore: $e');
-      return false; // Return false in case of an error
-    }
-  }
 }
 
 void showEmailAlreadyInUseDialog(BuildContext context) {
@@ -175,6 +163,9 @@ void showEmailAlreadyInUseDialog(BuildContext context) {
     },
   );
 }
+
+
+
 
 // class RegisteredUsersList extends StatefulWidget {
 //   @override
