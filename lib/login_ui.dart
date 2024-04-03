@@ -1,15 +1,14 @@
-import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
 import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
 import 'package:care_patient/Patient_Page/FormPatient_Page/form_generalPatient_info_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
+import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/register.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 
 class LoginUI extends StatefulWidget {
@@ -29,6 +28,7 @@ class _LoginUIState extends State<LoginUI> {
   @override
   void initState() {
     super.initState();
+    clearUserData();
     checkLoggedIn();
   }
 
@@ -37,6 +37,13 @@ class _LoginUIState extends State<LoginUI> {
     if (isLoggedIn) {
       navigateToHome();
     }
+  }
+
+  Future<void> clearUserData() async {
+    UserData.email = null;
+    UserData.username = null;
+    UserData.uid = null;
+    UserData.imageUrl = null;
   }
 
   Future<void> navigateToHome() async {
@@ -255,7 +262,7 @@ class _LoginUIState extends State<LoginUI> {
 
                                 if (!generalPhoneNumberExists) {
                                   print("Redirecting to CFormInfoUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormInfoUI(),
@@ -264,7 +271,7 @@ class _LoginUIState extends State<LoginUI> {
                                 } else if (caregiverAcceptedPolicy &&
                                     patientAcceptedPolicy) {
                                   print("Redirecting to HomeMainCareUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainCareUI(),
@@ -272,7 +279,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else if (caregiverAcceptedPolicy) {
                                   print("Redirecting to HomeMainCareUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainCareUI(),
@@ -280,7 +287,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else if (patientAcceptedPolicy) {
                                   print("Redirecting to HomeMainPatientUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainPatientUI(),
@@ -288,7 +295,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else {
                                   print("Redirecting to CFormInfoUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormInfoUI(),
@@ -310,7 +317,7 @@ class _LoginUIState extends State<LoginUI> {
 
                                 if (!generalPhoneNumberExists) {
                                   print("Redirecting to PFormInfoUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PFormInfoUI(),
@@ -318,7 +325,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else if (patientAcceptedPolicy) {
                                   print("Redirecting to HomeMainCareUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainCareUI(),
@@ -326,7 +333,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else {
                                   print("Redirecting to PFormInfoUI");
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PFormInfoUI(),
@@ -409,7 +416,7 @@ class _LoginUIState extends State<LoginUI> {
                       duration: Duration(milliseconds: 1900),
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => RegisterUI(),
@@ -476,7 +483,7 @@ class _LoginUIState extends State<LoginUI> {
                                         user.email!);
 
                                 if (!generalPhoneNumberExists) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormInfoUI(),
@@ -484,28 +491,28 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else if (caregiverAcceptedPolicy &&
                                     patientAcceptedPolicy) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainCareUI(),
                                     ),
                                   );
                                 } else if (caregiverAcceptedPolicy) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainCareUI(),
                                     ),
                                   );
                                 } else if (patientAcceptedPolicy) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainPatientUI(),
                                     ),
                                   );
                                 } else {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormInfoUI(),
@@ -521,21 +528,21 @@ class _LoginUIState extends State<LoginUI> {
                                         user.email!);
 
                                 if (!generalPhoneNumberExists) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PFormInfoUI(),
                                     ),
                                   );
                                 } else if (patientAcceptedPolicy) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeMainCareUI(),
                                     ),
                                   );
                                 } else {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PFormInfoUI(),
@@ -547,21 +554,21 @@ class _LoginUIState extends State<LoginUI> {
                           } else {
                             // Check if user selected an option
                             if (_selectedOption == 0) {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => HomeMainCareUI(),
                                 ),
                               );
                             } else if (_selectedOption == 1) {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => HomeMainPatientUI(),
                                 ),
                               );
                             } else {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => HomeMainCareUI(),
@@ -609,7 +616,7 @@ class _LoginUIState extends State<LoginUI> {
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ForgotPasswordUI(),

@@ -1,9 +1,3 @@
-import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
-import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
-import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
-import 'package:care_patient/Patient_Page/FormPatient_Page/form_HistoryMedical_ui.dart';
-import 'package:care_patient/Patient_Page/FormPatient_Page/form_generalPatient_info_ui.dart';
-import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -74,6 +68,8 @@ class AuthenticationService {
     await _auth.signOut();
     await _googleSignIn.signOut();
     await _setLoggedIn(false);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 
   Future<void> _setLoggedIn(bool value) async {
@@ -140,7 +136,6 @@ class AuthenticationService {
 
     return querySnapshot.docs.isNotEmpty;
   }
-
 }
 
 void showEmailAlreadyInUseDialog(BuildContext context) {
