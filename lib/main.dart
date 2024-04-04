@@ -43,7 +43,7 @@ class Main extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomeMainPatientUI(),
+      home: const LoginUI(),
     );
   }
 }

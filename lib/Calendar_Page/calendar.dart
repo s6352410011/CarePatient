@@ -110,12 +110,15 @@ class _CalendarUIState extends State<CalendarUI> {
                         children: [
                           const Icon(Icons.access_time),
                           const SizedBox(width: 5),
-                          Text(
-                            _selectedTime == null
-                                ? 'เลือกเวลาเริ่มกิจกรรมของคุณ'
-                                : 'เวลา: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
-                            style: const TextStyle(
-                              fontSize: 20,
+                          SizedBox(
+                            width: 200,
+                            child: Text(
+                              _selectedTime == null
+                                  ? 'เลือกเวลาเริ่มกิจกรรม'
+                                  : 'เวลา: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                              ),
                             ),
                           ),
                         ],
