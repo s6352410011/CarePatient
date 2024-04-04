@@ -51,6 +51,8 @@ dependencies:
   flutter_datetime_picker: ^1.5.1
   #flutter_localization: ^0.2.0
   intl: ^0.19.0
+  carousel_slider: ^4.2.1
+
   
   # flutter_facebook_auth: ^6.1.1
   
