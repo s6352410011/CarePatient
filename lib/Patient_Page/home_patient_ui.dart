@@ -17,27 +17,30 @@ class HomePatientUI extends StatefulWidget {
 }
 
 class _HomePatientUIState extends State<HomePatientUI> {
-  int _currentCarouselIndex = 0; // ตั้งค่าเริ่มต้นของ index ปัจจุบัน
-
-  final List<String> labels = [
-    'ปฏิทิน',
-    'ประวัติการว่าจ้าง',
-    'ข้อมูลผู้ดูแล',
-    'แผนที่',
-    'คะแนนรีวิว'
-  ];
+  int _selectedIndex = 0; // ตั้งค่าเริ่มต้นของ index ปัจจุบัน
 
   @override
   Widget build(BuildContext context) {
+    List<String> labels = [
+      'ปฏิทิน',
+      'ประวัติการว่าจ้าง',
+      'ข้อมูลผู้ดูแล',
+      'แผนที่',
+      'คะแนนรีวิว'
+    ];
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: ListView(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: 30,
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: buildCarousel(labels),
             ),
-            buildCarouselSlider(),
+            SizedBox(height: 10),
+            buildDots(labels.length),
             const SizedBox(height: 20.0),
             buildRowTabBar(context, ['กำลังดำเนินการ']),
             buildCardWithContact(context), // ทำ if else เพิ่มหน้ากำลังดำเนินการ
@@ -53,137 +56,132 @@ class _HomePatientUIState extends State<HomePatientUI> {
     );
   }
 
-  Widget buildCarouselSlider() {
-    return Column(
-      children: [
-        CarouselSlider.builder(
-          options: CarouselOptions(
-            height: 150,
-            enableInfiniteScroll: false,
-            viewportFraction: 0.4,
-            aspectRatio: 16 / 9,
-            autoPlay: false,
-            onPageChanged: (index, reason) {
-              // อัปเดต index ปัจจุบันเมื่อมีการ slide
-              setState(() {
-                _currentCarouselIndex = index;
-              });
-            },
-          ),
-          itemCount: labels.length,
-          itemBuilder: (BuildContext context, int index, int realIndex) {
-            String label = labels[index];
-            IconData iconData;
-            Color iconColor;
+  Widget buildCarousel(List<String> labels) {
+    return SizedBox(
+      height: 150,
+      child: PageView.builder(
+        itemCount: labels.length,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        itemBuilder: (context, index) {
+          return buildSlide(labels[index]);
+        },
+      ),
+    );
+  }
 
-            switch (label) {
-              case 'ปฏิทิน':
-                iconData = Icons.calendar_today;
-                iconColor = Colors.blue;
-                break;
-              case 'ประวัติการว่าจ้าง':
-                iconData = Icons.history;
-                iconColor = Colors.green;
-                break;
-              case 'ข้อมูลผู้ดูแล':
-                iconData = Icons.person;
-                iconColor = Colors.amber;
-                break;
-              case 'แผนที่':
-                iconData = Icons.map;
-                iconColor = Colors.red;
-                break;
-              case 'คะแนนรีวิว':
-                iconData = Icons.star;
-                iconColor = Colors.yellow;
-                break;
-              default:
-                iconData = Icons.error;
-                iconColor = Colors.grey;
-                break;
-            }
+  Widget buildSlide(String label) {
+    IconData iconData;
+    Color iconColor;
 
-            return GestureDetector(
-              onTap: () {
-                switch (label) {
-                  case 'ปฏิทิน':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CalendarUI(),
-                      ),
-                    );
-                    break;
-                  case 'ประวัติการว่าจ้าง':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HistoryWorkPage(),
-                      ),
-                    );
-                    break;
-                  case 'ข้อมูลผู้ดูแล':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PatientPage(),
-                      ),
-                    );
-                    break;
-                  case 'แผนที่':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapPage(),
-                      ),
-                    );
-                    break;
-                  case 'คะแนนรีวิว':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReviewPage(),
-                      ),
-                    );
-                    break;
-                  default:
-                    break;
-                }
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                child: Column(
-                  children: [
-                    Icon(iconData, color: iconColor, size: 100),
-                    SizedBox(height: 5),
-                    Text(label),
-                  ],
-                ),
+    switch (label) {
+      case 'ปฏิทิน':
+        iconData = Icons.calendar_today;
+        iconColor = Colors.blue;
+        break;
+      case 'ประวัติการว่าจ้าง':
+        iconData = Icons.history;
+        iconColor = Colors.green;
+        break;
+      case 'ข้อมูลผู้ดูแล':
+        iconData = Icons.person;
+        iconColor = Colors.amber;
+        break;
+      case 'แผนที่':
+        iconData = Icons.map;
+        iconColor = Colors.red;
+        break;
+      case 'คะแนนรีวิว':
+        iconData = Icons.star;
+        iconColor = Colors.yellow;
+        break;
+      default:
+        iconData = Icons.error;
+        iconColor = Colors.grey;
+        break;
+    }
+    return GestureDetector(
+      // Change InkWell to GestureDetector
+      onTap: () {
+        switch (label) {
+          case 'ปฏิทิน':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CalendarUI(),
               ),
             );
-          },
-        ),
-        SizedBox(height: 10),
-        Row(
+            break;
+          case 'ประวัติการว่าจ้าง':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HistoryWorkPage(),
+              ),
+            );
+            break;
+          case 'ข้อมูลผู้ดูแล':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MapPage(),
+              ),
+            );
+            break;
+          case 'แผนที่':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewPage(),
+              ),
+            );
+            break;
+          case 'คะแนนรีวิว':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewPage(),
+              ),
+            );
+            break;
+          default:
+            break;
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            labels.length,
-            (index) {
-              return Container(
-                width: 8.0,
-                height: 8.0,
-                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.blueAccent.withOpacity(
-                    index == _currentCarouselIndex ? 1 : 0.4,
-                  ),
-                ),
-              );
-            },
+          children: [
+            Icon(iconData, color: iconColor, size: 100),
+            SizedBox(height: 5),
+            Text(label),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDots(int count) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        count,
+        (index) => Container(
+          margin: EdgeInsets.symmetric(horizontal: 4),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: index == _selectedIndex
+                ? Colors.blue
+                : Colors.grey, // กำหนดสีของ dots ตาม selectedIndex
           ),
         ),
-      ],
+      ),
     );
   }
 }
