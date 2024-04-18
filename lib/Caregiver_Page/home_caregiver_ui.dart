@@ -1,36 +1,39 @@
+import 'package:flutter/material.dart';
 import 'package:care_patient/Calendar_Page/calendar.dart';
 import 'package:care_patient/Caregiver_Page/data_patient_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
 import 'package:care_patient/Pages/review_ui.dart';
-import 'package:flutter/material.dart';
-import 'package:care_patient/class/color.dart'; // นำเข้าไลบรารีที่เกี่ยวข้อง
+import 'package:care_patient/class/color.dart';
 
-class HomeCaregiverUI extends StatelessWidget {
+class HomeCaregiverUI extends StatefulWidget {
+  @override
+  _HomeCaregiverUIState createState() => _HomeCaregiverUIState();
+}
+
+class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    List<String> labels = ['ปฏิทิน', 'แผนที่', 'ประวัติการทำงาน', 'คะแนนรีวิว'];
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: ListView(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  buildRow(context,
-                      ['ปฏิทิน', 'แผนที่', 'ประวัติการทำงาน', 'คะแนนรีวิว']),
-                  //SizedBox(height: 20), // เพิ่มระยะห่างระหว่างแถว
-                  //buildRow(context, ['ประวัติการทำงาน', 'คะแนนรีวิว']),
-                ],
-              ),
+              child: buildCarousel(labels),
             ),
+            SizedBox(height: 10),
+            buildDots(labels.length),
             const SizedBox(height: 20.0),
             buildRowTabBar(context, ['กำลังดำเนินการ']),
-            buildCardWithContact(context), // ทำ if else เพิ่มหน้ากำลังดำเนินการ
+            buildCardWithContact(context),
             buildCardWithNoHire(context),
           ],
         ),
@@ -38,90 +41,117 @@ class HomeCaregiverUI extends StatelessWidget {
     );
   }
 
-  Widget buildRow(BuildContext context, List<String> labels) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: labels.map((label) {
-          IconData iconData;
-          Color iconColor;
+  Widget buildCarousel(List<String> labels) {
+    return SizedBox(
+      height: 150,
+      child: PageView.builder(
+        itemCount: labels.length,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        itemBuilder: (context, index) {
+          return buildSlide(labels[index]);
+        },
+      ),
+    );
+  }
 
-          switch (label) {
-            case 'ปฏิทิน':
-              iconData = Icons.calendar_today;
-              iconColor = Colors.blue;
-              break;
-            case 'ประวัติการทำงาน':
-              iconData = Icons.history;
-              iconColor = Colors.green;
-              break;
-            case 'แผนที่':
-              iconData = Icons.map;
-              iconColor = Colors.red;
-              break;
-            case 'คะแนนรีวิว':
-              iconData = Icons.star;
-              iconColor = Colors.yellow;
-              break;
-            default:
-              iconData = Icons.error;
-              iconColor = Colors.grey;
-              break;
-          }
-          return Container(
-            margin: EdgeInsets.symmetric(
-                horizontal: 15), // เพิ่มระยะห่างระหว่าง Icon
-            child: InkWell(
-              onTap: () {
-                switch (label) {
-                  case 'ปฏิทิน':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CalendarUI(),
-                      ),
-                    );
-                    break;
-                  case 'ประวัติการทำงาน':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HistoryWorkPage(),
-                      ),
-                    );
+  Widget buildSlide(String label) {
+    IconData iconData;
+    Color iconColor;
 
-                    break;
-                  case 'แผนที่':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapPage(),
-                      ),
-                    );
-                    break;
-                  case 'คะแนนรีวิว':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReviewPage(),
-                      ),
-                    );
-                    break;
-                  default:
-                    break;
-                }
-              },
-              child: Column(
-                children: [
-                  Icon(iconData, color: iconColor, size: 50), // Icon ใหญ่
-                  SizedBox(height: 5), // เพิ่มระยะห่างระหว่าง Icon กับชื่อ
-                  Text(label), // ชื่อใต้ Icon
-                ],
+    switch (label) {
+      case 'ปฏิทิน':
+        iconData = Icons.calendar_today;
+        iconColor = Colors.blue;
+        break;
+      case 'ประวัติการทำงาน':
+        iconData = Icons.history;
+        iconColor = Colors.green;
+        break;
+      case 'แผนที่':
+        iconData = Icons.map;
+        iconColor = Colors.red;
+        break;
+      case 'คะแนนรีวิว':
+        iconData = Icons.star;
+        iconColor = Colors.yellow;
+        break;
+      default:
+        iconData = Icons.error;
+        iconColor = Colors.grey;
+        break;
+    }
+    return GestureDetector(
+      // Change InkWell to GestureDetector
+      onTap: () {
+        switch (label) {
+          case 'ปฏิทิน':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CalendarUI(),
               ),
-            ),
-          );
-        }).toList(),
+            );
+            break;
+          case 'ประวัติการทำงาน':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HistoryWorkPage(),
+              ),
+            );
+            break;
+          case 'แผนที่':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MapPage(),
+              ),
+            );
+            break;
+          case 'คะแนนรีวิว':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewPage(),
+              ),
+            );
+            break;
+          default:
+            break;
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(iconData, color: iconColor, size: 100),
+            SizedBox(height: 5),
+            Text(label),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDots(int count) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        count,
+        (index) => Container(
+          margin: EdgeInsets.symmetric(horizontal: 4),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: index == _selectedIndex ? Colors.blue : Colors.grey, // color Dots
+          ),
+        ),
       ),
     );
   }
@@ -133,21 +163,21 @@ class HomeCaregiverUI extends StatelessWidget {
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            color: AllColor.pr,
+            color: Colors.blue,
           ),
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // ย้ายข้อความอยู่ตรงกลาง
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(width: 5),
                 Text(
-                  'กำลังดำเนินการ', // เปลี่ยนข้อความเป็น "กำลังดำเนินการ"
+                  'กำลังดำเนินการ',
                   style: TextStyle(
-                      color: Colors.white, // กำหนดสีข้อความ
-                      fontSize: 25, // กำหนดขนาดตัวอักษร
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -160,7 +190,7 @@ class HomeCaregiverUI extends StatelessWidget {
   Widget buildCardWithContact(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(10.0), // ระยะห่าง 10 จากขอบหน้าจอ
+        padding: const EdgeInsets.all(10.0),
         child: InkWell(
           onTap: () {
             Navigator.push(
@@ -169,44 +199,36 @@ class HomeCaregiverUI extends StatelessWidget {
             );
           },
           child: SizedBox(
-            height: 80, // กำหนดความสูงของการ์ดเป็น 80
+            height: 80,
             child: Card(
-              color: AllColor.sc, // สีพื้นหลังของการ์ด
-              elevation: 20, // ระดับการยกขึ้นของการ์ด
+              color: Colors.blue,
+              elevation: 20,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15), // ทำให้มีขอบโค้ง
+                borderRadius: BorderRadius.circular(15),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20), // กำหนดระยะห่างด้านข้าง
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween, // จัดวางชิดขอบ
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'ชื่อผู้ป่วย',
                       style: TextStyle(
-                        fontSize: 18, // ขนาดตัวอักษร
-                        color: Colors.white, // สีข้อความ
-                        fontWeight: FontWeight.bold, // ตัวหนา
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.phone,
-                              color: Colors.white), // ไอคอนโทรศัพท์
-                          onPressed: () {
-                            // ใส่โค้ดเมื่อกดไอคอนโทรศัพท์
-                          },
+                          icon: Icon(Icons.phone, color: Colors.white),
+                          onPressed: () {},
                         ),
-                        SizedBox(width: 10), // ระยะห่างระหว่างไอคอน
+                        SizedBox(width: 10),
                         IconButton(
-                          icon:
-                              Icon(Icons.chat, color: Colors.white), // ไอคอนแชท
-                          onPressed: () {
-                            // ใส่โค้ดเมื่อกดไอคอนแชท
-                          },
+                          icon: Icon(Icons.chat, color: Colors.white),
+                          onPressed: () {},
                         ),
                       ],
                     ),
@@ -221,10 +243,9 @@ class HomeCaregiverUI extends StatelessWidget {
   }
 
   Widget buildCardWithNoHire(BuildContext context) {
-    //ไม่ได้ จ้างใคร เลยให้ขึ้นสถานะนี้
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(10.0), // ระยะห่าง 10 จากขอบหน้าจอ
+        padding: const EdgeInsets.all(10.0),
         child: InkWell(
           onTap: () {
             Navigator.push(
@@ -233,41 +254,29 @@ class HomeCaregiverUI extends StatelessWidget {
             );
           },
           child: SizedBox(
-            height: 80, // กำหนดความสูงของการ์ดเป็น 80
+            height: 80,
             child: Card(
-              color: AllColor.sc, // สีพื้นหลังของการ์ด
-              elevation: 20, // ระดับการยกขึ้นของการ์ด
+              color: Colors.blue,
+              elevation: 20,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15), // ทำให้มีขอบโค้ง
+                borderRadius: BorderRadius.circular(15),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(10.0), // ระยะห่าง 10 จากขอบหน้าจอ
+                padding: const EdgeInsets.all(10.0),
                 child: Center(
                   child: Text(
                     'ยังไม่มีการว่าจ้างในขณะนี้ <(＿　＿)>',
                     style: TextStyle(
-                      fontSize: 18, // ขนาดตัวอักษร
-                      color: Colors.white, // สีข้อความ
-                      fontWeight: FontWeight.bold, // ตัวหนา
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    //textAlign: TextAlign.center, // จัดวางข้อความตรงกลาง
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget buildText(String labelText, String valueText) {
-    return Text(
-      '$labelText: $valueText',
-      style: TextStyle(
-        fontSize: 14, // ขนาดตัวอักษร
-        color: Colors.white, // สีข้อความ
-        //fontWeight: FontWeight.bold, // ตัวหนา
       ),
     );
   }
