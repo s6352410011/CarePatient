@@ -1,7 +1,6 @@
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter/services.dart';
 
 class AccountSettingUI extends StatefulWidget {
@@ -89,61 +88,60 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                     TextInputType.streetAddress, // ประเภทของคีย์บอร์ด (address)
                 // ตัวอื่น ๆ ของ TextFormField จะอยู่ที่นี่
               ),
-              SizedBox(height: 300),
-              ElevatedButton(
-                onPressed: () {
-                  // รหัสที่ต้องการให้ทำเมื่อปุ่มถูกกด
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  fixedSize: Size(200, 50), // สีพื้นหลังของปุ่ม
-                ),
-                child: Text(
-                  'Save',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('ต้องการลบบัญชีของคุณถาวร?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pop(); // ปิดหน้าต่างแจ้งเตือน
-                            },
-                            child: Text('Close'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              // ทำอะไรสักอย่างเมื่อกดปุ่ม OK
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LoginUI(),
-                                ),
-                              );
-                            },
-                            child: Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
+            ],
+          ),
+          SizedBox(height: 40),
+          ElevatedButton(
+            onPressed: () {
+              // รหัสที่ต้องการให้ทำเมื่อปุ่มถูกกด
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              fixedSize: Size(200, 50), // สีพื้นหลังของปุ่ม
+            ),
+            child: Text(
+              'Save',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('ต้องการลบบัญชีของคุณถาวร?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // ปิดหน้าต่างแจ้งเตือน
+                        },
+                        child: Text('Close'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // ทำอะไรสักอย่างเมื่อกดปุ่ม OK
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginUI(),
+                            ),
+                          );
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red, // สีปุ่มแดง
-                  fixedSize: Size(200, 50),
-                ),
-                child: Text('Delete Account',
-                    style: TextStyle(color: Colors.white)),
-              ),
-            ],
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red, // สีปุ่มแดง
+              fixedSize: Size(200, 50),
+            ),
+            child:
+                Text('Delete Account', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
