@@ -3,11 +3,12 @@ import 'package:care_patient/Caregiver_Page/data_patient_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
 import 'package:care_patient/Pages/review_ui.dart';
-import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
+import 'package:care_patient/class/database.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePatientUI extends StatefulWidget {
   const HomePatientUI({super.key});
@@ -28,30 +29,32 @@ class _HomePatientUIState extends State<HomePatientUI> {
       'แผนที่',
       'คะแนนรีวิว'
     ];
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: buildCarousel(labels),
-            ),
-            SizedBox(height: 10),
-            buildDots(labels.length),
-            const SizedBox(height: 20.0),
-            buildRowTabBar(context, ['กำลังดำเนินการ']),
-            buildCardWithContact(context), // ทำ if else เพิ่มหน้ากำลังดำเนินการ
-            buildCardWithNoHire(context),
-            buildCardWithWait(context),
-            const SizedBox(height: 20.0),
-            buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
-            const SizedBox(height: 10.0),
-            RegisterUsersList(),
-          ],
-        ),
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: buildCarousel(labels),
+          ),
+          SizedBox(height: 10),
+          buildDots(labels.length),
+          const SizedBox(height: 20.0),
+          buildRowTabBar(context, ['กำลังดำเนินการ']),
+          buildCardWithContact(context), // ทำ if else เพิ่มหน้ากำลังดำเนินการ
+          buildCardWithNoHire(context),
+          buildCardWithWait(context),
+          const SizedBox(height: 20.0),
+          buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
+          const SizedBox(height: 10.0),
+          // registerUsersListWidget(),
+          // AllUserData(),
+          // UserDataWidget(),
+          Expanded(
+            child: UserDataWidget(),
+          )
+        ],
       ),
     );
   }
@@ -438,45 +441,34 @@ Widget buildCardWithNoHire(BuildContext context) {
   );
 }
 
-class RegisterUsersList extends StatelessWidget {
+class UserDataWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<QuerySnapshot>(
-      future: FirebaseFirestore.instance.collection('registerusers').get(),
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection('general').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return CircularProgressIndicator(); // หรือโหลด UI อื่นๆ เมื่อรอข้อมูล
         }
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
+          return Text('เกิดข้อผิดพลาด: ${snapshot.error}');
         }
-        final users = snapshot.data!.docs;
-
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: ClampingScrollPhysics(), // ทำให้ไม่สามารถเลื่อนได้
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final userData = users[index].data() as Map<String, dynamic>;
-            final email = userData['email'];
-            //final password = userData['password'];
-
-            return GestureDetector(
-              // หรือใช้ InkWell ก็ได้
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ReviewPage(), // นำทางไปยังหน้า ReviewPage
-                  ),
-                );
-              },
-              child: Card(
+        final QuerySnapshot querySnapshot = snapshot.data as QuerySnapshot;
+        final List<String> names = [];
+        querySnapshot.docs.forEach((doc) {
+          final data = doc.data();
+          if (data != null) {
+            final name = (data as Map<String, dynamic>)['Name'] as String?;
+            if (name != null) {
+              names.add(name);
+            }
+          }
+        });
+        return Expanded(
+          child: ListView.builder(
+            itemCount: names.length,
+            itemBuilder: (context, index) {
+              return Card(
                 color: AllColor.sc,
                 elevation: 20,
                 shape: RoundedRectangleBorder(
@@ -485,20 +477,16 @@ class RegisterUsersList extends StatelessWidget {
                 child: ListTile(
                   leading: Icon(Icons.account_circle, color: AllColor.sc),
                   title: Text(
-                    'Email: $email',
+                    names[index],
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // subtitle: Text(
-                  //   'Password: $password',
-                  //   style: TextStyle(color: Colors.white),
-                  // ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );

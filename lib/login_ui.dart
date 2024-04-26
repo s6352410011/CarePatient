@@ -60,6 +60,11 @@ class _LoginUIState extends State<LoginUI> {
         context,
         MaterialPageRoute(builder: (context) => HomeMainPatientUI()),
       );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginUI()),
+      );
     }
   }
 
@@ -272,11 +277,31 @@ class _LoginUIState extends State<LoginUI> {
 
                                 if (!generalPhoneNumberExists) {
                                   print("Redirecting to CFormInfoUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CFormInfoUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CFormInfoUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 } else if (caregiverAcceptedPolicy &&
                                     patientAcceptedPolicy) {
@@ -292,24 +317,44 @@ class _LoginUIState extends State<LoginUI> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => HomeMainCareUI(),
+                                      builder: (context) => CFormWorkUI(),
                                     ),
                                   );
-                                } else if (patientAcceptedPolicy) {
-                                  print("Redirecting to HomeMainPatientUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeMainPatientUI(),
-                                    ),
-                                  );
+                                  // } else if (patientAcceptedPolicy) {
+                                  //   print("Redirecting to HomeMainPatientUI");
+                                  //   Navigator.pushReplacement(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) => HomeMainPatientUI(),
+                                  //     ),
+                                  //   );
                                 } else {
                                   print("Redirecting to CFormInfoUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CFormInfoUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CFormInfoUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 }
                               } else if (_selectedOption == 1) {
@@ -327,27 +372,87 @@ class _LoginUIState extends State<LoginUI> {
 
                                 if (!generalPhoneNumberExists) {
                                   print("Redirecting to PFormInfoUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PFormInfoUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PFormInfoUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
-                                } else if (patientAcceptedPolicy) {
+                                } else if (!patientAcceptedPolicy) {
                                   print("Redirecting to HomeMainCareUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeMainPatientUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PFormMedicalUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 } else {
                                   print("Redirecting to PFormMedicalUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PFormMedicalUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PFormMedicalUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 }
                               }
@@ -493,11 +598,31 @@ class _LoginUIState extends State<LoginUI> {
                                         user.email!);
 
                                 if (!generalPhoneNumberExists) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CFormInfoUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CFormInfoUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 } else if (caregiverAcceptedPolicy &&
                                     patientAcceptedPolicy) {
@@ -522,11 +647,31 @@ class _LoginUIState extends State<LoginUI> {
                                     ),
                                   );
                                 } else {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CFormWorkUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CFormWorkUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 }
                               } else if (_selectedOption == 1) {
@@ -538,11 +683,31 @@ class _LoginUIState extends State<LoginUI> {
                                         user.email!);
 
                                 if (!generalPhoneNumberExists) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PFormInfoUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PFormInfoUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 } else if (patientAcceptedPolicy) {
                                   Navigator.pushReplacement(
@@ -552,11 +717,31 @@ class _LoginUIState extends State<LoginUI> {
                                     ),
                                   );
                                 } else {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PFormMedicalUI(),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('แจ้งเตือน'),
+                                        content: Text(
+                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PFormMedicalUI(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('แบบฟอร์ม'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 }
                               }
@@ -687,5 +872,27 @@ class _LoginUIState extends State<LoginUI> {
         .get();
 
     return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
+  }
+}
+
+class DialogForms {
+  static void showMyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('แจ้งเตือน'),
+          content: Text('รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('แบบฟอร์ม'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
