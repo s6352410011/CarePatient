@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 
-class PatientPage extends StatefulWidget {
-  const PatientPage({super.key});
+class AllCareGiverUI extends StatefulWidget {
+  const AllCareGiverUI({super.key});
 
   @override
-  State<PatientPage> createState() => _PatientPageState();
+  State<AllCareGiverUI> createState() => _AllCareGiverUIState();
 }
 
-class _PatientPageState extends State<PatientPage> {
+class _AllCareGiverUIState extends State<AllCareGiverUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ข้อมูลผู้ดูแล'),
-      ),
-      body: const Center(
-        child: Text('ข้อมูลผู้ดูแล'),
-      ),
-    );
+        appBar: AppBar(
+      title: Text('รายชื่อผู้ดูแลทั้งหมด'),
+    ));
   }
 }

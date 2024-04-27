@@ -3,6 +3,7 @@ import 'package:care_patient/Caregiver_Page/data_patient_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
 import 'package:care_patient/Pages/review_ui.dart';
+import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
 import 'package:care_patient/class/database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -42,18 +43,16 @@ class _HomePatientUIState extends State<HomePatientUI> {
           buildDots(labels.length),
           const SizedBox(height: 20.0),
           buildRowTabBar(context, ['กำลังดำเนินการ']),
-          buildCardWithContact(context), // ทำ if else เพิ่มหน้ากำลังดำเนินการ
+          //buildCardWithContact(context), // ทำ if else เพิ่มหน้ากำลังดำเนินการ ใส่่ชื่ผู้ดูแล แบบสไลด์ขึ้นลงได้
           buildCardWithNoHire(context),
-          buildCardWithWait(context),
+          // buildCardWithWait(context),
           const SizedBox(height: 20.0),
           buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
           const SizedBox(height: 10.0),
           // registerUsersListWidget(),
           // AllUserData(),
           // UserDataWidget(),
-          Expanded(
-            child: UserDataWidget(),
-          )
+          UserDataWidget(),
         ],
       ),
     );
@@ -220,7 +219,7 @@ Widget buildRowWithNames(BuildContext context, List<String> labels) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReviewPage(),
+                        builder: (context) => AllCareGiverUI(),
                       ),
                     );
                     break;

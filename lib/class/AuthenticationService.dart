@@ -45,7 +45,8 @@ class AuthenticationService {
         if (!userDocSnapshot.exists) {
           // If the user does not exist, add their data to Firestore
           await userDoc.set({
-            // Add other data you want to store about the user
+            'email': user.email, // เพิ่มฟิลด์ email ลงในเอกสาร
+            // เพิ่มฟิลด์อื่น ๆ ตามต้องการ
           });
         }
 
@@ -80,20 +81,6 @@ class AuthenticationService {
   Future<bool> isLoggedIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('isLoggedIn') ?? false;
-  }
-
-  // Method สำหรับ SignUp **register
-  Future signUpWithEmailPassword(String email, String password) async {
-    try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      User? user = result.user;
-      UserData.uid = user?.uid;
-      return user;
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
   }
 
   // Method สำหรับ SignIn **loging ด้วย เมลล์
@@ -158,51 +145,3 @@ void showEmailAlreadyInUseDialog(BuildContext context) {
     },
   );
 }
-
-
-
-
-// class RegisteredUsersList extends StatefulWidget {
-//   @override
-//   _RegisteredUsersListState createState() => _RegisteredUsersListState();
-// }
-
-// class _RegisteredUsersListState extends State<RegisteredUsersList> {
-//   List<User?> _registeredUsers = [];
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadRegisteredUsers();
-//   }
-
-//   Future<void> _loadRegisteredUsers() async {
-//     List<User?> users = FirebaseAuth.instance.currentUser != null
-//         ? [FirebaseAuth.instance.currentUser]
-//         : [];
-
-//     setState(() {
-//       _registeredUsers = users;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Registered Users'),
-//       ),
-//       body: ListView.builder(
-//         itemCount: _registeredUsers.length,
-//         itemBuilder: (context, index) {
-//           User? user = _registeredUsers[index];
-//           return ListTile(
-//             title: Text(user?.email ?? 'Unknown'),
-//             subtitle: Text(user?.uid ?? ''),
-//             // Add more user information if needed
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
