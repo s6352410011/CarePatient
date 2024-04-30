@@ -1,15 +1,17 @@
-import 'package:care_patient/Calendar_Page/calendar.dart';
 import 'package:care_patient/Caregiver_Page/data_patient_ui.dart';
-import 'package:care_patient/Pages/historywork_ui.dart';
-import 'package:care_patient/Pages/map_ui.dart';
-import 'package:care_patient/Pages/review_ui.dart';
 import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
 import 'package:care_patient/class/database.dart';
+import 'package:care_patient/test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:care_patient/Patient_Page/ShowPage/page1.dart';
+import 'package:care_patient/Patient_Page/ShowPage/page2.dart';
+import 'package:care_patient/Patient_Page/ShowPage/page3.dart';
+import 'package:care_patient/class/color.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomePatientUI extends StatefulWidget {
   const HomePatientUI({super.key});
@@ -19,170 +21,72 @@ class HomePatientUI extends StatefulWidget {
 }
 
 class _HomePatientUIState extends State<HomePatientUI> {
-  int _selectedIndex = 0; // ตั้งค่าเริ่มต้นของ index ปัจจุบัน
+  final controller = PageController(viewportFraction: 0.8, keepPage: true);
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startLoop();
+  }
+
+  void _startLoop() {
+    Future.delayed(Duration(seconds: 5), () {
+      if (_currentPage < 3) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      if (mounted) {
+        controller.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+        _startLoop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<String> labels = [
-      'ปฏิทิน',
-      'ประวัติการว่าจ้าง',
-      'ข้อมูลผู้ดูแล',
-      'แผนที่',
-      'คะแนนรีวิว'
+    final pages = <Widget>[
+      ShowPage1(),
+      ShowPage2(),
+      ShowPage3(),
     ];
+
+    final colors = <Color>[
+      AllColor.DotsPrimary,
+      AllColor.DotsSecondary,
+      AllColor.DotsThird,
+    ];
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: buildCarousel(labels),
+            child: PageViewWithIndicator(
+              controller: controller,
+              pages: pages,
+              colors: colors,
+            ),
           ),
-          SizedBox(height: 10),
-          buildDots(labels.length),
-          const SizedBox(height: 20.0),
           buildRowTabBar(context, ['กำลังดำเนินการ']),
-          //buildCardWithContact(context), // ทำ if else เพิ่มหน้ากำลังดำเนินการ ใส่่ชื่ผู้ดูแล แบบสไลด์ขึ้นลงได้
           buildCardWithNoHire(context),
-          // buildCardWithWait(context),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 5),
           buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
           const SizedBox(height: 10.0),
-          // registerUsersListWidget(),
-          // AllUserData(),
-          // UserDataWidget(),
           UserDataWidget(),
         ],
-      ),
-    );
-  }
-
-  Widget buildCarousel(List<String> labels) {
-    return SizedBox(
-      height: 150,
-      child: PageView.builder(
-        itemCount: labels.length,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        itemBuilder: (context, index) {
-          return buildSlide(labels[index]);
-        },
-      ),
-    );
-  }
-
-  Widget buildSlide(String label) {
-    IconData iconData;
-    Color iconColor;
-
-    switch (label) {
-      case 'ปฏิทิน':
-        iconData = Icons.calendar_today;
-        iconColor = Colors.blue;
-        break;
-      case 'ประวัติการว่าจ้าง':
-        iconData = Icons.history;
-        iconColor = Colors.green;
-        break;
-      case 'ข้อมูลผู้ดูแล':
-        iconData = Icons.person;
-        iconColor = Colors.amber;
-        break;
-      case 'แผนที่':
-        iconData = Icons.map;
-        iconColor = Colors.red;
-        break;
-      case 'คะแนนรีวิว':
-        iconData = Icons.star;
-        iconColor = Colors.yellow;
-        break;
-      default:
-        iconData = Icons.error;
-        iconColor = Colors.grey;
-        break;
-    }
-    return GestureDetector(
-      // Change InkWell to GestureDetector
-      onTap: () {
-        switch (label) {
-          case 'ปฏิทิน':
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CalendarUI(),
-              ),
-            );
-            break;
-          case 'ประวัติการว่าจ้าง':
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HistoryWorkPage(),
-              ),
-            );
-            break;
-          case 'ข้อมูลผู้ดูแล':
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MapPage(),
-              ),
-            );
-            break;
-          case 'แผนที่':
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ReviewPage(),
-              ),
-            );
-            break;
-          case 'คะแนนรีวิว':
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ReviewPage(),
-              ),
-            );
-            break;
-          default:
-            break;
-        }
-      },
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(iconData, color: iconColor, size: 100),
-            SizedBox(height: 5),
-            Text(label),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildDots(int count) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        count,
-        (index) => Container(
-          margin: EdgeInsets.symmetric(horizontal: 4),
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: index == _selectedIndex
-                ? Colors.blue
-                : Colors.grey, // กำหนดสีของ dots ตาม selectedIndex
-          ),
-        ),
       ),
     );
   }
@@ -440,29 +344,48 @@ Widget buildCardWithNoHire(BuildContext context) {
   );
 }
 
-class UserDataWidget extends StatelessWidget {
+class UserDataWidget extends StatefulWidget {
+  @override
+  _UserDataWidgetState createState() => _UserDataWidgetState();
+}
+
+class _UserDataWidgetState extends State<UserDataWidget> {
+  late Future<List<String>> _userDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userDataFuture = _loadUserData();
+  }
+
+  Future<List<String>> _loadUserData() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('general').get();
+    List<String> names = [];
+    querySnapshot.docs.forEach((doc) {
+      final data = doc.data();
+      if (data != null) {
+        final name = (data as Map<String, dynamic>)['Name'] as String?;
+        if (name != null) {
+          names.add(name);
+        }
+      }
+    });
+    return names;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('general').snapshots(),
-      builder: (context, snapshot) {
+    return FutureBuilder(
+      future: _userDataFuture,
+      builder: (context, AsyncSnapshot<List<String>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // หรือโหลด UI อื่นๆ เมื่อรอข้อมูล
+          return CircularProgressIndicator();
         }
         if (snapshot.hasError) {
           return Text('เกิดข้อผิดพลาด: ${snapshot.error}');
         }
-        final QuerySnapshot querySnapshot = snapshot.data as QuerySnapshot;
-        final List<String> names = [];
-        querySnapshot.docs.forEach((doc) {
-          final data = doc.data();
-          if (data != null) {
-            final name = (data as Map<String, dynamic>)['Name'] as String?;
-            if (name != null) {
-              names.add(name);
-            }
-          }
-        });
+        List<String> names = snapshot.data!;
         return Expanded(
           child: ListView.builder(
             itemCount: names.length,
@@ -488,6 +411,72 @@ class UserDataWidget extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+// Show Page 3 Page
+class PageViewWithIndicator extends StatelessWidget {
+  final PageController controller;
+  final List<Widget> pages;
+  final List<Color> colors;
+
+  const PageViewWithIndicator({
+    Key? key,
+    required this.controller,
+    required this.pages,
+    required this.colors,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        SizedBox(height: 16),
+        SizedBox(
+          height: 240,
+          child: PageView.builder(
+            controller: controller,
+            itemCount: pages.length,
+            itemBuilder: (_, index) {
+              return pages[index % pages.length];
+            },
+          ),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Container(
+          child: Center(
+            child: SmoothPageIndicator(
+              controller: controller,
+              count: pages.length,
+              effect: CustomizableEffect(
+                activeDotDecoration: DotDecoration(
+                  width: 100,
+                  height: 12,
+                  color: colors[0], // สี dots สถานะที่ 1
+                  rotationAngle: 180,
+                  verticalOffset: -10,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                dotDecoration: DotDecoration(
+                  width: 24,
+                  height: 12,
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(16),
+                  verticalOffset: 0,
+                ),
+                spacing: 10.0, // ระยะห่างระหว่าง dots
+                inActiveColorOverride: (i) =>
+                    colors[i], // เลือกสี dots ในสถานะที่ไม่ได้ active
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 32.0),
+      ],
     );
   }
 }

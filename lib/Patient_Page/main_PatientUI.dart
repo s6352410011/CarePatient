@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:care_patient/Patient_Page/home_patient_ui.dart';
 import 'package:care_patient/chat/chat_home.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/login_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/Account_Page/account_ui.dart';
 import 'package:care_patient/navbar/notifications_ui.dart';
@@ -17,20 +19,18 @@ class HomeMainPatientUI extends StatefulWidget {
 }
 
 class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
-  int _selectedIndex = 1; // กำหนดค่าเริ่มต้นเป็น 1 เพื่อเลือกหน้า "Home"
+  int _selectedIndex = 0; // กำหนดค่าเริ่มต้นเป็น 1 เพื่อเลือกหน้า "Home"
 
   final List<Widget> _pages = [
-    NotificationsUI(),
     HomePatientUI(),
+    NotificationsUI(),
     ChatHome(),
     AccountUI(),
   ];
-
-  final List<String> _titles = ['Notifications', 'Home', 'Messages', 'Account'];
+  final List<String> _titles = ['Home', 'Notifications', 'Messages', 'Account'];
 
   Color _backgroundColor = AllColor.pr;
   Color _textColor = Colors.white;
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -87,6 +87,7 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
         return false; // ไม่อนุญาตให้กดปุ่มย้อนกลับได้โดยตรง
       },
       child: Scaffold(
+        //backgroundColor: Colors.white,
         appBar: AppBar(
           automaticallyImplyLeading: false, // กำหนดให้ไม่แสดงปุ่ม back
           backgroundColor: _backgroundColor,
@@ -103,29 +104,63 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
         body: Center(
           child: _pages.elementAt(_selectedIndex),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              label: 'Notifications',
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: AllColor.pr, // สีพื้นหลังของ Bottom Navigation Bar เป็นสีขาว
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 20,
+                color: Colors.black
+                    .withOpacity(.1), // สีของเงาที่ปรากฏเมื่อมีการเลื่อน
+              )
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+              child: GNav(
+                rippleColor:
+                    Colors.grey[300]!, // สีของเส้นสัมผัสเมื่อแตะที่แท็บ
+                hoverColor: AllColor.sc!, // สีพื้นหลังเมื่อชี้ที่แท็บ
+                gap: 8, // ระยะห่างระหว่างแท็บ
+                activeColor:
+                    Colors.white, // สีของ icon และข้อความเมื่อเลือกแท็บ
+                iconSize: 24, // ขนาดของ icon
+                padding: EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 12), // การขยายขนาดแท็บ
+                duration: Duration(
+                    milliseconds:
+                        400), // ระยะเวลาในการแสดงเอฟเฟกต์ขณะเปลี่ยนแท็บ
+                tabBackgroundColor: AllColor.sc, // สีพื้นหลังแท็บ
+                color: Colors.black,
+                tabs: [
+                  GButton(
+                    icon: LineIcons.home,
+                    text: 'Home',
+                  ),
+                  GButton(
+                    icon: LineIcons.bell,
+                    text: 'Notifications',
+                  ),
+                  GButton(
+                    icon: LineIcons.facebookMessenger,
+                    text: 'Messages',
+                  ),
+                  GButton(
+                    icon: LineIcons.user,
+                    text: 'Account',
+                  ),
+                ],
+                selectedIndex: _selectedIndex,
+                onTabChange: (index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.message),
-              label: 'Messages',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              label: 'Account',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: AllColor.sc,
-          unselectedItemColor: Colors.white,
-          onTap: _onItemTapped,
+          ),
         ),
       ),
     );
