@@ -1,138 +1,494 @@
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:care_patient/Patient_Page/ShowPage/page1.dart';
-import 'package:care_patient/Patient_Page/ShowPage/page2.dart';
-import 'package:care_patient/Patient_Page/ShowPage/page3.dart';
-import 'package:care_patient/class/color.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class PageViewWithIndicator extends StatelessWidget {
-  final PageController controller;
-  final List<Widget> pages;
-  final List<Color> colors;
-
-  const PageViewWithIndicator({
-    Key? key,
-    required this.controller,
-    required this.pages,
-    required this.colors,
-  }) : super(key: key);
+class Calendar extends StatefulWidget {
+  const Calendar({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        SizedBox(height: 16),
-        SizedBox(
-          height: 240,
-          child: PageView.builder(
-            controller: controller,
-            itemCount: pages.length,
-            itemBuilder: (_, index) {
-              return pages[index % pages.length];
-            },
-          ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Container(
-          child: Center(
-            child: SmoothPageIndicator(
-              controller: controller,
-              count: pages.length,
-              effect: CustomizableEffect(
-                activeDotDecoration: DotDecoration(
-                  width: 100,
-                  height: 12,
-                  color: colors[0], // สี dots สถานะที่ 1
-                  rotationAngle: 180,
-                  verticalOffset: -10,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                dotDecoration: DotDecoration(
-                  width: 24,
-                  height: 12,
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(16),
-                  verticalOffset: 0,
-                ),
-                spacing: 10.0, // ระยะห่างระหว่าง dots
-                inActiveColorOverride: (i) =>
-                    colors[i], // เลือกสี dots ในสถานะที่ไม่ได้ active
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 32.0),
-      ],
-    );
-  }
+  State<Calendar> createState() => _CalendarState();
 }
 
-class TestUI extends StatefulWidget {
-  const TestUI({Key? key}) : super(key: key);
-
-  @override
-  State<TestUI> createState() => _TestUIState();
-}
-
-class _TestUIState extends State<TestUI> {
-  final controller = PageController(viewportFraction: 0.8, keepPage: true);
-  int _currentPage = 0;
+class _CalendarState extends State<Calendar> {
+  late CalendarFormat _calendarFormat;
+  late DateTime _focusedDay;
+  late DateTime _selectedDay;
+  late Map<DateTime, List<dynamic>> _events;
+  TextEditingController _eventController = TextEditingController();
+  late TimeOfDay? _selectedTime; // เพิ่มตัวแปร _selectedTime ที่นี่
 
   @override
   void initState() {
     super.initState();
-    _startLoop();
+    // กำหนดรูปแบบปฏิทินเริ่มต้นเป็นรูปแบบเดือน
+    _calendarFormat = CalendarFormat.month;
+    // กำหนดวันที่โฟกัสในปฏิทินเริ่มต้นเป็นวันปัจจุบัน
+    _focusedDay = DateTime.now();
+    // กำหนดวันที่ที่เลือกในปฏิทินเริ่มต้นเป็นวันปัจจุบัน
+    _selectedDay = DateTime.now();
+    _selectedTime = null; // กำหนดค่าเริ่มต้นของ _selectedTime เป็น null
+    // สร้างรายการเหตุการณ์เปล่า ๆ
+    _events = {};
   }
 
-  void _startLoop() {
-    Future.delayed(Duration(seconds: 5), () {
-      if (_currentPage < 3) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
-      if (mounted) {
-        controller.animateToPage(
-          _currentPage,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
+  // แสดง Dialog เพื่อเพิ่มเหตุการณ์ใหม่
+  void _addEvent() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.grey[200],
+              title: const Text('เพิ่มกิจกรรม'),
+              content: SizedBox(
+                width: 300,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _eventController,
+                      decoration: const InputDecoration(
+                        hintText: 'ชื่อกิจกรรม',
+                      ),
+                      onSaved: (value) {},
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        final TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                          builder: (BuildContext context, Widget? child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context)
+                                  .copyWith(alwaysUse24HourFormat: true),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (pickedTime != null) {
+                          setState(() {
+                            _selectedTime = pickedTime;
+                          });
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          const Icon(Icons.access_time),
+                          const SizedBox(width: 5),
+                          SizedBox(
+                            width: 200,
+                            child: Text(
+                              _selectedTime == null
+                                  ? 'Select event time'
+                                  : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    _eventController.clear();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('ยกเลิก'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    _saveEvent();
+                    _eventController.clear();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('บันทึก'),
+                ),
+              ],
+            );
+          },
         );
-        _startLoop();
-      }
-    });
+      },
+    );
   }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
+// บันทึกเหตุการณ์ใหม่
+  void _saveEvent() {
+    if (_selectedDay != null &&
+        _eventController.text.isNotEmpty &&
+        _selectedTime != null) {
+      setState(() {
+        final newEvent = _eventController.text;
+        final DateTime eventDateTime = DateTime(
+          _selectedDay.year,
+          _selectedDay.month,
+          _selectedDay.day,
+          _selectedTime!.hour,
+          _selectedTime!.minute,
+        );
+
+        if (_events.containsKey(_selectedDay)) {
+          _events[_selectedDay]!
+              .add({'event': newEvent, 'time': _selectedTime});
+        } else {
+          _events[_selectedDay] = [
+            {'event': newEvent, 'time': _selectedTime}
+          ];
+        }
+      });
+    }
+  }
+
+// แก้ไขเหตุการณ์
+  void _editEvent(String event, TimeOfDay? eventTime) async {
+    _eventController.text = event;
+    _selectedTime = eventTime; // เพิ่มบรรทัดนี้เพื่อกำหนดเวลาเริ่มต้น
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text('Edit Event'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _eventController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your event',
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  InkWell(
+                    onTap: () async {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: _selectedTime ?? TimeOfDay.now(),
+                      );
+                      if (pickedTime != null) {
+                        setState(() {
+                          _selectedTime =
+                              pickedTime; // อัพเดตค่าเวลาใหม่ที่เลือก
+                        });
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.access_time),
+                        SizedBox(width: 5),
+                        Text(
+                          _selectedTime == null
+                              ? 'Select event time'
+                              : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    _eventController.clear();
+                    _selectedTime = null;
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final updatedEvent = _eventController.text.isNotEmpty
+                        ? _eventController.text
+                        : event;
+                    setState(() {
+                      if (_eventController.text.isNotEmpty ||
+                          _selectedTime != null) {
+                        _events[_selectedDay] = [
+                          {'event': updatedEvent, 'time': _selectedTime}
+                        ];
+                      }
+                    });
+                    _eventController.clear();
+                    _selectedTime = null;
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final pages = <Widget>[
-      ShowPage1(),
-      ShowPage2(),
-      ShowPage3(),
-    ];
-
-    final colors = <Color>[
-      AllColor.DotsPrimary,
-      AllColor.DotsSecondary,
-      AllColor.DotsThird,
-    ];
-
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: PageViewWithIndicator(
-            controller: controller,
-            pages: pages,
-            colors: colors,
-          ),
+      appBar: AppBar(
+        title: Text('Calendar'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addEvent,
+        child: Icon(Icons.add),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // แสดงปฏิทิน
+            TableCalendar(
+              locale: 'th_TH',
+              firstDay: DateTime.utc(2010, 10, 16),
+              lastDay: DateTime.utc(2030, 3, 14),
+              focusedDay: _focusedDay,
+              calendarFormat: _calendarFormat,
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDay, day);
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+              },
+              eventLoader: (day) {
+                return _events[day] ?? [];
+              },
+              calendarBuilders: CalendarBuilders(),
+              availableCalendarFormats: const {
+                CalendarFormat.month: 'เดือน',
+                CalendarFormat.week: 'สัปดาห์',
+              },
+              onFormatChanged: (format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              },
+              onPageChanged: (focusedDay) {
+                _focusedDay = focusedDay;
+              },
+            ),
+            Divider(
+              height: 20.0, // กำหนดความสูงของเส้นขั้น
+              color: Colors.grey[300], // สีของเส้นขั้น
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 5),
+              child: Text(
+                'Events :',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _events.entries.map((entry) {
+                if (isSameDay(entry.key, _selectedDay)) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: _selectedDay == entry.key
+                              ? Colors.grey[300]
+                              : Colors.transparent,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: entry.value.length,
+                            itemBuilder: (context, index) {
+                              final Map<String, dynamic> eventData =
+                                  entry.value[index];
+                              final String event = eventData['event'];
+                              final TimeOfDay? eventTime = eventData['time'];
+                              return ListTile(
+                                title: Text(
+                                  event,
+                                  style: TextStyle(
+                                    fontSize: 20, // ปรับขนาดตัวอักษรตามต้องการ
+                                  ),
+                                ),
+                                subtitle: eventTime != null
+                                    ? Text(
+                                        'Time: ${eventTime.hour.toString().padLeft(2, '0')} : ${eventTime.minute.toString().padLeft(2, '0')}',
+                                        style: TextStyle(fontSize: 16),
+                                      )
+                                    : null,
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () async {
+                                        _eventController.text = event;
+                                        await showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return StatefulBuilder(
+                                              builder: (BuildContext context,
+                                                  StateSetter setState) {
+                                                return AlertDialog(
+                                                  title: Text('Edit Event'),
+                                                  content: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      TextFormField(
+                                                        controller:
+                                                            _eventController,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          hintText:
+                                                              'Enter your event',
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 20),
+                                                      InkWell(
+                                                        onTap: () async {
+                                                          final TimeOfDay?
+                                                              pickedTime =
+                                                              await showTimePicker(
+                                                            context: context,
+                                                            initialTime:
+                                                                TimeOfDay.now(),
+                                                          );
+                                                          if (pickedTime !=
+                                                              null) {
+                                                            setState(() {
+                                                              _selectedTime =
+                                                                  pickedTime;
+                                                            });
+                                                          }
+                                                        },
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons
+                                                                .access_time),
+                                                            SizedBox(width: 5),
+                                                            Text(
+                                                              _selectedTime ==
+                                                                      null
+                                                                  ? 'Select event time'
+                                                                  : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                                                              style: TextStyle(
+                                                                  fontSize: 16),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        _eventController
+                                                            .clear();
+                                                        _selectedTime = null;
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('Cancel'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        final updatedEvent =
+                                                            _eventController
+                                                                    .text
+                                                                    .isNotEmpty
+                                                                ? _eventController
+                                                                    .text
+                                                                : event;
+                                                        setState(() {
+                                                          if (_eventController
+                                                                  .text
+                                                                  .isNotEmpty ||
+                                                              _selectedTime !=
+                                                                  null) {
+                                                            _events[
+                                                                _selectedDay] = [
+                                                              updatedEvent
+                                                            ];
+                                                          }
+                                                        });
+                                                        _eventController
+                                                            .clear();
+                                                        _selectedTime = null;
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('Save'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        // Show confirmation dialog
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text("Confirmation"),
+                                              content: Text(
+                                                  "Are you sure you want to delete this event?"),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: Text("Cancel"),
+                                                  onPressed: () {
+                                                    // Close the dialog
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text("OK"),
+                                                  onPressed: () {
+                                                    // Delete the event
+                                                    setState(() {
+                                                      _events[entry.key]!
+                                                          .remove(event);
+                                                    });
+                                                    // Close the dialog
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );
