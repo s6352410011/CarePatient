@@ -39,7 +39,7 @@ class AuthenticationService {
       if (user != null) {
         // Check if the user exists in Firestore
         final userDoc =
-            FirebaseFirestore.instance.collection('forms').doc(user.email);
+            FirebaseFirestore.instance.collection('users').doc(user.email);
         final userDocSnapshot = await userDoc.get();
 
         if (!userDocSnapshot.exists) {
