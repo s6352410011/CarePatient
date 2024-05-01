@@ -25,7 +25,7 @@ class _DataPatientUIState extends State<DataPatientUI> {
           style: TextStyle(color: Colors.white), // สีข้อความ
         ),
         centerTitle: true, // จัดข้อความตรงกลาง
-        backgroundColor: AllColor.pr, // สีพื้นหลังของ AppBar
+        backgroundColor: AllColor.Primary, // สีพื้นหลังของ AppBar
         leading: IconButton(
           // ปุ่ม back
           icon: Icon(Icons.arrow_back, color: Colors.white), // ไอคอน back

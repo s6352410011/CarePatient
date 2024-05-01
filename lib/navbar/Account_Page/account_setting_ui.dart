@@ -15,7 +15,7 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AllColor.pr,
+        backgroundColor: AllColor.Primary,
         title: const Text('Account Setting'),
       ),
       body: ListView(

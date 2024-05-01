@@ -24,7 +24,7 @@ class _ReviewPageState extends State<ReviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AllColor.pr, // สีพื้นหลังของ AppBar
+        backgroundColor: AllColor.Primary, // สีพื้นหลังของ AppBar
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center, // จัดตำแหน่งตรงกลาง
           children: [
@@ -49,7 +49,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 itemCount: 5, // จำนวนรีวิว
                 itemBuilder: (context, index) {
                   return Card(
-                    color: AllColor.sc, // สีพื้นหลังของการ์ด
+                    color: AllColor.Secondary, // สีพื้นหลังของการ์ด
                     elevation: 5, // ความโค้งของการ์ด
                     shape: RoundedRectangleBorder(
                       borderRadius:
@@ -106,7 +106,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 IconButton(
                   icon: const Icon(
                     Icons.send,
-                    color: AllColor.sc, // สีของไอคอน
+                    color: AllColor.Secondary, // สีของไอคอน
                   ),
                   onPressed: () {
                     // การทำงานเมื่อกดปุ่มส่งรีวิว

@@ -176,7 +176,7 @@ class _CalendarUIState extends State<CalendarUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AllColor.pr,
+        backgroundColor: AllColor.Primary,
         title: const Text('ปฏิทิน'),
       ),
       floatingActionButton: FloatingActionButton(

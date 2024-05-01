@@ -284,7 +284,7 @@ class _RegisterUIState extends State<RegisterUI> {
                             });
                           },
                           controlAffinity: ListTileControlAffinity.leading,
-                          activeColor: AllColor.sc,
+                          activeColor: AllColor.Secondary,
                         ),
                       ),
                       SizedBox(
@@ -391,7 +391,7 @@ class _RegisterUIState extends State<RegisterUI> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AllColor.sc, // สีปุ่ม
+                            backgroundColor: AllColor.Secondary, // สีปุ่ม
                             fixedSize: Size(200, 50),
                           ),
                           child: Center(
@@ -425,7 +425,7 @@ class _RegisterUIState extends State<RegisterUI> {
                             child: Text(
                               "Forgot Password?",
                               style: TextStyle(
-                                color: AllColor.pr,
+                                color: AllColor.Primary,
                                 fontSize: 16,
                               ),
                             ),

@@ -37,7 +37,7 @@ class _HistoryWorkPageState extends State<HistoryWorkPage>
           ),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: AllColor.pr,
+        backgroundColor: AllColor.Primary,
         bottom: TabBar(
           controller: _tabController,
           tabs: [
@@ -58,7 +58,7 @@ class _HistoryWorkPageState extends State<HistoryWorkPage>
         ),
       ),
       body: Container(
-        color: AllColor.bg,
+        color: AllColor.Backgroud,
         child: TabBarView(
           controller: _tabController,
           children: [
@@ -66,7 +66,7 @@ class _HistoryWorkPageState extends State<HistoryWorkPage>
               child: Text(
                 'เสร็จสิ้น',
                 style: TextStyle(
-                  color: AllColor.sc,
+                  color: AllColor.Secondary,
                   fontSize: 24,
                 ),
               ),
@@ -75,7 +75,7 @@ class _HistoryWorkPageState extends State<HistoryWorkPage>
               child: Text(
                 'ล้มเหลว',
                 style: TextStyle(
-                  color: AllColor.sc,
+                  color: AllColor.Secondary,
                   fontSize: 24,
                 ),
               ),

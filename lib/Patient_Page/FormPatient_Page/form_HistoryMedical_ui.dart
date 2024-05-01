@@ -92,7 +92,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: AllColor.pr,
+        backgroundColor: AllColor.Primary,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -530,7 +530,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
               label: Text('เลือกไฟล์ $_selectedFile'), // ข้อความปุ่ม
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white, // สีข้อความบนปุ่ม
-                backgroundColor: AllColor.sc, // สีปุ่ม
+                backgroundColor: AllColor.Secondary, // สีปุ่ม
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -791,7 +791,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 ),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: AllColor.pr,
+                  backgroundColor: AllColor.Primary,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

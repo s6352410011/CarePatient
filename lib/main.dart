@@ -31,7 +31,7 @@ class Main extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         canvasColor: AllColor
-            .pr, // กำหนดสีพื้นหลังที่ต้องการให้กับ Bottom Navigation Bar
+            .Primary, // กำหนดสีพื้นหลังที่ต้องการให้กับ Bottom Navigation Bar
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20.0),

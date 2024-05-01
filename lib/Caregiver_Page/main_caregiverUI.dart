@@ -31,7 +31,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
   ];
   final List<String> _titles = ['Home', 'Notifications', 'Messages', 'Account'];
 
-  Color _backgroundColor = AllColor.pr;
+  Color _backgroundColor = AllColor.Primary;
   Color _textColor = Colors.white;
   void _onItemTapped(int index) {
     setState(() {
@@ -108,7 +108,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
-            color: AllColor.pr, // สีพื้นหลังของ Bottom Navigation Bar เป็นสีขาว
+            color: AllColor.Primary, // สีพื้นหลังของ Bottom Navigation Bar เป็นสีขาว
             boxShadow: [
               BoxShadow(
                 blurRadius: 20,
@@ -124,7 +124,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
               child: GNav(
                 rippleColor:
                     Colors.grey[300]!, // สีของเส้นสัมผัสเมื่อแตะที่แท็บ
-                hoverColor: AllColor.sc!, // สีพื้นหลังเมื่อชี้ที่แท็บ
+                hoverColor: AllColor.Secondary!, // สีพื้นหลังเมื่อชี้ที่แท็บ
                 gap: 8, // ระยะห่างระหว่างแท็บ
                 activeColor:
                     Colors.white, // สีของ icon และข้อความเมื่อเลือกแท็บ
@@ -134,7 +134,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
                 duration: Duration(
                     milliseconds:
                         400), // ระยะเวลาในการแสดงเอฟเฟกต์ขณะเปลี่ยนแท็บ
-                tabBackgroundColor: AllColor.sc, // สีพื้นหลังแท็บ
+                tabBackgroundColor: AllColor.Secondary, // สีพื้นหลังแท็บ
                 color: Colors.black,
                 tabs: [
                   GButton(

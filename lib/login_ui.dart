@@ -506,7 +506,7 @@ class _LoginUIState extends State<LoginUI> {
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(200, 10),
                           padding: EdgeInsets.symmetric(vertical: 15.0),
-                          backgroundColor: AllColor.pr,
+                          backgroundColor: AllColor.Primary,
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -541,7 +541,7 @@ class _LoginUIState extends State<LoginUI> {
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(200, 10),
                           padding: EdgeInsets.symmetric(vertical: 15.0),
-                          backgroundColor: AllColor.sc,
+                          backgroundColor: AllColor.Secondary,
                           elevation: 5,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -821,7 +821,7 @@ class _LoginUIState extends State<LoginUI> {
                           child: Text(
                             "Forgot Password?",
                             style: TextStyle(
-                              color: AllColor.pr,
+                              color: AllColor.Primary,
                               fontSize: 16,
                             ),
                           ),

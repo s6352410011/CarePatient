@@ -490,7 +490,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: AllColor.pr,
+                    backgroundColor: AllColor.Primary,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
