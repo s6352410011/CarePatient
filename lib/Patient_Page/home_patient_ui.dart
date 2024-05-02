@@ -182,12 +182,12 @@ class _UserDataWidgetState extends State<UserDataWidget> {
 
   Future<List<String>> _loadUserData() async {
     QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('general').get();
+        await FirebaseFirestore.instance.collection('caregiver').get();
     List<String> names = [];
     querySnapshot.docs.forEach((doc) {
       final data = doc.data();
       if (data != null) {
-        final name = (data as Map<String, dynamic>)['Name'] as String?;
+        final name = (data as Map<String, dynamic>)['name'] as String?;
         if (name != null) {
           names.add(name);
         }

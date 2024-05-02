@@ -123,6 +123,77 @@ class AuthenticationService {
 
     return querySnapshot.docs.isNotEmpty;
   }
+
+  Future getData() async {
+    try {
+      // ดึงข้อมูลจาก Collection "care_seekers"
+      Future<QuerySnapshot> careSeekers =
+          FirebaseFirestore.instance.collection("patient").get();
+
+      // ดึงข้อมูลจาก Collection "care_providers"
+      Future<QuerySnapshot> careProviders =
+          FirebaseFirestore.instance.collection("caregiver").get();
+
+      // ดึงข้อมูลจาก Collection "users"
+      Future<QuerySnapshot> users =
+          FirebaseFirestore.instance.collection("users").get();
+
+      // รอให้ข้อมูลจากทั้งสาม Collection ถูกดึงกลับมา
+      var snapshots = await Future.wait([careSeekers, careProviders, users]);
+
+      // ตอนนี้คุณสามารถใช้ snapshots[index] เพื่อเข้าถึงข้อมูลของแต่ละ Collection ได้
+      var careSeekersData = snapshots[0].docs;
+      var careProvidersData = snapshots[1].docs;
+      var usersData = snapshots[2].docs;
+
+      // ต่อไปคุณสามารถนำข้อมูลที่ได้มาแสดงในหน้าจอได้
+      // ตัวอย่าง: แสดงจำนวนข้อมูลที่ได้จากแต่ละ Collection
+      print("Care Seekers count: ${careSeekersData.length}");
+      print("Care Providers count: ${careProvidersData.length}");
+      print("Users count: ${usersData.length}");
+
+      // ต่อไปคุณสามารถนำข้อมูลที่ได้มาแสดงในหน้าจอได้
+    } catch (e) {
+      print('Error getting data: $e');
+    }
+  }
+
+  //เช็คเบอร์โทรศัพท์
+  // Future<bool> checkCaregiverPhoneNumberExists(String email) async {
+  //   DocumentSnapshot<Map<String, dynamic>> snapshot =
+  //       await FirebaseFirestore.instance.collection('caregiver').doc().get();
+
+  //   return snapshot.exists && snapshot.data()!['phoneNumber'] != null;
+  // }
+
+  // Future<bool> checkPatientPhoneNumberExists(String email) async {
+  //   DocumentSnapshot<Map<String, dynamic>> snapshot =
+  //       await FirebaseFirestore.instance.collection('patient').doc().get();
+
+  //   return snapshot.exists && snapshot.data()!['phoneNumber'] != null;
+  // }
+  Future<bool> checkUserPhoneNumberExists(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('users').doc().get();
+
+    return snapshot.exists && snapshot.data()!['phoneNumber'] != null;
+  }
+
+  //เช็ค Caregiver Policy
+  Future<bool> checkCaregiverAcceptedPolicy(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('caregiver').doc().get();
+
+    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
+  }
+
+  //เช็ค Patient Policy
+  Future<bool> checkPatientAcceptedPolicy(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('patient').doc().get();
+
+    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
+  }
 }
 
 void showEmailAlreadyInUseDialog(BuildContext context) {

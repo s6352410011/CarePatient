@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/Calendar_Page/calendar.dart';
 import 'package:care_patient/Caregiver_Page/data_patient_ui.dart';
@@ -5,6 +8,7 @@ import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
 import 'package:care_patient/Pages/review_ui.dart';
 import 'package:care_patient/class/color.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeCaregiverUI extends StatefulWidget {
   @override
@@ -149,7 +153,9 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: index == _selectedIndex ? Colors.blue : Colors.grey, // color Dots
+            color: index == _selectedIndex
+                ? Colors.blue
+                : Colors.grey, // color Dots
           ),
         ),
       ),
@@ -278,6 +284,124 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class UserDataWidget extends StatefulWidget {
+  const UserDataWidget({Key? key}) : super(key: key);
+
+  @override
+  _UserDataWidgetState createState() => _UserDataWidgetState();
+}
+
+class _UserDataWidgetState extends State<UserDataWidget> {
+  late Future<List<String>> _userDataFuture;
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _userDataFuture = _loadUserData();
+    _pageController =
+        PageController(viewportFraction: 0.8, initialPage: _currentPage);
+    _startAutoScroll();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoScroll() {
+    Timer.periodic(Duration(seconds: 20), (timer) {
+      if (_currentPage < 3) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      if (mounted) {
+        _pageController.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  Future<List<String>> _loadUserData() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('caregiver').get();
+    List<String> names = [];
+    querySnapshot.docs.forEach((doc) {
+      final data = doc.data();
+      if (data != null) {
+        final name = (data as Map<String, dynamic>)['name'] as String?;
+        if (name != null) {
+          names.add(name);
+        }
+      }
+    });
+    return names;
+  }
+
+  void _onCardClicked() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DataPatientUI(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _userDataFuture,
+      builder: (context, AsyncSnapshot<List<String>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+        if (snapshot.hasError) {
+          return Text('เกิดข้อผิดพลาด: ${snapshot.error}');
+        }
+        List<String> names = snapshot.data!;
+        return Expanded(
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: names.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: _onCardClicked,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  child: Card(
+                    color: AllColor.Secondary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.account_circle,
+                          color: AllColor.IconPrimary),
+                      title: Text(
+                        names[index],
+                        style: TextStyle(
+                          color: AllColor.TextPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

@@ -32,7 +32,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
   User? user; // Declare User variable
 
   CollectionReference _usersCollection =
-      FirebaseFirestore.instance.collection('forms');
+      FirebaseFirestore.instance.collection('caregiver');
 
   @override
   void initState() {
@@ -410,10 +410,9 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                                             if (_acceptedPolicy) {
                                               await _usersCollection
                                                   .doc(user!.email)
-                                                  .collection('caregiver')
-                                                  .doc('data')
-                                                  .set({
-                                                'acceptedPolicy': _acceptedPolicy,
+                                                  .update({
+                                                'acceptedPolicy':
+                                                    _acceptedPolicy,
                                                 'relatedSkills': _relatedSkills,
                                                 'specificSkills':
                                                     _specificSkills,

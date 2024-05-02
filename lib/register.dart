@@ -55,9 +55,7 @@ class _RegisterUIState extends State<RegisterUI> {
             );
 
             // เพิ่มข้อมูลผู้ใช้ลงใน Firebase Firestore
-            // await _usersCollection.doc(userCredential.user!.email).set({
-            //   'email': email,
-            await _usersCollection.doc().set({
+            await _usersCollection.doc(email).set({
               'email': email,
             });
 
@@ -90,37 +88,21 @@ class _RegisterUIState extends State<RegisterUI> {
           .limit(1)
           .get();
 
-      // ถ้ามีผู้ใช้งานในระบบแล้ว
-      if (querySnapshot.docs.isNotEmpty) {
+      // ถ้าไม่มีผู้ใช้งานในระบบ
+      if (querySnapshot.docs.isEmpty) {
+        // เพิ่มข้อมูลผู้ใช้ใหม่ใน Firestore
+        await _usersCollection.doc(email).set({
+          'email': email,
+        });
+        // แจ้งว่าไม่มีผู้ใช้ในระบบและสามารถลงทะเบียนได้
         return true;
       } else {
+        // มีผู้ใช้งานในระบบแล้ว
         return false;
       }
     } catch (e) {
       print('Error checking existing user: $e');
       return false;
-    }
-  }
-
-  void _showAlertDialogSignUp(String title, String message) {
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(title),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
     }
   }
 
@@ -511,6 +493,28 @@ class _RegisterUIState extends State<RegisterUI> {
         );
       },
     );
+  }
+
+  void _showAlertDialogSignUp(String title, String message) {
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   String? validateEmail(String? value) {

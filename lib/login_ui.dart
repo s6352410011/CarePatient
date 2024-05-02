@@ -2,14 +2,12 @@ import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_
 import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
 import 'package:care_patient/Patient_Page/FormPatient_Page/form_HistoryMedical_ui.dart';
 import 'package:care_patient/Patient_Page/FormPatient_Page/form_generalPatient_info_ui.dart';
-import 'package:care_patient/Patient_Page/home_patient_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/register.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
@@ -259,14 +257,17 @@ class _LoginUIState extends State<LoginUI> {
 
                               if (_selectedOption == 0) {
                                 bool generalPhoneNumberExists =
-                                    await checkGeneralPhoneNumberExists(
-                                        _emailController.text);
+                                    await _authenticationService
+                                        .checkUserPhoneNumberExists(
+                                            _emailController.text);
                                 bool caregiverAcceptedPolicy =
-                                    await checkCaregiverAcceptedPolicy(
-                                        _emailController.text);
+                                    await _authenticationService
+                                        .checkCaregiverAcceptedPolicy(
+                                            _emailController.text);
                                 bool patientAcceptedPolicy =
-                                    await checkPatientAcceptedPolicy(
-                                        _emailController.text);
+                                    await _authenticationService
+                                        .checkPatientAcceptedPolicy(
+                                            _emailController.text);
 
                                 print(
                                     "General Phone Number Exists: $generalPhoneNumberExists");
@@ -359,11 +360,13 @@ class _LoginUIState extends State<LoginUI> {
                                 }
                               } else if (_selectedOption == 1) {
                                 bool generalPhoneNumberExists =
-                                    await checkGeneralPhoneNumberExists(
-                                        _emailController.text);
+                                    await _authenticationService
+                                        .checkUserPhoneNumberExists(
+                                            _emailController.text);
                                 bool patientAcceptedPolicy =
-                                    await checkPatientAcceptedPolicy(
-                                        _emailController.text);
+                                    await _authenticationService
+                                        .checkPatientAcceptedPolicy(
+                                            _emailController.text);
 
                                 print(
                                     "General Phone Number Exists: $generalPhoneNumberExists");
@@ -588,14 +591,17 @@ class _LoginUIState extends State<LoginUI> {
                               // Check if user selected an option
                               if (_selectedOption == 0) {
                                 bool generalPhoneNumberExists =
-                                    await checkGeneralPhoneNumberExists(
-                                        user.email!);
+                                    await _authenticationService
+                                        .checkUserPhoneNumberExists(
+                                            user.email!);
                                 bool caregiverAcceptedPolicy =
-                                    await checkCaregiverAcceptedPolicy(
-                                        user.email!);
+                                    await _authenticationService
+                                        .checkCaregiverAcceptedPolicy(
+                                            user.email!);
                                 bool patientAcceptedPolicy =
-                                    await checkPatientAcceptedPolicy(
-                                        user.email!);
+                                    await _authenticationService
+                                        .checkPatientAcceptedPolicy(
+                                            user.email!);
 
                                 if (!generalPhoneNumberExists) {
                                   showDialog(
@@ -676,11 +682,13 @@ class _LoginUIState extends State<LoginUI> {
                                 }
                               } else if (_selectedOption == 1) {
                                 bool generalPhoneNumberExists =
-                                    await checkGeneralPhoneNumberExists(
-                                        user.email!);
+                                    await _authenticationService
+                                        .checkUserPhoneNumberExists(
+                                            user.email!);
                                 bool patientAcceptedPolicy =
-                                    await checkPatientAcceptedPolicy(
-                                        user.email!);
+                                    await _authenticationService
+                                        .checkPatientAcceptedPolicy(
+                                            user.email!);
 
                                 if (!generalPhoneNumberExists) {
                                   showDialog(
@@ -836,42 +844,6 @@ class _LoginUIState extends State<LoginUI> {
         ),
       ),
     );
-  }
-
-  Future<bool> checkGeneralPhoneNumberExists(String email) async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection('forms')
-        .doc(email)
-        .collection('general')
-        .doc('data')
-        .get();
-
-    return snapshot.exists && snapshot.data()!['phoneNumber'] != null;
-  }
-
-  Future<bool> checkCaregiverAcceptedPolicy(String email) async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection('forms')
-        .doc(email)
-        .collection('caregiver')
-        .doc('data')
-        .get();
-
-    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
-  }
-
-  Future<bool> checkPatientAcceptedPolicy(String email) async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection('forms')
-        .doc(email)
-        .collection('patient')
-        .doc('data')
-        .get();
-
-    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
   }
 }
 

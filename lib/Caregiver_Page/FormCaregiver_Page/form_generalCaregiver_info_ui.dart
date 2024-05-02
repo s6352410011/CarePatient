@@ -31,7 +31,9 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
   String? _selectedFile = '';
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   CollectionReference _usersCollection =
-      FirebaseFirestore.instance.collection('forms');
+      FirebaseFirestore.instance.collection('caregiver');
+  CollectionReference _usersCollection1 =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -344,11 +346,15 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                         );
                       } else {
                         await firebase;
-                        await _usersCollection
-                            .doc(user!.email)
-                            .collection('general')
-                            .doc('data')
-                            .set({
+                        await _usersCollection1.doc(user!.email).update({
+                          'name': _name,
+                          'gender': _gender,
+                          'birthDate': _selectedDate,
+                          'address': _address,
+                          'phoneNumber': _phoneNumber,
+                          'imagePath': _selectedFile,
+                        });
+                        await _usersCollection.doc(user!.email).set({
                           'name': _name,
                           'gender': _gender,
                           'birthDate': _selectedDate,

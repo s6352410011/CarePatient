@@ -44,7 +44,9 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
 
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   CollectionReference _usersCollection =
-      FirebaseFirestore.instance.collection('forms');
+      FirebaseFirestore.instance.collection('patient');
+  CollectionReference _usersCollection1 =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -699,9 +701,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                             await firebase;
                                             await _usersCollection
                                                 .doc(user!.email)
-                                                .collection('patient')
-                                                .doc('data')
-                                                .set({
+                                                .update({
                                               'acceptedPolicy': _acceptedPolicy,
                                               'email': _email,
                                               'history_medicine':
