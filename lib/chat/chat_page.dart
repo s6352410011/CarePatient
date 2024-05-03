@@ -48,7 +48,7 @@ class ChatPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Expanded(child: _buildMessageList(senderID,receiverID)),
+          Expanded(child: _buildMessageList(senderID, receiverID)),
           _buildUserInput(),
         ],
       ),

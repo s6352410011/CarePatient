@@ -7,7 +7,7 @@ class ChatService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Stream<List<Map<String, dynamic>>> getUserStream() {
-    return _firestore.collection("forms").snapshots().map((snapshot) {
+    return _firestore.collection("caregiver").snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         final user = doc.data();
         return user;
@@ -45,20 +45,21 @@ class ChatService {
 
       await _firestore
           .collection("chat_rooms")
-          .doc(chatRoomID)
+          .doc(currentUserEmail)
           .collection("messages")
           .add(newMessage.toMap());
     });
   }
 
   Stream<QuerySnapshot> getMessage(String userID, otherUserID) {
+    final String currentUserEmail = _auth.currentUser!.email!;
     List<String> ids = [userID, otherUserID];
     ids.sort();
     String chatRoomID = ids.join('_');
 
     return _firestore
         .collection("chat_rooms")
-        .doc(chatRoomID)
+        .doc(currentUserEmail)
         .collection("messages")
         .orderBy("timestamp", descending: false)
         .snapshots();

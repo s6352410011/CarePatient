@@ -1,3 +1,4 @@
+import 'package:care_patient/Calendar_Page/calendar.dart';
 import 'package:care_patient/Patient_Page/ShowPage/page1.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/login_ui.dart';
@@ -29,21 +30,20 @@ class Main extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        canvasColor: AllColor
-            .Primary, // กำหนดสีพื้นหลังที่ต้องการให้กับ Bottom Navigation Bar
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 3.0,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          canvasColor: AllColor
+              .Primary, // กำหนดสีพื้นหลังที่ต้องการให้กับ Bottom Navigation Bar
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20.0),
+              borderSide: const BorderSide(
+                color: Colors.red,
+                width: 3.0,
+              ),
             ),
           ),
         ),
-      ),
-      home: const LoginUI(),
-    );
+        home: const LoginUI());
   }
 }

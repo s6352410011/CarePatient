@@ -48,32 +48,32 @@ class _ChatHomeState extends State<ChatHome> {
         });
   }
 
-Widget _buildUserListItem(Map<String, dynamic>? userData) {
-  if (userData == null) {
-    return Container(); // หรือวิดเจ็ตเริ่มต้นอื่น ๆ เพื่อแสดงข้อความที่ข้อมูลขาดหายไป
-  }
+  Widget _buildUserListItem(Map<String, dynamic>? userData) {
+    if (userData == null) {
+      return Container(); // หรือวิดเจ็ตเริ่มต้นอื่น ๆ เพื่อแสดงข้อความที่ข้อมูลขาดหายไป
+    }
 
-  String? currentUserEmail = _authService.chat()?.email;
-  if (userData.containsKey("email") && userData["email"] != currentUserEmail) {
-    return UserTile(
-      text: userData["email"] ?? '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก email เป็น null
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatPage(
-              receiverEmail: userData["email"] ?? '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก email เป็น null
-              receiverID: userData["uid"] ?? '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก uid เป็น null
+    String? currentUserEmail = _authService.chat()?.email;
+    if (userData.containsKey("name") && userData["name"] != currentUserEmail) {
+      return UserTile(
+        text: userData["name"] ??
+            '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก email เป็น null
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatPage(
+                receiverEmail: userData["name"] ??
+                    '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก name เป็น null
+                receiverID: userData["email"] ??
+                    '', // ใช้สตริงว่างเป็นค่าเริ่มต้นหาก email เป็น null
+              ),
             ),
-          ),
-        );
-      },
-    );
-  } else {
-    return Container();
+          );
+        },
+      );
+    } else {
+      return Container();
+    }
   }
-}
-
-
-
 }
