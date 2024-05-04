@@ -701,7 +701,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                             await firebase;
                                             await _usersCollection
                                                 .doc(user!.email)
-                                                .update({
+                                                .set({
                                               'acceptedPolicy': _acceptedPolicy,
                                               'email': _email,
                                               'history_medicine':

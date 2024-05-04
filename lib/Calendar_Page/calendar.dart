@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
+import 'package:care_patient/class/color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +23,7 @@ class _CalendarUIState extends State<CalendarUI> {
   late Map<DateTime, List<dynamic>> _events;
   TextEditingController _eventController = TextEditingController();
   late TimeOfDay? _selectedTime; // เพิ่มตัวแปร _selectedTime ที่นี่
-
+  final User? user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
@@ -32,6 +36,33 @@ class _CalendarUIState extends State<CalendarUI> {
     _selectedTime = null; // กำหนดค่าเริ่มต้นของ _selectedTime เป็น null
     // สร้างรายการเหตุการณ์เปล่า ๆ
     _events = {};
+    _fetchEvents();
+  }
+
+  void _fetchEvents() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    try {
+      DocumentSnapshot snapshot =
+          await firestore.collection('caregiver').doc(user!.email).get();
+      if (snapshot.exists) {
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          _events = {
+            for (var entry in data.entries)
+              DateTime.parse(entry.key): [
+                {
+                  'event': entry.value['event'],
+                  'time': (entry.value['time'] as Timestamp).toDate()
+                }
+              ]
+          };
+        });
+      } else {
+        print('Document does not exist on the database');
+      }
+    } catch (error) {
+      print('Failed to get data: $error');
+    }
   }
 
   // แสดง Dialog เพื่อเพิ่มเหตุการณ์ใหม่
@@ -124,31 +155,6 @@ class _CalendarUIState extends State<CalendarUI> {
   }
 
 // บันทึกเหตุการณ์ใหม่
-  // void _saveEvent() {
-  //   if (_selectedDay != null &&
-  //       _eventController.text.isNotEmpty &&
-  //       _selectedTime != null) {
-  //     setState(() {
-  //       final newEvent = _eventController.text;
-  //       final DateTime eventDateTime = DateTime(
-  //         _selectedDay.year,
-  //         _selectedDay.month,
-  //         _selectedDay.day,
-  //         _selectedTime!.hour,
-  //         _selectedTime!.minute,
-  //       );
-
-  //       if (_events.containsKey(_selectedDay)) {
-  //         _events[_selectedDay]!
-  //             .add({'event': newEvent, 'time': _selectedTime});
-  //       } else {
-  //         _events[_selectedDay] = [
-  //           {'event': newEvent, 'time': _selectedTime}
-  //         ];
-  //       }
-  //     });
-  //   }
-  // }
   void _saveEvent() {
     if (_selectedDay != null &&
         _eventController.text.isNotEmpty &&
@@ -194,100 +200,6 @@ class _CalendarUIState extends State<CalendarUI> {
   }
 
 // แก้ไขเหตุการณ์
-  // void _editEvent(String event, TimeOfDay? eventTime) async {
-  //   _eventController.text = event;
-  //   _selectedTime = eventTime; // เพิ่มบรรทัดนี้เพื่อกำหนดเวลาเริ่มต้น
-  //   await showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //         builder: (BuildContext context, StateSetter setState) {
-  //           return AlertDialog(
-  //             title: Text('Edit Event'),
-  //             content: Column(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 TextFormField(
-  //                   controller: _eventController,
-  //                   decoration: InputDecoration(
-  //                     hintText: 'Enter your event',
-  //                   ),
-  //                 ),
-  //                 SizedBox(height: 20),
-  //                 InkWell(
-  //                   onTap: () async {
-  //                     final TimeOfDay? pickedTime = await showTimePicker(
-  //                       context: context,
-  //                       initialTime: _selectedTime ?? TimeOfDay.now(),
-  //                     );
-  //                     if (pickedTime != null) {
-  //                       setState(() {
-  //                         _selectedTime =
-  //                             pickedTime; // อัพเดตค่าเวลาใหม่ที่เลือก
-  //                       });
-  //                     }
-  //                   },
-  //                   child: Row(
-  //                     children: [
-  //                       Icon(Icons.access_time),
-  //                       SizedBox(width: 5),
-  //                       Text(
-  //                         _selectedTime == null
-  //                             ? 'Select event time'
-  //                             : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
-  //                         style: TextStyle(fontSize: 16),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             actions: <Widget>[
-  //               TextButton(
-  //                 onPressed: () {
-  //                   _eventController.clear();
-  //                   _selectedTime = null;
-  //                   Navigator.of(context).pop();
-  //                 },
-  //                 child: Text('Cancel'),
-  //               ),
-  //               TextButton(
-  //                 onPressed: () {
-  //                   final updatedEvent = _eventController.text.isNotEmpty
-  //                       ? _eventController.text
-  //                       : event;
-  //                   setState(() {
-  //                     _events[_selectedDay] =
-  //                         _events[_selectedDay]?.map((eventData) {
-  //                               if (eventData['event'] == event) {
-  //                                 return {
-  //                                   'event': updatedEvent,
-  //                                   'time': _selectedTime
-  //                                 };
-  //                               }
-  //                               return eventData;
-  //                             }).toList() ??
-  //                             [
-  //                               {'event': updatedEvent, 'time': _selectedTime}
-  //                             ];
-  //                   });
-
-  //                   setState(() {});
-  //                   _eventController.clear();
-  //                   _selectedTime = null;
-  //                   Navigator.of(context).pop();
-  //                 },
-  //                 child: Text('Save'),
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  //   setState(() {});
-  // }
-  
   void _editEvent(String event, TimeOfDay? eventTime) async {
     _eventController.text = event;
     _selectedTime = eventTime;
@@ -402,22 +314,21 @@ class _CalendarUIState extends State<CalendarUI> {
     setState(() {});
   }
 
-  void _deleteEvent(String event) {
-    // ลบเหตุการณ์จาก Firestore
+  void _deleteEvent(String event, TimeOfDay? eventTime) async {
+    // ลบฟิลด์ 'event' และ 'time' จากเอกสารใน Firestore
     FirebaseFirestore.instance
         .collection('caregiver') // ชื่อ Collection
         .doc(user!.email) // ใช้ email ของผู้ใช้เป็นชื่อ Document
         .update({
-          'events': FieldValue.arrayRemove([
-            {'event': event}
-          ])
+          'event': FieldValue.delete(), // ลบฟิลด์ 'event'
+          'time': FieldValue.delete(), // ลบฟิลด์ 'time'
         })
-        .then((value) => print('Event deleted from Firestore'))
-        .catchError((error) => print('Failed to delete event: $error'));
+        .then((value) => print('Fields deleted from Firestore document'))
+        .catchError((error) => print('Failed to delete fields: $error'));
 
     setState(() {
-      _events[_selectedDay]
-          ?.removeWhere((element) => element['event'] == event);
+      _events[_selectedDay]?.removeWhere((eventData) =>
+          eventData['event'] == event && eventData['time'] == eventTime);
     });
   }
 
@@ -545,7 +456,8 @@ class _CalendarUIState extends State<CalendarUI> {
                                                   child: Text("OK"),
                                                   onPressed: () {
                                                     // Delete the event
-                                                    _deleteEvent(event);
+                                                    _deleteEvent(
+                                                        event, eventTime);
                                                     setState(() {
                                                       _events[entry.key]!
                                                           .remove(event);

@@ -410,7 +410,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                                             if (_acceptedPolicy) {
                                               await _usersCollection
                                                   .doc(user!.email)
-                                                  .update({
+                                                  .set({
                                                 'acceptedPolicy':
                                                     _acceptedPolicy,
                                                 'relatedSkills': _relatedSkills,
