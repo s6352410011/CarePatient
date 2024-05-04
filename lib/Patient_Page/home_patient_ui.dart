@@ -197,12 +197,13 @@ class _UserDataWidgetState extends State<UserDataWidget> {
   }
 
   void _onCardClicked() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AllCareGiverUI(),
-      ),
-    );
+    //ไปหน้าส่วนตัว
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => AllCareGiverUI(),
+    //   ),
+    // );
   }
 
   @override

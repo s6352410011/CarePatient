@@ -174,15 +174,18 @@ class AuthenticationService {
   // }
   Future<bool> checkUserPhoneNumberExists(String email) async {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance.collection('users').doc().get();
+        await FirebaseFirestore.instance.collection('users').doc(email).get();
 
     return snapshot.exists && snapshot.data()!['phoneNumber'] != null;
   }
 
   //เช็ค Caregiver Policy
   Future<bool> checkCaregiverAcceptedPolicy(String email) async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance.collection('caregiver').doc().get();
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('caregiver')
+        .doc(email)
+        .get();
 
     return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
   }
@@ -190,9 +193,36 @@ class AuthenticationService {
   //เช็ค Patient Policy
   Future<bool> checkPatientAcceptedPolicy(String email) async {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance.collection('patient').doc().get();
+        await FirebaseFirestore.instance.collection('patient').doc(email).get();
 
     return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
+  }
+
+  Future saveEventToFirestore(
+      String userEmail, String eventName, DateTime eventDateTime) async {
+    try {
+      // Get current user's UID
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      // Reference to Firestore collection "caregiver"
+      CollectionReference caregiverCollection =
+          FirebaseFirestore.instance.collection("caregiver");
+
+      // Reference to user's document by email
+      DocumentReference userDocRef = caregiverCollection.doc(userEmail);
+
+      // Add event data to user's document
+      await userDocRef.set(
+          {
+            'event': eventName,
+            'time': eventDateTime,
+          },
+          SetOptions(
+              merge:
+                  true)); // Merge with existing data if document already exists
+    } catch (e) {
+      print("Error saving event to Firestore: $e");
+    }
   }
 }
 

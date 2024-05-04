@@ -1,3 +1,5 @@
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -122,20 +124,63 @@ class _CalendarUIState extends State<CalendarUI> {
   }
 
 // บันทึกเหตุการณ์ใหม่
+  // void _saveEvent() {
+  //   if (_selectedDay != null &&
+  //       _eventController.text.isNotEmpty &&
+  //       _selectedTime != null) {
+  //     setState(() {
+  //       final newEvent = _eventController.text;
+  //       final DateTime eventDateTime = DateTime(
+  //         _selectedDay.year,
+  //         _selectedDay.month,
+  //         _selectedDay.day,
+  //         _selectedTime!.hour,
+  //         _selectedTime!.minute,
+  //       );
+
+  //       if (_events.containsKey(_selectedDay)) {
+  //         _events[_selectedDay]!
+  //             .add({'event': newEvent, 'time': _selectedTime});
+  //       } else {
+  //         _events[_selectedDay] = [
+  //           {'event': newEvent, 'time': _selectedTime}
+  //         ];
+  //       }
+  //     });
+  //   }
+  // }
   void _saveEvent() {
     if (_selectedDay != null &&
         _eventController.text.isNotEmpty &&
         _selectedTime != null) {
-      setState(() {
-        final newEvent = _eventController.text;
-        final DateTime eventDateTime = DateTime(
-          _selectedDay.year,
-          _selectedDay.month,
-          _selectedDay.day,
-          _selectedTime!.hour,
-          _selectedTime!.minute,
-        );
+      final newEvent = _eventController.text;
+      final DateTime eventDateTime = DateTime(
+        _selectedDay.year,
+        _selectedDay.month,
+        _selectedDay.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      );
 
+      // เชื่อมต่อ Firestore
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // สร้างโครงสร้างข้อมูล
+      Map<String, dynamic> eventData = {
+        'event': newEvent,
+        'time': Timestamp.fromDate(eventDateTime),
+      };
+
+      // บันทึกข้อมูลลงใน Firestore
+      firestore
+          .collection('caregiver') // ชื่อ Collection
+          .doc(user!.email) // ชื่อ Document (ในที่นี้ให้ใช้ email ของผู้ใช้)
+          .set(eventData,
+              SetOptions(merge: true)) // merge: true จะทำให้มีการรวมข้อมูล
+          .then((value) => print('Event added to Firestore'))
+          .catchError((error) => print('Failed to add event: $error'));
+
+      setState(() {
         if (_events.containsKey(_selectedDay)) {
           _events[_selectedDay]!
               .add({'event': newEvent, 'time': _selectedTime});
