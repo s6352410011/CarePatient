@@ -25,20 +25,8 @@ class _AccountUIState extends State<AccountUI> {
           padding: EdgeInsets.all(16),
           children: [
             SizedBox(height: 30),
-            // CircleAvatar(
-            //   radius: 100,
-            //   backgroundImage: AssetImage('assets/user_image.jpg'),
-            // ),
             UserProfileWidget(),
             SizedBox(height: 30),
-            // Text(
-            //   'ชื่อผู้ใช้',
-            //   style: TextStyle(
-            //     fontSize: 30,
-            //     fontWeight: FontWeight.bold,
-            //   ),
-            // ),
-            SizedBox(height: 20),
             GestureDetector(
               onTap: () {
                 setState(() {
