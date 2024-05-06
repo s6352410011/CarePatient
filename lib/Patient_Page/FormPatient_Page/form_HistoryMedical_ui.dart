@@ -4,9 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
+import 'dart:io';
 
 class PFormMedicalUI extends StatefulWidget {
   const PFormMedicalUI({Key? key}) : super(key: key);
@@ -529,7 +531,8 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 }
               },
               icon: Icon(Icons.attach_file_rounded), // ไอคอนแนบไฟล์
-              label: Text('เลือกไฟล์ $_selectedFile'), // ข้อความปุ่ม
+              // label: Text('เลือกไฟล์ $_selectedFile'), // ข้อความปุ่ม
+              label: Text('เลือกไฟล์ '), // ข้อความปุ่ม
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white, // สีข้อความบนปุ่ม
                 backgroundColor: AllColor.Secondary, // สีปุ่ม
@@ -845,6 +848,31 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
       }
     } else {
       print('No user signed in.');
+    }
+  }
+
+  Future<void> _uploadImage(File file) async {
+    // ระบุ path ใน Firebase Storage ที่คุณต้องการจะบันทึกไฟล์
+    String storagePath =
+        'images/${_email!.substring(0, _email!.indexOf('@'))}_C.jpg';
+
+    // อ้างอิง Firebase Storage instance
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(storagePath);
+
+    try {
+      // อัปโหลดไฟล์ไปยัง Firebase Storage
+      await storageReference.putFile(file);
+
+      // หากต้องการ URL ของไฟล์ที่อัปโหลด เพื่อนำมาเก็บไว้ใน Firestore หรือใช้งานอื่น ๆ
+      String downloadURL = await storageReference.getDownloadURL();
+
+      // ทำสิ่งที่ต้องการกับ downloadURL ต่อไป
+      // เช่น เก็บ downloadURL ลงใน Firestore
+    } catch (e) {
+      // หากเกิดข้อผิดพลาดในการอัปโหลด
+      print('เกิดข้อผิดพลาดในการอัปโหลด: $e');
+      // ทำสิ่งที่คุณต้องการเมื่อเกิดข้อผิดพลาด เช่น แสดงข้อความแจ้งเตือน
     }
   }
 }
