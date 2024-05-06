@@ -1,403 +1,142 @@
-// import 'package:flutter/material.dart';
-// import 'package:table_calendar/table_calendar.dart';
-// import 'package:intl/intl.dart';
-// import 'package:intl/date_symbol_data_local.dart';
+import 'package:care_patient/Caregiver_Page/writedaily_ui.dart';
+import 'package:care_patient/class/color.dart';
+import 'package:flutter/material.dart';
 
-// class Calendar extends StatefulWidget {
-//   const Calendar({Key? key}) : super(key: key);
+class DataCaregiverUI extends StatefulWidget {
+  const DataCaregiverUI({super.key});
 
-//   @override
-//   State<Calendar> createState() => _CalendarState();
-// }
+  @override
+  State<DataCaregiverUI> createState() => _DataCaregiverUIState();
+}
 
-// class _CalendarState extends State<Calendar> {
-//   late CalendarFormat _calendarFormat;
-//   late DateTime _focusedDay;
-//   late DateTime _selectedDay;
-//   late Map<DateTime, List<dynamic>> _events;
-//   TextEditingController _eventController = TextEditingController();
-//   late TimeOfDay? _selectedTime; // เพิ่มตัวแปร _selectedTime ที่นี่
+class _DataCaregiverUIState extends State<DataCaregiverUI> {
+  final TextStyle _textStyle = TextStyle(
+    color: AllColor.TextSecondary, // สีอักษร
+    fontSize: 18, // ขนาดอักษร
+  );
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     // กำหนดรูปแบบปฏิทินเริ่มต้นเป็นรูปแบบเดือน
-//     _calendarFormat = CalendarFormat.month;
-//     // กำหนดวันที่โฟกัสในปฏิทินเริ่มต้นเป็นวันปัจจุบัน
-//     _focusedDay = DateTime.now();
-//     // กำหนดวันที่ที่เลือกในปฏิทินเริ่มต้นเป็นวันปัจจุบัน
-//     _selectedDay = DateTime.now();
-//     _selectedTime = null; // กำหนดค่าเริ่มต้นของ _selectedTime เป็น null
-//     // สร้างรายการเหตุการณ์เปล่า ๆ
-//     _events = {};
-//   }
-
-//   // แสดง Dialog เพื่อเพิ่มเหตุการณ์ใหม่
-//   void _addEvent() {
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return StatefulBuilder(
-//           builder: (BuildContext context, setState) {
-//             return AlertDialog(
-//               backgroundColor: Colors.grey[200],
-//               title: const Text('เพิ่มกิจกรรม'),
-//               content: SizedBox(
-//                 width: 300,
-//                 child: Column(
-//                   mainAxisSize: MainAxisSize.min,
-//                   children: [
-//                     TextFormField(
-//                       controller: _eventController,
-//                       decoration: const InputDecoration(
-//                         hintText: 'ชื่อกิจกรรม',
-//                       ),
-//                       onSaved: (value) {},
-//                     ),
-//                     const SizedBox(
-//                       height: 20,
-//                     ),
-//                     InkWell(
-//                       onTap: () async {
-//                         final TimeOfDay? pickedTime = await showTimePicker(
-//                           context: context,
-//                           initialTime: TimeOfDay.now(),
-//                           builder: (BuildContext context, Widget? child) {
-//                             return MediaQuery(
-//                               data: MediaQuery.of(context)
-//                                   .copyWith(alwaysUse24HourFormat: true),
-//                               child: child!,
-//                             );
-//                           },
-//                         );
-//                         if (pickedTime != null) {
-//                           setState(() {
-//                             _selectedTime = pickedTime;
-//                           });
-//                         }
-//                       },
-//                       child: Row(
-//                         children: [
-//                           const Icon(Icons.access_time),
-//                           const SizedBox(width: 5),
-//                           SizedBox(
-//                             width: 200,
-//                             child: Text(
-//                               _selectedTime == null
-//                                   ? 'Select event time'
-//                                   : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
-//                               style: const TextStyle(
-//                                 fontSize: 20,
-//                               ),
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               actions: <Widget>[
-//                 TextButton(
-//                   onPressed: () {
-//                     _eventController.clear();
-//                     Navigator.of(context).pop();
-//                   },
-//                   child: const Text('ยกเลิก'),
-//                 ),
-//                 TextButton(
-//                   onPressed: () {
-//                     _saveEvent();
-//                     _eventController.clear();
-//                     Navigator.of(context).pop();
-//                   },
-//                   child: const Text('บันทึก'),
-//                 ),
-//               ],
-//             );
-//           },
-//         );
-//       },
-//     );
-//   }
-
-// // บันทึกเหตุการณ์ใหม่
-//   void _saveEvent() {
-//     if (_selectedDay != null &&
-//         _eventController.text.isNotEmpty &&
-//         _selectedTime != null) {
-//       setState(() {
-//         final newEvent = _eventController.text;
-//         final DateTime eventDateTime = DateTime(
-//           _selectedDay.year,
-//           _selectedDay.month,
-//           _selectedDay.day,
-//           _selectedTime!.hour,
-//           _selectedTime!.minute,
-//         );
-
-//         if (_events.containsKey(_selectedDay)) {
-//           _events[_selectedDay]!
-//               .add({'event': newEvent, 'time': _selectedTime});
-//         } else {
-//           _events[_selectedDay] = [
-//             {'event': newEvent, 'time': _selectedTime}
-//           ];
-//         }
-//       });
-//     }
-//   }
-
-// // แก้ไขเหตุการณ์
-//   void _editEvent(String event, TimeOfDay? eventTime) async {
-//     _eventController.text = event;
-//     _selectedTime = eventTime; // เพิ่มบรรทัดนี้เพื่อกำหนดเวลาเริ่มต้น
-//     await showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return StatefulBuilder(
-//           builder: (BuildContext context, StateSetter setState) {
-//             return AlertDialog(
-//               title: Text('Edit Event'),
-//               content: Column(
-//                 mainAxisSize: MainAxisSize.min,
-//                 children: [
-//                   TextFormField(
-//                     controller: _eventController,
-//                     decoration: InputDecoration(
-//                       hintText: 'Enter your event',
-//                     ),
-//                   ),
-//                   SizedBox(height: 20),
-//                   InkWell(
-//                     onTap: () async {
-//                       final TimeOfDay? pickedTime = await showTimePicker(
-//                         context: context,
-//                         initialTime: _selectedTime ?? TimeOfDay.now(),
-//                       );
-//                       if (pickedTime != null) {
-//                         setState(() {
-//                           _selectedTime =
-//                               pickedTime; // อัพเดตค่าเวลาใหม่ที่เลือก
-//                         });
-//                       }
-//                     },
-//                     child: Row(
-//                       children: [
-//                         Icon(Icons.access_time),
-//                         SizedBox(width: 5),
-//                         Text(
-//                           _selectedTime == null
-//                               ? 'Select event time'
-//                               : 'Time: ${_selectedTime!.hour.toString().padLeft(2, '0')} : ${_selectedTime!.minute.toString().padLeft(2, '0')}',
-//                           style: TextStyle(fontSize: 16),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               actions: <Widget>[
-//                 TextButton(
-//                   onPressed: () {
-//                     _eventController.clear();
-//                     _selectedTime = null;
-//                     Navigator.of(context).pop();
-//                   },
-//                   child: Text('Cancel'),
-//                 ),
-//                 TextButton(
-//                   onPressed: () {
-//                     final updatedEvent = _eventController.text.isNotEmpty
-//                         ? _eventController.text
-//                         : event;
-//                     setState(() {
-//                       _events[_selectedDay] =
-//                           _events[_selectedDay]?.map((eventData) {
-//                                 if (eventData['event'] == event) {
-//                                   return {
-//                                     'event': updatedEvent,
-//                                     'time': _selectedTime
-//                                   };
-//                                 }
-//                                 return eventData;
-//                               }).toList() ??
-//                               [
-//                                 {'event': updatedEvent, 'time': _selectedTime}
-//                               ];
-//                     });
-
-//                     setState(() {});
-//                     _eventController.clear();
-//                     _selectedTime = null;
-//                     Navigator.of(context).pop();
-//                   },
-//                   child: Text('Save'),
-//                 ),
-//               ],
-//             );
-//           },
-//         );
-//       },
-//     );
-//     setState(() {});
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Calendar'),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _addEvent,
-//         child: Icon(Icons.add),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // แสดงปฏิทิน
-//             TableCalendar(
-//               locale: 'th_TH',
-//               firstDay: DateTime.utc(2010, 10, 16),
-//               lastDay: DateTime.utc(2030, 3, 14),
-//               focusedDay: _focusedDay,
-//               calendarFormat: _calendarFormat,
-//               selectedDayPredicate: (day) {
-//                 return isSameDay(_selectedDay, day);
-//               },
-//               onDaySelected: (selectedDay, focusedDay) {
-//                 setState(() {
-//                   _selectedDay = selectedDay;
-//                   _focusedDay = focusedDay;
-//                 });
-//               },
-//               eventLoader: (day) {
-//                 return _events[day] ?? [];
-//               },
-//               calendarBuilders: CalendarBuilders(),
-//               availableCalendarFormats: const {
-//                 CalendarFormat.month: 'เดือน',
-//                 CalendarFormat.week: 'สัปดาห์',
-//               },
-//               onFormatChanged: (format) {
-//                 setState(() {
-//                   _calendarFormat = format;
-//                 });
-//               },
-//               onPageChanged: (focusedDay) {
-//                 _focusedDay = focusedDay;
-//               },
-//             ),
-//             Divider(
-//               height: 20.0, // กำหนดความสูงของเส้นขั้น
-//               color: Colors.grey[300], // สีของเส้นขั้น
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.only(left: 20, top: 5),
-//               child: Text(
-//                 'Events :',
-//                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//               ),
-//             ),
-//             Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: _events.entries.map((entry) {
-//                 if (isSameDay(entry.key, _selectedDay)) {
-//                   return Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Padding(
-//                         padding: const EdgeInsets.all(8.0),
-//                         child: Card(
-//                           color: _selectedDay == entry.key
-//                               ? Colors.grey[300]
-//                               : Colors.transparent,
-//                           child: ListView.builder(
-//                             shrinkWrap: true,
-//                             itemCount: entry.value.length,
-//                             itemBuilder: (context, index) {
-//                               final Map<String, dynamic> eventData =
-//                                   entry.value[index];
-//                               final String event = eventData['event'];
-//                               final TimeOfDay? eventTime = eventData['time'];
-//                               return ListTile(
-//                                 title: Text(
-//                                   event,
-//                                   style: TextStyle(
-//                                     fontSize: 20, // ปรับขนาดตัวอักษรตามต้องการ
-//                                   ),
-//                                 ),
-//                                 subtitle: eventTime != null
-//                                     ? Text(
-//                                         'Time: ${eventTime.hour.toString().padLeft(2, '0')} : ${eventTime.minute.toString().padLeft(2, '0')}',
-//                                         style: TextStyle(fontSize: 16),
-//                                       )
-//                                     : null,
-//                                 trailing: Row(
-//                                   mainAxisSize: MainAxisSize.min,
-//                                   children: [
-//                                     IconButton(
-//                                       icon: Icon(Icons.edit),
-//                                       onPressed: () async {
-//                                         _editEvent(event, eventTime);
-//                                       },
-//                                     ),
-//                                     IconButton(
-//                                       icon: Icon(Icons.delete),
-//                                       onPressed: () {
-//                                         // Show confirmation dialog
-//                                         showDialog(
-//                                           context: context,
-//                                           builder: (BuildContext context) {
-//                                             return AlertDialog(
-//                                               title: Text("Confirmation"),
-//                                               content: Text(
-//                                                   "Are you sure you want to delete this event?"),
-//                                               actions: <Widget>[
-//                                                 TextButton(
-//                                                   child: Text("Cancel"),
-//                                                   onPressed: () {
-//                                                     // Close the dialog
-//                                                     Navigator.of(context).pop();
-//                                                   },
-//                                                 ),
-//                                                 TextButton(
-//                                                   child: Text("OK"),
-//                                                   onPressed: () {
-//                                                     // Delete the event
-//                                                     setState(() {
-//                                                       _events[entry.key]!
-//                                                           .remove(event);
-//                                                     });
-//                                                     // Close the dialog
-//                                                     Navigator.of(context).pop();
-//                                                   },
-//                                                 ),
-//                                               ],
-//                                             );
-//                                           },
-//                                         );
-//                                       },
-//                                     ),
-//                                   ],
-//                                 ),
-//                               );
-//                             },
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   );
-//                 } else {
-//                   return SizedBox.shrink();
-//                 }
-//               }).toList(),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'ข้อมูลผู้ป่วย',
+          style: TextStyle(color: AllColor.TextPrimary), // สีข้อความ
+        ),
+        centerTitle: true, // จัดข้อความตรงกลาง
+        backgroundColor: AllColor.Primary, // สีพื้นหลังของ AppBar
+        leading: IconButton(
+          // ปุ่ม back
+          icon: Icon(Icons.arrow_back, color: Colors.white), // ไอคอน back
+          onPressed: () {
+            Navigator.pop(context); // การกลับไปยังหน้าก่อนหน้านี้
+          },
+        ),
+      ),
+      body: SingleChildScrollView(
+        // ใช้ SingleChildScrollView เพื่อให้สามารถเลื่อนได้หากข้อมูลมากเกินไป
+        child: Padding(
+          padding: const EdgeInsets.all(5.0), // ระยะห่างขอบ 5px
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // จัดวางเนื้อหาไปทางซ้าย
+            children: [
+              Center(
+                // โชว์รูปผู้ป่วย อยู่ตรงกลางหน้าจอ
+                child: Container(
+                  width: 150, // ขนาดของรูป
+                  height: 150, // ขนาดของรูป
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage(
+                          'path/to/your/image.jpg'), // เปลี่ยนเป็น path ของรูปภาพของผู้ป่วย
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10), // ระยะห่างระหว่างรูปและข้อมูล
+              Center(
+                // ชื่อผู้ดูแล : นาย พาย อยู่ตรงกลางหน้าจอใต้รูปที่โชว์
+                child: Text(
+                  'ชื่อผู้ดูแล : นาย พาย',
+                  style: TextStyle(fontSize: 20), // ขนาดอักษร
+                ),
+              ),
+              SizedBox(height: 20), // ระยะห่างระหว่างรูปและข้อมูล
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0), // ระยะห่างจากซ้าย
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('อายุ : ', style: _textStyle), // ข้อมูลอายุ
+                    Text('เพศ : ', style: _textStyle), // ข้อมูลเพศ
+                    Text('เบอร์โทรศัพท์ : ',
+                        style: _textStyle), // ข้อมูลเบอร์โทรศัพท์
+                    Text('คุณสมบัติ : ', style: _textStyle), // คุณสมบัติ
+                    Text('ความเชี่ยวชาญ : ',
+                        style: _textStyle), // ความเชี่ยวชาญ
+                    Text('ค่าจ้างรายวัน : ' + '800' + ' บาท',
+                        style:
+                            _textStyle), //ค่าจ้างรายวัน 800 บาทเป็นเรทเงินสมุติ ดึงเอาจากฐานข้อมูลที่ลงไว้
+                  ],
+                ),
+              ),
+              SizedBox(height: 20), // ระยะห่างระหว่างข้อมูลและปุ่ม
+              Row(
+                // ปุ่มจดบันทึกประจำวัน + icon
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                WriteDailyUI()), // เปลี่ยน WriteDaily() เป็นหน้าที่เราต้องการให้ไป
+                      );
+                    }, // การทำงานเมื่อปุ่มถูกกด
+                    icon: Icon(Icons.edit_document), // ไอคอน icon
+                    label: Text('อ่านบันทึกประจำวัน'), // ข้อความบนปุ่ม
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: AllColor.IconPrimary,
+                      backgroundColor: AllColor.Primary, // สีของตัวอักษรบนปุ่ม
+                      textStyle: TextStyle(fontSize: 18), // ขนาดอักษร
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10), // ระยะห่างระหว่างปุ่ม
+              Row(
+                // ปุ่มสำเร็จ และ ปุ่มยกเลิก
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {}, // การทำงานเมื่อปุ่มถูกกด
+                    child: Text('สำเร็จ'), // ข้อความบนปุ่ม
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, // สีของตัวอักษรบนปุ่ม
+                      backgroundColor: Colors.blue, // สีพื้นหลัง
+                      textStyle: TextStyle(fontSize: 18), // ขนาดอักษร
+                    ),
+                  ),
+                  SizedBox(width: 10), // ระยะห่างระหว่างปุ่ม
+                  ElevatedButton(
+                    onPressed: () {}, // การทำงานเมื่อปุ่มถูกกด
+                    child: Text('ยกเลิก'), // ข้อความบนปุ่ม
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, // สีของตัวอักษรบนปุ่ม
+                      backgroundColor: Colors.red, // สีพื้นหลัง
+                      textStyle: TextStyle(fontSize: 18), // ขนาดอักษร
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -27,4 +27,5 @@ class AllColor {
   static const Color IconSecondary = Colors.black;
   static const Color IconThird = Color.fromARGB(255, 22, 26, 83);
   static const Color IconFour = Color.fromARGB(255, 80, 38, 119);
+  static const Color IconFive = Color(0xFFF08080);
 }
