@@ -262,11 +262,11 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
 
                     if (result != null) {
                       setState(() {
-                        // _selectedFile = result.files.single.path!;
-                        _selectedFile =
-                            _email!.substring(0, _email!.indexOf('@')) +
-                                '_C.jpg';
+                        _selectedFile = result.files.single.path!;
                       });
+
+                      // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
+                      await _uploadImage(File(_selectedFile!));
                     } else {
                       showDialog(
                         context: context,
@@ -288,8 +288,8 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     }
                   },
                   icon: Icon(Icons.attach_file),
-                  label: Text('เลือกไฟล'),
                   // label: Text('เลือกไฟล์ $_selectedFile'),
+                  label: Text('เลือกไฟล์ '),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.orange,

@@ -505,12 +505,12 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
 
                 if (result != null) {
                   setState(() {
-                    // ตัดชื่อไฟล์ให้เหลือแค่ email ของผู้ใช้
-                    _selectedFile = _email!.substring(0, _email!.indexOf('@')) +
-                        '_patient.jpg';
+                    _selectedFile = result.files.single.path!;
                   });
+
+                  // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
+                  await _uploadImage(File(_selectedFile!));
                 } else {
-                  // ถ้าผู้ใช้ยกเลิกการเลือกไฟล์
                   showDialog(
                     context: context,
                     builder: (context) {
@@ -530,19 +530,19 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                   );
                 }
               },
-              icon: Icon(Icons.attach_file_rounded), // ไอคอนแนบไฟล์
-              // label: Text('เลือกไฟล์ $_selectedFile'), // ข้อความปุ่ม
-              label: Text('เลือกไฟล์ '), // ข้อความปุ่ม
+              icon: Icon(Icons.attach_file),
+              // label: Text('เลือกไฟล์ $_selectedFile'),
+              label: Text('เลือกไฟล์ '),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, // สีข้อความบนปุ่ม
-                backgroundColor: AllColor.Secondary, // สีปุ่ม
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.orange,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 padding: EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 15,
-                ), // ขนาดการเรียงรูปและข้อความ
+                ),
               ),
             ),
             SizedBox(height: 20),
@@ -704,7 +704,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                             await firebase;
                                             await _usersCollection
                                                 .doc(user!.email)
-                                                .set({
+                                                .update({
                                               'acceptedPolicy': _acceptedPolicy,
                                               'email': _email,
                                               'history_medicine':
