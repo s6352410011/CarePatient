@@ -15,6 +15,8 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
   late final User? _user;
   late final ValueNotifier<List<Event>> _selectedEvents;
   late DateTime _selectedDay;
+  DateTime _focusedMonth = DateTime.now();
+  List<Event> _eventsForMonth = [];
 
   @override
   void initState() {
@@ -22,6 +24,28 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     _user = FirebaseAuth.instance.currentUser;
     _selectedEvents = ValueNotifier([]);
     _selectedDay = DateTime.now();
+    _initializeEvents();
+  }
+
+  Future<void> _initializeEvents() async {
+    final events = await _getEventsForMonth(DateTime.now());
+    setState(() {
+      _eventsForMonth = events;
+    });
+  }
+
+  void _onPageChanged(DateTime focusedDay) {
+    setState(() {
+      _focusedMonth = focusedDay;
+    });
+    _updateEvents(focusedDay);
+  }
+
+  Future<void> _updateEvents(DateTime month) async {
+    final events = await _getEventsForMonth(month);
+    setState(() {
+      _eventsForMonth = events;
+    });
   }
 
   void _deleteEvent(Event event) async {
@@ -56,31 +80,57 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     }
   }
 
-  void _editEvent(Event event) {
-    Navigator.push(
+  void refreshCalendar() {
+    setState(() {});
+  }
+
+  void _editEvent(Event event) async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditEventScreen(event: event),
+        builder: (context) =>
+            EditEventScreen(event: event, refreshCalendar: refreshCalendar),
       ),
     );
+    if (result == true) {
+      _updateEvents(_focusedMonth);
+    }
+  }
+
+  Widget _markerBuilder(
+      BuildContext context, DateTime day, List<Event> events) {
+    final hasEvent = _eventsForMonth.any((event) => isSameDay(event.date, day));
+    if (hasEvent) {
+      return Container(
+        margin: EdgeInsets.only(bottom: 4),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.blue,
+        ),
+        width: 6,
+        height: 6,
+      );
+    }
+    return SizedBox.shrink();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calendar'),
+        title: Text('ปฏิทิน'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TableCalendar<Event>(
+            locale: 'th_TH',
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: DateTime.now(),
+            focusedDay: _focusedMonth,
             calendarFormat: CalendarFormat.month,
-            eventLoader: _getEventsForDay,
             onDaySelected: _onDaySelected,
+            onPageChanged: _onPageChanged,
             headerStyle: HeaderStyle(
               formatButtonVisible: false,
             ),
@@ -93,6 +143,9 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: _markerBuilder,
+            ),
           ),
           SizedBox(height: 10),
           Expanded(
@@ -131,23 +184,43 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
               },
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddEventScreen()),
-              );
-            },
-            child: Text('Add Event'),
-          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddEventScreen(selectedDate: _selectedDay),
+            ),
+          );
+          if (result == true) {
+            _updateEvents(_focusedMonth);
+          }
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
-    return _selectedEvents.value.where((event) {
-      return isSameDay(event.date, day);
+  Future<List<Event>> _getEventsForMonth(DateTime month) async {
+    final startOfMonth = DateTime(month.year, month.month, 1);
+    final endOfMonth = DateTime(month.year, month.month + 1, 0);
+    final snapshot = await FirebaseFirestore.instance
+        .collection('patient')
+        .doc(_user!.email)
+        .collection('calendar')
+        .where('date',
+            isGreaterThanOrEqualTo: startOfMonth, isLessThan: endOfMonth)
+        .get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      final eventDate = (data['date'] as Timestamp).toDate();
+      return Event(
+        title: data['title'],
+        time: data['time'],
+        date: eventDate,
+      );
     }).toList();
   }
 
@@ -195,6 +268,10 @@ class Event {
 }
 
 class AddEventScreen extends StatefulWidget {
+  final DateTime selectedDate;
+
+  AddEventScreen({required this.selectedDate});
+
   @override
   _AddEventScreenState createState() => _AddEventScreenState();
 }
@@ -203,7 +280,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _timeController = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.selectedDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -305,9 +388,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Event added successfully')),
         );
-        // อัพเดท UI ด้วย setState เพื่อให้แสดงการเปลี่ยนแปลงทันที
-        setState(() {});
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (error) {
       print('Error adding event: $error');
@@ -327,8 +408,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
 class EditEventScreen extends StatefulWidget {
   final Event event;
+  final Function refreshCalendar;
 
-  const EditEventScreen({Key? key, required this.event}) : super(key: key);
+  const EditEventScreen({
+    Key? key,
+    required this.event,
+    required this.refreshCalendar,
+  }) : super(key: key);
 
   @override
   _EditEventScreenState createState() => _EditEventScreenState();
@@ -366,6 +452,24 @@ class _EditEventScreenState extends State<EditEventScreen> {
             TextFormField(
               controller: _timeController,
               decoration: InputDecoration(labelText: 'Event Time'),
+              onTap: () async {
+                final selectedTime = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.fromDateTime(_selectedDate),
+                );
+                if (selectedTime != null) {
+                  setState(() {
+                    _timeController.text = selectedTime.format(context);
+                    _selectedDate = DateTime(
+                      _selectedDate.year,
+                      _selectedDate.month,
+                      _selectedDate.day,
+                      selectedTime.hour,
+                      selectedTime.minute,
+                    );
+                  });
+                }
+              },
             ),
             SizedBox(height: 20),
             Row(
@@ -429,9 +533,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Event updated successfully')),
         );
-        // อัพเดท UI ด้วย setState เพื่อให้แสดงการเปลี่ยนแปลงทันที
-        setState(() {});
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (error) {
       print('Error updating event: $error');

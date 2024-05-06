@@ -76,9 +76,11 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
                         await SharedPreferences.getInstance();
                     prefs.clear();
                     // โหลดหน้า LoginUI ใหม่
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => LoginUI()),
+                      (route) =>
+                          false, // predicate ที่ให้เป็นเท็จเพื่อลบทุกหน้าใน stack,
                     );
                   },
                   child: Text("ออกจากระบบ"),

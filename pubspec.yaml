@@ -31,7 +31,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+    
   animate_do: ^3.3.0
   flutter_launcher_icons: ^0.13.1
   google_sign_in: ^6.2.1
