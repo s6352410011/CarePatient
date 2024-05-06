@@ -1,6 +1,7 @@
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/login_ui.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_HistoryWork_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 User? user = auth.currentUser;
@@ -260,11 +262,11 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
 
                     if (result != null) {
                       setState(() {
-                        // _selectedFile = result.files.single.path!;
-                        _selectedFile =
-                            _email!.substring(0, _email!.indexOf('@')) +
-                                '_C.jpg';
+                        _selectedFile = result.files.single.path!;
                       });
+
+                      // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
+                      await _uploadImage(File(_selectedFile!));
                     } else {
                       showDialog(
                         context: context,
@@ -286,7 +288,8 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     }
                   },
                   icon: Icon(Icons.attach_file),
-                  label: Text('เลือกไฟล์ $_selectedFile'),
+                  // label: Text('เลือกไฟล์ $_selectedFile'),
+                  label: Text('เลือกไฟล์ '),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.orange,
@@ -399,5 +402,30 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
         ),
       ),
     );
+  }
+
+  Future<void> _uploadImage(File file) async {
+    // ระบุ path ใน Firebase Storage ที่คุณต้องการจะบันทึกไฟล์
+    String storagePath =
+        'images/${_email!.substring(0, _email!.indexOf('@'))}_C.jpg';
+
+    // อ้างอิง Firebase Storage instance
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(storagePath);
+
+    try {
+      // อัปโหลดไฟล์ไปยัง Firebase Storage
+      await storageReference.putFile(file);
+
+      // หากต้องการ URL ของไฟล์ที่อัปโหลด เพื่อนำมาเก็บไว้ใน Firestore หรือใช้งานอื่น ๆ
+      String downloadURL = await storageReference.getDownloadURL();
+
+      // ทำสิ่งที่ต้องการกับ downloadURL ต่อไป
+      // เช่น เก็บ downloadURL ลงใน Firestore
+    } catch (e) {
+      // หากเกิดข้อผิดพลาดในการอัปโหลด
+      print('เกิดข้อผิดพลาดในการอัปโหลด: $e');
+      // ทำสิ่งที่คุณต้องการเมื่อเกิดข้อผิดพลาด เช่น แสดงข้อความแจ้งเตือน
+    }
   }
 }

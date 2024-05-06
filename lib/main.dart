@@ -1,3 +1,4 @@
+import 'package:care_patient/image.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:care_patient/class/firebase_options.dart';
 
@@ -41,6 +42,6 @@ class Main extends StatelessWidget {
             ),
           ),
         ),
-        home: const LoginUI());
+        home: LoginUI());
   }
 }
