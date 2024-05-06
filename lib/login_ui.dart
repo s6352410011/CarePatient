@@ -31,14 +31,9 @@ class _LoginUIState extends State<LoginUI> {
     setState(() {});
     super.initState();
     clearUserData();
-    checkLoggedIn();
-  }
-
-  Future<void> checkLoggedIn() async {
-    final bool isLoggedIn = await _authenticationService.isLoggedIn();
-    if (isLoggedIn) {
-      navigateToHome();
-    }
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      checkLoggedIn(context);
+    });
   }
 
   Future<void> clearUserData() async {
@@ -48,19 +43,26 @@ class _LoginUIState extends State<LoginUI> {
     UserData.imageUrl = null;
   }
 
-  Future<void> navigateToHome() async {
-    if (_selectedOption == 1) {
-      Navigator.pushReplacement(
+  Future<void> checkLoggedIn(BuildContext context) async {
+    final bool isLoggedIn = await _authenticationService.isLoggedIn();
+    if (isLoggedIn) {
+      navigateToHome(context);
+    }
+  }
+
+  Future<void> navigateToHome(BuildContext context) async {
+    if (_selectedOption == 0) {
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomeMainCareUI()),
       );
-    } else if (_selectedOption == 0) {
-      Navigator.pushReplacement(
+    } else if (_selectedOption == 1) {
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomeMainPatientUI()),
       );
     } else {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => LoginUI()),
       );

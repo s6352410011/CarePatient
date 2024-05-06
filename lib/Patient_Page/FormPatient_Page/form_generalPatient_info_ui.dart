@@ -360,14 +360,36 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                         );
                       } else {
                         await firebase;
-                        await _usersCollection1.doc(user!.email).update({
-                          'Patientname': _name,
-                          'gender': _gender,
-                          'birthDate': _selectedDate,
-                          'address': _address,
-                          'phoneNumber': _phoneNumber,
-                          'imagePath': _selectedFile,
-                        });
+                        // ตรวจสอบว่ามีเอกสารใน _usersCollection1 ที่มี email เป็น user!.email หรือไม่
+                        var documentSnapshot =
+                            await _usersCollection1.doc(user!.email).get();
+                        // ตรวจสอบว่ามีฟิลด์ name ในเอกสารหรือไม่
+                        if (documentSnapshot.exists &&
+                            documentSnapshot.data() is Map<String, dynamic> &&
+                            (documentSnapshot.data() as Map<String, dynamic>)
+                                .containsKey('name')) {
+                          // ถ้ามีฟิลด์ name ในเอกสารอยู่แล้ว ให้ทำการอัปเดตข้อมูล
+                          await _usersCollection1.doc(user!.email).update({
+                            'name': _name,
+                            'gender': _gender,
+                            'birthDate': _selectedDate,
+                            'address': _address,
+                            'phoneNumber': _phoneNumber,
+                            'imagePath': _selectedFile,
+                          });
+                        } else {
+                          // ถ้าไม่มีฟิลด์ name ในเอกสาร ให้ทำการเพิ่มข้อมูล
+                          await _usersCollection1.doc(user!.email).set({
+                            'name': _name,
+                            'gender': _gender,
+                            'birthDate': _selectedDate,
+                            'address': _address,
+                            'phoneNumber': _phoneNumber,
+                            'imagePath': _selectedFile,
+                          });
+                        }
+
+                        // เพิ่มข้อมูลลงใน _usersCollection และทำการ navigation หลังจากที่เพิ่มข้อมูลเสร็จสิ้น
                         await _usersCollection.doc(user!.email).set({
                           'name': _name,
                           'gender': _gender,

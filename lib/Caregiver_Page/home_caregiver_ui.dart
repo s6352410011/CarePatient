@@ -1,13 +1,6 @@
 import 'dart:async';
-import 'package:care_patient/Caregiver_Page/writedaily_ui.dart';
-import 'package:care_patient/Pages/historywork_ui.dart';
-import 'package:care_patient/Pages/review_ui.dart';
-import 'package:care_patient/Patient_Page/CalendarPatient_Page/calendarPatient.dart';
-import 'package:care_patient/ShowPage/page1.dart';
-import 'package:care_patient/ShowPage/page2.dart';
-import 'package:care_patient/ShowPage/page3.dart';
-import 'package:care_patient/ShowPage/page4.dart';
-import 'package:care_patient/test.dart';
+import 'package:care_patient/Caregiver_Page/CalendarCare_Page/calendarCare.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,34 +16,153 @@ class HomeCaregiverUI extends StatefulWidget {
   State<HomeCaregiverUI> createState() => _HomePatientUIState();
 }
 
-class _HomePatientUIState extends State<HomeCaregiverUI> {
-  final PageController controller =
-      PageController(viewportFraction: 0.8, keepPage: true);
-  int _currentPage = 0;
+class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
+  int _selectedIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-    _startLoop();
+  Widget build(BuildContext context) {
+    List<String> labels = ['ปฏิทิน', 'แผนที่', 'ประวัติการทำงาน', 'คะแนนรีวิว'];
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AppBarWidget(),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: buildCarousel(labels),
+            ),
+            SizedBox(height: 10),
+            buildDots(labels.length),
+            const SizedBox(height: 20.0),
+            buildRowTabBar(context, ['กำลังดำเนินการ']),
+            buildCardWithContact(context),
+            buildCardWithNoHire(context),
+            UserDataWidget(),
+          ],
+        ),
+      ),
+    );
   }
 
-// เริ่มการเลื่อนหน้าอัตโนมัติ
-  void _startLoop() {
-    Timer.periodic(Duration(seconds: 10), (_) {
-      if (_currentPage < 2) {
-        //จำนวนเพจ
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
-      if (mounted) {
-        controller.animateToPage(
-          _currentPage,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
+  Widget buildCarousel(List<String> labels) {
+    return SizedBox(
+      height: 150,
+      child: PageView.builder(
+        itemCount: labels.length,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        itemBuilder: (context, index) {
+          return buildSlide(labels[index]);
+        },
+      ),
+    );
+  }
+
+  Widget buildSlide(String label) {
+    IconData iconData;
+    Color iconColor;
+
+    switch (label) {
+      case 'ปฏิทิน':
+        iconData = Icons.calendar_today;
+        iconColor = Colors.blue;
+        break;
+      case 'ประวัติการทำงาน':
+        iconData = Icons.history;
+        iconColor = Colors.green;
+        break;
+      case 'แผนที่':
+        iconData = Icons.map;
+        iconColor = Colors.red;
+        break;
+      case 'คะแนนรีวิว':
+        iconData = Icons.star;
+        iconColor = Colors.yellow;
+        break;
+      default:
+        iconData = Icons.error;
+        iconColor = Colors.grey;
+        break;
+    }
+    return GestureDetector(
+      // Change InkWell to GestureDetector
+      onTap: () {
+        switch (label) {
+          case 'ปฏิทิน':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CalendarCareUI(),
+              ),
+            );
+            break;
+          case 'ประวัติการทำงาน':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HistoryWorkPage(),
+              ),
+            );
+            break;
+          case 'แผนที่':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MapPage(),
+              ),
+            );
+            break;
+          case 'คะแนนรีวิว':
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewPage(),
+              ),
+            );
+            break;
+          default:
+            break;
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(iconData, color: iconColor, size: 100),
+            SizedBox(height: 5),
+            Text(label),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDots(int count) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        count,
+        (index) => Container(
+          margin: EdgeInsets.symmetric(horizontal: 4),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: index == _selectedIndex
+                ? Colors.blue
+                : Colors.grey, // color Dots
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -90,75 +202,33 @@ Future<String> getName() async {
 
 //AppBar ที่แสดงชื่อผู้ใช้
 class AppBarWidget extends StatelessWidget {
-  const AppBarWidget({Key? key}) : super(key: key);
+  final Future<String> userNameFuture;
+
+  const AppBarWidget({Key? key, required this.userNameFuture})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false, // กำหนดให้ไม่แสดงปุ่ม back
-      title: FutureBuilder(
-        future: getName(),
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text('สวัสดี');
-          } else {
-            if (snapshot.hasError) {
-              return Text('สวัสดี');
-            } else {
-              return Text('สวัสดีคุณ ${snapshot.data}' + ' (❁´◡`❁)');
-            }
-          }
-        },
-      ),
-    );
-  }
-}
-
-// PageView ที่แสดงหน้าต่าง ๆ
-class PageViewWidget extends StatelessWidget {
-  final PageController controller;
-
-  const PageViewWidget({Key? key, required this.controller}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return PageViewWithIndicator(
-      controller: controller,
-      pages: [
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CalendarPatientUI()),
-            );
-          },
-          child: ShowPage1(),
+      title: Text('สวัสดี'),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FutureBuilder(
+            future: getName(),
+            builder: (context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Text('คุณ ${snapshot.data}');
+                }
+              }
+            },
+          ),
         ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HistoryWorkPage()),
-            );
-          },
-          child: ShowPage2(),
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ReviewPage()),
-            );
-          },
-          child: ShowPage3(),
-        ),
-      ],
-      // กำหนดสีของ Dots
-      colors: [
-        AllColor.DotsPrimary,
-        AllColor.DotsSecondary,
-        AllColor.DotsThird,
-        AllColor.DotsFour,
       ],
     );
   }
