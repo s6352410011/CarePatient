@@ -15,7 +15,7 @@ class ShowPage1 extends StatelessWidget {
         height: 280,
         child: Center(
           child: Text(
-            "ควยเอ่ย",
+            "โชว์กิจกรรมวันนี้",
             style: TextStyle(color: Colors.indigo),
           ),
         ),

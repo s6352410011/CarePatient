@@ -1,11 +1,13 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:care_patient/chat/chat_home.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/login_ui.dart';
-import 'package:care_patient/navbar/Account_Page/account_ui.dart';
+import 'package:care_patient/navbar/Patient/Account_Page/account_ui.dart';
 import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
-import 'package:care_patient/navbar/notifications_ui.dart';
+import 'package:care_patient/navbar/Caregiver/notifications_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -31,8 +33,8 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
   ];
   final List<String> _titles = ['Home', 'Notifications', 'Messages', 'Account'];
 
-  Color _backgroundColor = AllColor.Primary;
-  Color _textColor = Colors.white;
+  Color _backgroundColor = AllColor.Primary_C;
+  Color _textColor = AllColor.TextPrimary;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -108,7 +110,8 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
-            color: AllColor.Primary, // สีพื้นหลังของ Bottom Navigation Bar เป็นสีขาว
+            color: AllColor
+                .Primary_C, // สีพื้นหลังของ Bottom Navigation Bar เป็นสีขาว
             boxShadow: [
               BoxShadow(
                 blurRadius: 20,
@@ -124,7 +127,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
               child: GNav(
                 rippleColor:
                     Colors.grey[300]!, // สีของเส้นสัมผัสเมื่อแตะที่แท็บ
-                hoverColor: AllColor.Secondary!, // สีพื้นหลังเมื่อชี้ที่แท็บ
+                hoverColor: AllColor.Secondary_C!, // สีพื้นหลังเมื่อชี้ที่แท็บ
                 gap: 8, // ระยะห่างระหว่างแท็บ
                 activeColor:
                     Colors.white, // สีของ icon และข้อความเมื่อเลือกแท็บ
@@ -134,7 +137,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
                 duration: Duration(
                     milliseconds:
                         400), // ระยะเวลาในการแสดงเอฟเฟกต์ขณะเปลี่ยนแท็บ
-                tabBackgroundColor: AllColor.Secondary, // สีพื้นหลังแท็บ
+                tabBackgroundColor: AllColor.Secondary_C, // สีพื้นหลังแท็บ
                 color: Colors.black,
                 tabs: [
                   GButton(

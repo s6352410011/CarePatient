@@ -15,7 +15,7 @@ class ShowPage2 extends StatelessWidget {
         height: 280,
         child: Center(
           child: Text(
-            "เมื่อไหร่จะจบ",
+            "กำลังดำเนินการ",
             style: TextStyle(color: Colors.indigo),
           ),
         ),

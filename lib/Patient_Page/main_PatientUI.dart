@@ -7,8 +7,8 @@ import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:care_patient/class/color.dart';
-import 'package:care_patient/navbar/Account_Page/account_ui.dart';
-import 'package:care_patient/navbar/notifications_ui.dart';
+import 'package:care_patient/navbar/Patient/Account_Page/account_ui.dart';
+import 'package:care_patient/navbar/Patient/notifications_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeMainPatientUI extends StatefulWidget {
@@ -106,7 +106,8 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
-            color: AllColor.Primary, // สีพื้นหลังของ Bottom Navigation Bar เป็นสีขาว
+            color: AllColor
+                .Primary, // สีพื้นหลังของ Bottom Navigation Bar เป็นสีขาว
             boxShadow: [
               BoxShadow(
                 blurRadius: 20,

@@ -4,7 +4,7 @@ import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Patient_Page/CalendarPatient_Page/calendarPatient.dart';
 import 'package:care_patient/ShowPage/page1.dart';
 import 'package:care_patient/ShowPage/page2.dart';
-import 'package:care_patient/ShowPage/page3.dart';
+import 'package:care_patient/ShowPage/page4.dart';
 import 'package:care_patient/test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +148,7 @@ class PageViewWidget extends StatelessWidget {
               MaterialPageRoute(builder: (context) => HistoryWorkPage()),
             );
           },
-          child: ShowPage3(),
+          child: ShowPage4(),
         ),
       ],
       // กำหนดสีของ Dots
@@ -425,7 +425,7 @@ Widget buildIconButtonRow(BuildContext context) {
     child: IconButtonRow(
       buttonDataList: [
         IconButtonData(
-          iconData: Icons.calendar_today,
+          iconData: Icons.calendar_month,
           label: 'ปฏิทิน',
           onPressed: () {
             Navigator.push(
@@ -435,7 +435,7 @@ Widget buildIconButtonRow(BuildContext context) {
           },
         ),
         IconButtonData(
-          iconData: Icons.history,
+          iconData: Icons.history_edu,
           label: 'ประวัติการว่าจ้าง',
           onPressed: () {
             Navigator.push(
@@ -473,11 +473,14 @@ class IconButtonRow extends StatelessWidget {
         return InkWell(
           onTap: buttonData.onPressed,
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             child: Column(
               // แก้จาก Row เป็น Column
               children: [
-                Icon(buttonData.iconData, color: AllColor.IconFive),
+                Icon(
+                  buttonData.iconData, color: AllColor.IconFive,
+                  size: 35, // กำหนดขนาดของไอคอน
+                ),
                 SizedBox(height: 5), // เพิ่มระยะห่างระหว่าง icon และข้อความ
                 Text(
                   buttonData.label,

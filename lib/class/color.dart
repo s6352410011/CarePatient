@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 class AllColor {
   //-------------------------------------
-  //Color For App *Primary
+  //Color For App *Primary Patient
   static const Color Backgroud = Colors.white;
   static const Color Primary = Color(0xFFF08080);
   static const Color Secondary = Color.fromARGB(255, 103, 97, 179);
+
+  //-------------------------------------
+  //Color For App *Primary Caregiver
+  static const Color Backgroud_C = Colors.white;
+  static const Color Primary_C = Color(0xFF067a8a);
+  static const Color Secondary_C = Color(0xFF89e1d2);
 
   //-------------------------------------
   //Color For Dots
@@ -28,4 +34,5 @@ class AllColor {
   static const Color IconThird = Color.fromARGB(255, 22, 26, 83);
   static const Color IconFour = Color.fromARGB(255, 80, 38, 119);
   static const Color IconFive = Color(0xFFF08080);
+  static const Color IconSix = Color(0xFF067a8a);
 }
