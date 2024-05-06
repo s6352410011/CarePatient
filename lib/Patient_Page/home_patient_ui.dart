@@ -294,11 +294,11 @@ Widget buildRowWithNames(BuildContext context, List<String> labels) {
 
       if (label == 'รายชื่อผู้ดูแล') {
         iconData = Icons.recent_actors;
-        iconColor = AllColor.Primary;
+        iconColor = AllColor.IconSeven;
         iconSize = 30.0; // กำหนดขนาดของไอคอน
       } else if (label == 'รายชื่อทั้งหมด') {
         iconData = Icons.list;
-        iconColor = AllColor.Secondary;
+        iconColor = AllColor.IconSeven;
         iconSize = 30.0; // กำหนดขนาดของไอคอน
         return InkWell(
           onTap: () {
@@ -478,7 +478,7 @@ class IconButtonRow extends StatelessWidget {
               // แก้จาก Row เป็น Column
               children: [
                 Icon(
-                  buttonData.iconData, color: AllColor.IconFive,
+                  buttonData.iconData, color: AllColor.IconSeven,
                   size: 35, // กำหนดขนาดของไอคอน
                 ),
                 SizedBox(height: 5), // เพิ่มระยะห่างระหว่าง icon และข้อความ

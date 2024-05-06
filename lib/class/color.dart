@@ -4,8 +4,14 @@ class AllColor {
   //-------------------------------------
   //Color For App *Primary Patient
   static const Color Backgroud = Colors.white;
-  static const Color Primary = Color(0xFFF08080);
-  static const Color Secondary = Color.fromARGB(255, 103, 97, 179);
+  static const Color Primary = Color(0xFF114b6e);
+  static const Color Secondary = Color(0xFF6ca4c4);
+
+  //-------------------------------------
+  //Color For App *Primary Patient
+  // static const Color Backgroud = Colors.white;
+  // static const Color Primary = Color(0xFFF08080);
+  // static const Color Secondary = Color.fromARGB(255, 103, 97, 179);
 
   //-------------------------------------
   //Color For App *Primary Caregiver
@@ -35,4 +41,5 @@ class AllColor {
   static const Color IconFour = Color.fromARGB(255, 80, 38, 119);
   static const Color IconFive = Color(0xFFF08080);
   static const Color IconSix = Color(0xFF067a8a);
+  static const Color IconSeven = Color(0xFF114b6e);
 }
