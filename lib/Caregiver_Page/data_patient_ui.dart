@@ -12,7 +12,7 @@ class DataPatientUI extends StatefulWidget {
 //อักษร
 class _DataPatientUIState extends State<DataPatientUI> {
   final TextStyle _textStyle = TextStyle(
-    color: Colors.black, // สีอักษร
+    color: AllColor.TextSecondary, // สีอักษร
     fontSize: 16, // ขนาดอักษร
   );
 

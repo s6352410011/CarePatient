@@ -701,6 +701,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                         onPressed: () async {
                                           if (_acceptedPolicy) {
                                             // Code to save form data to Firebase
+
                                             await firebase;
                                             await _usersCollection
                                                 .doc(user!.email)
@@ -738,8 +739,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                               'sunday_selected':
                                                   _sundaySelected,
                                             });
-                                            saveUserDataToPatientCollection();
-                                            Navigator.push(
+                                            Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>

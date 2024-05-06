@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
+import 'package:care_patient/Caregiver_Page/writedaily_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Patient_Page/CalendarPatient_Page/calendarPatient.dart';
-import 'package:care_patient/Patient_Page/ShowPage/page1.dart';
-import 'package:care_patient/Patient_Page/ShowPage/page2.dart';
-import 'package:care_patient/Patient_Page/ShowPage/page3.dart';
+import 'package:care_patient/ShowPage/page1.dart';
+import 'package:care_patient/ShowPage/page2.dart';
+import 'package:care_patient/ShowPage/page3.dart';
+import 'package:care_patient/test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,7 @@ import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+// สร้างหน้าจอหลักของผู้ป่วย
 class HomePatientUI extends StatefulWidget {
   const HomePatientUI({Key? key}) : super(key: key);
 
@@ -30,8 +32,9 @@ class _HomePatientUIState extends State<HomePatientUI> {
     _startLoop();
   }
 
+// เริ่มการเลื่อนหน้าอัตโนมัติ
   void _startLoop() {
-    Timer.periodic(Duration(seconds: 0), (_) {
+    Timer.periodic(Duration(seconds: 2), (_) {
       if (_currentPage < 2) {
         _currentPage++;
       } else {
@@ -53,6 +56,7 @@ class _HomePatientUIState extends State<HomePatientUI> {
     super.dispose();
   }
 
+//เรียก widget มาแสดงโชว์หน้าหลัก
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,6 +67,7 @@ class _HomePatientUIState extends State<HomePatientUI> {
           const SizedBox(height: 15.0),
           AppBarWidget(),
           PageViewWidget(controller: controller),
+          buildIconButtonRow(context),
           buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
           const SizedBox(height: 15.0),
           UserDataWidget(),
@@ -73,6 +78,7 @@ class _HomePatientUIState extends State<HomePatientUI> {
   }
 }
 
+//ดึงชื่อผู้ใช้จาก Firebase
 Future<String> getName() async {
   String email = FirebaseAuth.instance.currentUser!.email!;
   DocumentSnapshot userDoc =
@@ -80,36 +86,33 @@ Future<String> getName() async {
   return userDoc['name'];
 }
 
+//AppBar ที่แสดงชื่อผู้ใช้
 class AppBarWidget extends StatelessWidget {
   const AppBarWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text('สวัสดี'),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: FutureBuilder(
-            future: getName(),
-            builder: (context, AsyncSnapshot<String> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else {
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return Text('คุณ ${snapshot.data}');
-                }
-              }
-            },
-          ),
-        ),
-      ],
+      automaticallyImplyLeading: false, // กำหนดให้ไม่แสดงปุ่ม back
+      title: FutureBuilder(
+        future: getName(),
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text('สวัสดี');
+          } else {
+            if (snapshot.hasError) {
+              return Text('สวัสดี');
+            } else {
+              return Text('สวัสดีคุณ ${snapshot.data}' + ' (❁´◡`❁)');
+            }
+          }
+        },
+      ),
     );
   }
 }
 
+// PageView ที่แสดงหน้าต่าง ๆ
 class PageViewWidget extends StatelessWidget {
   final PageController controller;
 
@@ -122,7 +125,7 @@ class PageViewWidget extends StatelessWidget {
       pages: [
         GestureDetector(
           onTap: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => CalendarPatientUI()),
             );
@@ -131,16 +134,16 @@ class PageViewWidget extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => CalendarPatientUI()),
+              MaterialPageRoute(builder: (context) => HistoryWorkPage()),
             );
           },
           child: ShowPage2(),
         ),
         GestureDetector(
           onTap: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HistoryWorkPage()),
             );
@@ -148,7 +151,7 @@ class PageViewWidget extends StatelessWidget {
           child: ShowPage3(),
         ),
       ],
-      //color Dots
+      // กำหนดสีของ Dots
       colors: [
         AllColor.DotsPrimary,
         AllColor.DotsSecondary,
@@ -158,6 +161,7 @@ class PageViewWidget extends StatelessWidget {
   }
 }
 
+// Widget ที่แสดงข้อมูลของผู้ดูแลทั้งหมด
 class UserDataWidget extends StatefulWidget {
   const UserDataWidget({Key? key}) : super(key: key);
 
@@ -185,6 +189,7 @@ class _UserDataWidgetState extends State<UserDataWidget> {
     super.dispose();
   }
 
+// เริ่มการเลื่อนอัตโนมัติของหน้า UserDataWidget
   void _startAutoScroll() {
     Timer.periodic(Duration(seconds: 20), (timer) {
       if (_currentPage < 3) {
@@ -202,6 +207,7 @@ class _UserDataWidgetState extends State<UserDataWidget> {
     });
   }
 
+// ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
   Future<List<String>> _loadUserData() async {
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('caregiver').get();
@@ -218,14 +224,14 @@ class _UserDataWidgetState extends State<UserDataWidget> {
     return names;
   }
 
+// เมื่อคลิกที่ Card ไปหน้าข้อมูลของผู้ดูแล
   void _onCardClicked() {
-    //ไปหน้าส่วนตัว
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => AllCareGiverUI(),
-    //   ),
-    // );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DataCaregiverUI(),
+      ),
+    );
   }
 
   @override
@@ -277,19 +283,23 @@ class _UserDataWidgetState extends State<UserDataWidget> {
   }
 }
 
+// สร้างแถวของไอคอนและข้อความ
 Widget buildRowWithNames(BuildContext context, List<String> labels) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: labels.map((label) {
       IconData iconData;
       Color iconColor;
+      double iconSize; // เพิ่มตัวแปรเก็บขนาดของไอคอน
 
       if (label == 'รายชื่อผู้ดูแล') {
         iconData = Icons.recent_actors;
         iconColor = AllColor.Primary;
+        iconSize = 30.0; // กำหนดขนาดของไอคอน
       } else if (label == 'รายชื่อทั้งหมด') {
         iconData = Icons.list;
         iconColor = AllColor.Secondary;
+        iconSize = 30.0; // กำหนดขนาดของไอคอน
         return InkWell(
           onTap: () {
             Navigator.push(
@@ -301,12 +311,17 @@ Widget buildRowWithNames(BuildContext context, List<String> labels) {
           },
           child: Container(
             padding: const EdgeInsets.all(20),
-            child: Icon(iconData, color: iconColor),
+            child: Icon(
+              iconData,
+              color: iconColor,
+              size: iconSize, // กำหนดขนาดของไอคอน
+            ),
           ),
         );
       } else {
         iconData = Icons.error;
         iconColor = Colors.grey;
+        iconSize = 20.0; // กำหนดขนาดของไอคอน
       }
 
       return InkWell(
@@ -315,13 +330,18 @@ Widget buildRowWithNames(BuildContext context, List<String> labels) {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Icon(iconData, color: iconColor),
+              Icon(
+                iconData,
+                color: iconColor,
+                size: iconSize, // กำหนดขนาดของไอคอน
+              ),
               SizedBox(width: 5),
               Text(
                 label,
                 style: TextStyle(
                   color: AllColor.TextSecondary,
                   fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
               ),
             ],
@@ -332,6 +352,7 @@ Widget buildRowWithNames(BuildContext context, List<String> labels) {
   );
 }
 
+// สร้าง PageView ที่มีตัวบ่งชี้เป็น Dots
 class PageViewWithIndicator extends StatelessWidget {
   final PageController controller;
   final List<Widget> pages;
@@ -370,7 +391,7 @@ class PageViewWithIndicator extends StatelessWidget {
               count: pages.length,
               effect: CustomizableEffect(
                 activeDotDecoration: DotDecoration(
-                  width: 100,
+                  width: 100, //ความยาว dots
                   height: 12,
                   color: colors[0], // สี dots สถานะที่ 1
                   rotationAngle: 180,
@@ -395,4 +416,93 @@ class PageViewWithIndicator extends StatelessWidget {
       ],
     );
   }
+}
+
+// ฟังก์ชัน helper สำหรับสร้างแถวของปุ่ม IconButton
+Widget buildIconButtonRow(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.all(15.0),
+    child: IconButtonRow(
+      buttonDataList: [
+        IconButtonData(
+          iconData: Icons.calendar_today,
+          label: 'ปฏิทิน',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CalendarPatientUI()),
+            );
+          },
+        ),
+        IconButtonData(
+          iconData: Icons.history,
+          label: 'ประวัติการว่าจ้าง',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HistoryWorkPage()),
+            );
+          },
+        ),
+        IconButtonData(
+          iconData: Icons.article,
+          label: 'อ่านบันทึก',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WriteDailyUI()),
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+class IconButtonRow extends StatelessWidget {
+  final List<IconButtonData> buttonDataList;
+
+  const IconButtonRow({Key? key, required this.buttonDataList})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: buttonDataList.map((buttonData) {
+        return InkWell(
+          onTap: buttonData.onPressed,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              // แก้จาก Row เป็น Column
+              children: [
+                Icon(buttonData.iconData, color: AllColor.IconFive),
+                SizedBox(height: 5), // เพิ่มระยะห่างระหว่าง icon และข้อความ
+                Text(
+                  buttonData.label,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class IconButtonData {
+  final IconData iconData;
+  final String label;
+  final VoidCallback onPressed;
+
+  const IconButtonData({
+    required this.iconData,
+    required this.label,
+    required this.onPressed,
+  });
 }

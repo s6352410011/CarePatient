@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:care_patient/Caregiver_Page/CalendarCare_Page/calendarCare.dart';
+import 'package:care_patient/Patient_Page/home_patient_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,13 @@ class HomeCaregiverUI extends StatefulWidget {
 
 class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
   int _selectedIndex = 0;
+  late Future<String> _userNameFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userNameFuture = getName(); // เรียกใช้ฟังก์ชัน getName() ใน initState()
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +36,9 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppBarWidget(),
+            AppBarWidget(
+                userNameFuture:
+                    _userNameFuture), // ส่ง _userNameFuture ไปยัง AppBarWidget
             SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.all(10.0),
@@ -95,7 +105,7 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
       onTap: () {
         switch (label) {
           case 'ปฏิทิน':
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => CalendarCareUI(),
@@ -103,7 +113,7 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
             );
             break;
           case 'ประวัติการทำงาน':
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => HistoryWorkPage(),
@@ -111,7 +121,7 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
             );
             break;
           case 'แผนที่':
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => MapPage(),
@@ -119,7 +129,7 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
             );
             break;
           case 'คะแนนรีวิว':
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => ReviewPage(),
@@ -298,7 +308,10 @@ Future<String> getName() async {
 }
 
 class AppBarWidget extends StatelessWidget {
-  const AppBarWidget({Key? key}) : super(key: key);
+  final Future<String> userNameFuture;
+
+  const AppBarWidget({Key? key, required this.userNameFuture})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +321,7 @@ class AppBarWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-            future: getName(),
+            future: userNameFuture, // ใช้ _userNameFuture ที่ส่งเข้ามา
             builder: (context, AsyncSnapshot<String> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();

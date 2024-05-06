@@ -16,6 +16,14 @@ final AuthenticationService _authenticationService = AuthenticationService();
 
 class _AccountUIState extends State<AccountUI> {
   bool isActive = true;
+  late User? _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    // ดึงข้อมูลผู้ใช้ปัจจุบันทันทีเมื่อ State ถูกสร้าง
+    _currentUser = FirebaseAuth.instance.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +33,8 @@ class _AccountUIState extends State<AccountUI> {
           padding: EdgeInsets.all(16),
           children: [
             SizedBox(height: 30),
-            UserProfileWidget(),
+            UserProfileWidget(
+                user: _currentUser), // ส่งข้อมูลผู้ใช้ไปยัง Widget
             SizedBox(height: 30),
             GestureDetector(
               onTap: () {
@@ -123,7 +132,6 @@ class _AccountUIState extends State<AccountUI> {
             ElevatedButton(
               onPressed: () async {
                 _showSignOutDialog(context);
-                await _authenticationService.signOut();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -150,35 +158,27 @@ class _AccountUIState extends State<AccountUI> {
 }
 
 class UserProfileWidget extends StatelessWidget {
+  final User? user;
+
+  const UserProfileWidget({Key? key, required this.user}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<User?>(
-      future: FirebaseAuth.instance.authStateChanges().first,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data == null) {
-          return Text('User not authenticated');
-        } else {
-          final User user = snapshot.data!;
-          return Column(
+    return user != null
+        ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(user.photoURL ?? ''),
+                backgroundImage: NetworkImage(user!.photoURL ?? ''),
               ),
               SizedBox(height: 20),
-              Text('Email: ${user.email}'),
+              Text('Email: ${user!.email}'),
               // อื่น ๆ ที่คุณต้องการแสดง
             ],
-          );
-        }
-      },
-    );
+          )
+        : CircularProgressIndicator();
   }
 }
 
