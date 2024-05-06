@@ -1,8 +1,8 @@
 import 'dart:async';
-
+import 'package:care_patient/Caregiver_Page/CalendarCare_Page/calendarCare.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:care_patient/Calendar_Page/calendar.dart';
 import 'package:care_patient/Caregiver_Page/data_patient_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
 import 'package:care_patient/Pages/map_ui.dart';
@@ -28,6 +28,7 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            AppBarWidget(),
             SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.all(10.0),
@@ -39,6 +40,7 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
             buildRowTabBar(context, ['กำลังดำเนินการ']),
             buildCardWithContact(context),
             buildCardWithNoHire(context),
+            UserDataWidget(),
           ],
         ),
       ),
@@ -96,7 +98,7 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CalendarUI(),
+                builder: (context) => CalendarCareUI(),
               ),
             );
             break;
@@ -284,6 +286,43 @@ class _HomeCaregiverUIState extends State<HomeCaregiverUI> {
           ),
         ),
       ),
+    );
+  }
+}
+
+Future<String> getName() async {
+  String email = FirebaseAuth.instance.currentUser!.email!;
+  DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('patient').doc(email).get();
+  return userDoc['name'];
+}
+
+class AppBarWidget extends StatelessWidget {
+  const AppBarWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text('สวัสดี'),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FutureBuilder(
+            future: getName(),
+            builder: (context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Text('คุณ ${snapshot.data}');
+                }
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }

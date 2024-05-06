@@ -4,14 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
-class CalendarUI extends StatefulWidget {
-  const CalendarUI({Key? key}) : super(key: key);
+class CalendarPatientUI extends StatefulWidget {
+  const CalendarPatientUI({Key? key}) : super(key: key);
 
   @override
-  State<CalendarUI> createState() => _CalendarUIState();
+  State<CalendarPatientUI> createState() => _CalendarPatientUIState();
 }
 
-class _CalendarUIState extends State<CalendarUI> {
+class _CalendarPatientUIState extends State<CalendarPatientUI> {
   late final User? _user;
   late final ValueNotifier<List<Event>> _selectedEvents;
   late DateTime _selectedDay;
@@ -29,7 +29,7 @@ class _CalendarUIState extends State<CalendarUI> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await FirebaseFirestore.instance
-            .collection('caregiver')
+            .collection('patient')
             .doc(user.email)
             .collection('calendar')
             .where('title', isEqualTo: event.title)
@@ -165,7 +165,7 @@ class _CalendarUIState extends State<CalendarUI> {
     final endOfDay =
         DateTime(selectedDay.year, selectedDay.month, selectedDay.day + 1);
     final snapshot = await FirebaseFirestore.instance
-        .collection('caregiver')
+        .collection('patient')
         .doc(_user!.email)
         .collection('calendar')
         .where('date', isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
@@ -294,7 +294,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await FirebaseFirestore.instance
-            .collection('caregiver')
+            .collection('patient')
             .doc(user.email)
             .collection('calendar')
             .add({
@@ -410,7 +410,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await FirebaseFirestore.instance
-            .collection('caregiver')
+            .collection('patient')
             .doc(user.email)
             .collection('calendar')
             .where('title', isEqualTo: widget.event.title)

@@ -735,7 +735,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                                               'sunday_selected':
                                                   _sundaySelected,
                                             });
-
+                                            saveUserDataToPatientCollection();
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -803,5 +803,48 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
         ),
       ),
     );
+  }
+
+// Function to save specific user data from 'users' collection to 'Patient' collection
+  Future<void> saveUserDataToPatientCollection() async {
+    // Get current user from FirebaseAuth
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        // Retrieve specific user data from the 'users' collection
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.email)
+            .get();
+
+        // Check if the document exists
+        if (userSnapshot.exists) {
+          // Get specific fields from the document
+          Map<String, dynamic> userData = {
+            'address': userSnapshot['address'],
+            'birthDate': userSnapshot['birthDate'],
+            'gender': userSnapshot['gender'],
+            'imagePath': userSnapshot['imagePath'],
+            'name': userSnapshot['name'],
+            'phoneNumber': userSnapshot['phoneNumber'],
+          };
+
+          // Save user data to the 'Patient' collection under the document with the user's email
+          await FirebaseFirestore.instance
+              .collection('patient')
+              .doc(user.email)
+              .update(userData);
+
+          print('User data saved to Patient collection for user ${user.email}');
+        } else {
+          print(
+              'No user data found in users collection for user ${user.email}');
+        }
+      } catch (e) {
+        print('Error: $e');
+      }
+    } else {
+      print('No user signed in.');
+    }
   }
 }

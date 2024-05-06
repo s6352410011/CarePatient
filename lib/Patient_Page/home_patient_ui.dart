@@ -1,9 +1,11 @@
 import 'dart:async';
-import 'package:care_patient/Calendar_Page/calendar.dart';
+import 'package:care_patient/Caregiver_Page/FormCaregiver_Page/form_generalCaregiver_info_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
+import 'package:care_patient/Patient_Page/CalendarPatient_Page/calendarPatient.dart';
 import 'package:care_patient/Patient_Page/ShowPage/page1.dart';
 import 'package:care_patient/Patient_Page/ShowPage/page2.dart';
 import 'package:care_patient/Patient_Page/ShowPage/page3.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
@@ -22,28 +24,28 @@ class _HomePatientUIState extends State<HomePatientUI> {
       PageController(viewportFraction: 0.8, keepPage: true);
   int _currentPage = 0;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _startLoop();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _startLoop();
+  }
 
-  // void _startLoop() {
-  //   Timer.periodic(Duration(seconds: 0), (_) {
-  //     if (_currentPage < 2) {
-  //       _currentPage++;
-  //     } else {
-  //       _currentPage = 0;
-  //     }
-  //     if (mounted) {
-  //       controller.animateToPage(
-  //         _currentPage,
-  //         duration: Duration(milliseconds: 500),
-  //         curve: Curves.easeInOut,
-  //       );
-  //     }
-  //   });
-  // }
+  void _startLoop() {
+    Timer.periodic(Duration(seconds: 0), (_) {
+      if (_currentPage < 2) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      if (mounted) {
+        controller.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -71,6 +73,13 @@ class _HomePatientUIState extends State<HomePatientUI> {
   }
 }
 
+Future<String> getName() async {
+  String email = FirebaseAuth.instance.currentUser!.email!;
+  DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('patient').doc(email).get();
+  return userDoc['name'];
+}
+
 class AppBarWidget extends StatelessWidget {
   const AppBarWidget({Key? key}) : super(key: key);
 
@@ -81,7 +90,20 @@ class AppBarWidget extends StatelessWidget {
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text('คุณ ' + '(❁´◡`❁)'),
+          child: FutureBuilder(
+            future: getName(),
+            builder: (context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Text('คุณ ${snapshot.data}');
+                }
+              }
+            },
+          ),
         ),
       ],
     );
@@ -102,7 +124,7 @@ class PageViewWidget extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CalendarUI()),
+              MaterialPageRoute(builder: (context) => CalendarPatientUI()),
             );
           },
           child: ShowPage1(),
@@ -111,7 +133,7 @@ class PageViewWidget extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CalendarUI()),
+              MaterialPageRoute(builder: (context) => CalendarPatientUI()),
             );
           },
           child: ShowPage2(),

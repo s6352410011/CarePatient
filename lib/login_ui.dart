@@ -28,6 +28,7 @@ class _LoginUIState extends State<LoginUI> {
   int? _selectedOption = 0;
   @override
   void initState() {
+    setState(() {});
     super.initState();
     clearUserData();
     checkLoggedIn();

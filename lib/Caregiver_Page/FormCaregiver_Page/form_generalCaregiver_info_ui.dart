@@ -347,7 +347,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                       } else {
                         await firebase;
                         await _usersCollection1.doc(user!.email).update({
-                          'name': _name,
+                          'Carename': _name,
                           'gender': _gender,
                           'birthDate': _selectedDate,
                           'address': _address,

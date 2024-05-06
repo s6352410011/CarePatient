@@ -354,7 +354,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                       } else {
                         await firebase;
                         await _usersCollection1.doc(user!.email).update({
-                          'name': _name,
+                          'Patientname': _name,
                           'gender': _gender,
                           'birthDate': _selectedDate,
                           'address': _address,
