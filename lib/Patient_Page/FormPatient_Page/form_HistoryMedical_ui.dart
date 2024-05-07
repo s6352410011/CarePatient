@@ -488,63 +488,64 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 ),
               ),
             ),
+
             // แนบไฟล์รูป
-            Text(
-              'แนบรูปภาพผู้ป่วย : ',
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            ElevatedButton.icon(
-              onPressed: () async {
-                FilePickerResult? result =
-                    await FilePicker.platform.pickFiles();
+            // Text(
+            //   'แนบรูปภาพผู้ป่วย : ',
+            //   style: TextStyle(
+            //     fontSize: 18,
+            //   ),
+            // ),
+            // SizedBox(
+            //   height: 20,
+            // ),
+            // ElevatedButton.icon(
+            //   onPressed: () async {
+            //     FilePickerResult? result =
+            //         await FilePicker.platform.pickFiles();
 
-                if (result != null) {
-                  setState(() {
-                    _selectedFile = result.files.single.path!;
-                  });
+            //     if (result != null) {
+            //       setState(() {
+            //         _selectedFile = result.files.single.path!;
+            //       });
 
-                  // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
-                  await _uploadImage(File(_selectedFile!));
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text('แจ้งเตือน'),
-                        content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('ตกลง'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-              icon: Icon(Icons.attach_file),
-              // label: Text('เลือกไฟล์ $_selectedFile'),
-              label: Text('เลือกไฟล์ '),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.orange,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 15,
-                ),
-              ),
-            ),
+            //       // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
+            //       await _uploadImage(File(_selectedFile!));
+            //     } else {
+            //       showDialog(
+            //         context: context,
+            //         builder: (context) {
+            //           return AlertDialog(
+            //             title: Text('แจ้งเตือน'),
+            //             content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
+            //             actions: [
+            //               TextButton(
+            //                 onPressed: () {
+            //                   Navigator.of(context).pop();
+            //                 },
+            //                 child: Text('ตกลง'),
+            //               ),
+            //             ],
+            //           );
+            //         },
+            //       );
+            //     }
+            //   },
+            //   icon: Icon(Icons.attach_file),
+            //   // label: Text('เลือกไฟล์ $_selectedFile'),
+            //   label: Text('เลือกไฟล์ '),
+            //   style: ElevatedButton.styleFrom(
+            //     foregroundColor: Colors.white,
+            //     backgroundColor: Colors.orange,
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(20),
+            //     ),
+            //     padding: EdgeInsets.symmetric(
+            //       horizontal: 20,
+            //       vertical: 15,
+            //     ),
+            //   ),
+            // ),
             SizedBox(height: 20),
             // ปุ่มถัดไป
             Center(
@@ -567,9 +568,9 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                   if (_phoneNumber == null || _phoneNumber == '') {
                     missingFields += 'เบอร์โทรศัพท์, ';
                   }
-                  if (_selectedFile == null || _selectedFile == '') {
-                    missingFields += 'รูปภาพ, ';
-                  }
+                  // if (_selectedFile == null || _selectedFile == '') {
+                  //   missingFields += 'รูปภาพ, ';
+                  // }
 
                   if (_namerelative == null || _namerelative == '') {
                     missingFields += 'ชื่อผู้ติดต่อ, ';
@@ -851,28 +852,28 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
     }
   }
 
-  Future<void> _uploadImage(File file) async {
-    // ระบุ path ใน Firebase Storage ที่คุณต้องการจะบันทึกไฟล์
-    String storagePath =
-        'images/${_email!.substring(0, _email!.indexOf('@'))}_Patient.jpg';
+  // Future<void> _uploadImage(File file) async {
+  //   // ระบุ path ใน Firebase Storage ที่คุณต้องการจะบันทึกไฟล์
+  //   String storagePath =
+  //       'images/${_email!.substring(0, _email!.indexOf('@'))}_Patient.jpg';
 
-    // อ้างอิง Firebase Storage instance
-    final Reference storageReference =
-        FirebaseStorage.instance.ref().child(storagePath);
+  //   // อ้างอิง Firebase Storage instance
+  //   final Reference storageReference =
+  //       FirebaseStorage.instance.ref().child(storagePath);
 
-    try {
-      // อัปโหลดไฟล์ไปยัง Firebase Storage
-      await storageReference.putFile(file);
+  //   try {
+  //     // อัปโหลดไฟล์ไปยัง Firebase Storage
+  //     await storageReference.putFile(file);
 
-      // หากต้องการ URL ของไฟล์ที่อัปโหลด เพื่อนำมาเก็บไว้ใน Firestore หรือใช้งานอื่น ๆ
-      String downloadURL = await storageReference.getDownloadURL();
+  //     // หากต้องการ URL ของไฟล์ที่อัปโหลด เพื่อนำมาเก็บไว้ใน Firestore หรือใช้งานอื่น ๆ
+  //     String downloadURL = await storageReference.getDownloadURL();
 
-      // ทำสิ่งที่ต้องการกับ downloadURL ต่อไป
-      // เช่น เก็บ downloadURL ลงใน Firestore
-    } catch (e) {
-      // หากเกิดข้อผิดพลาดในการอัปโหลด
-      print('เกิดข้อผิดพลาดในการอัปโหลด: $e');
-      // ทำสิ่งที่คุณต้องการเมื่อเกิดข้อผิดพลาด เช่น แสดงข้อความแจ้งเตือน
-    }
-  }
+  //     // ทำสิ่งที่ต้องการกับ downloadURL ต่อไป
+  //     // เช่น เก็บ downloadURL ลงใน Firestore
+  //   } catch (e) {
+  //     // หากเกิดข้อผิดพลาดในการอัปโหลด
+  //     print('เกิดข้อผิดพลาดในการอัปโหลด: $e');
+  //     // ทำสิ่งที่คุณต้องการเมื่อเกิดข้อผิดพลาด เช่น แสดงข้อความแจ้งเตือน
+  //   }
+  // }
 }

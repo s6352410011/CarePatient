@@ -36,6 +36,8 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
       FirebaseFirestore.instance.collection('caregiver');
   CollectionReference _usersCollection1 =
       FirebaseFirestore.instance.collection('users');
+  CollectionReference _usersCollection2 =
+      FirebaseFirestore.instance.collection('patient');
 
   @override
   void initState() {
@@ -288,8 +290,8 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     }
                   },
                   icon: Icon(Icons.attach_file),
-                  // label: Text('เลือกไฟล์ $_selectedFile'),
-                  label: Text('เลือกไฟล์ '),
+                  label: Text('เลือกไฟล์ $_selectedFile'),
+                  // label: Text('เลือกไฟล์ '),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.orange,
@@ -377,7 +379,14 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                             'imagePath': _selectedFile,
                           });
                         }
-
+                        await _usersCollection2.doc(user!.email).set({
+                          'name': _name,
+                          'gender': _gender,
+                          'birthDate': _selectedDate,
+                          'address': _address,
+                          'phoneNumber': _phoneNumber,
+                          'imagePath': _selectedFile,
+                        });
                         await _usersCollection.doc(user!.email).set({
                           'name': _name,
                           'gender': _gender,
@@ -428,7 +437,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
   Future<void> _uploadImage(File file) async {
     // ระบุ path ใน Firebase Storage ที่คุณต้องการจะบันทึกไฟล์
     String storagePath =
-        'images/${_email!.substring(0, _email!.indexOf('@'))}_C.jpg';
+        'images/${_email!.substring(0, _email!.indexOf('@'))}_Patient.jpg';
 
     // อ้างอิง Firebase Storage instance
     final Reference storageReference =

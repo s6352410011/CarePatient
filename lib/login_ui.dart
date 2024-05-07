@@ -9,6 +9,7 @@ import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
@@ -33,6 +34,7 @@ class _LoginUIState extends State<LoginUI> {
     super.initState();
     clearUserData();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
+      clearUserData();
       checkLoggedIn(context);
     });
   }

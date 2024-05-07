@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:care_patient/navbar/Patient/Account_Page/account_setting_ui.dart';
 import 'package:care_patient/Password_Page/reset_password.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart'; // Import for Firebase Storage
 
 class AccountUI extends StatefulWidget {
   const AccountUI({Key? key}) : super(key: key);
@@ -16,203 +20,96 @@ final AuthenticationService _authenticationService = AuthenticationService();
 
 class _AccountUIState extends State<AccountUI> {
   bool isActive = true;
+  String userImageUrl = ''; // Variable to store user image URL
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserImageUrl(); // Fetch user image URL on initialization
+  }
+
+  Future<void> _getUserImageUrl() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final storage = FirebaseStorage.instance;
+        final reference = storage.ref().child('user_images/${user.uid}');
+        final url = await reference.getDownloadURL();
+        setState(() {
+          userImageUrl = url;
+        });
+      }
+    } catch (error) {
+      print(error.toString()); // Handle potential errors
+    }
+  }
+
+  // ... rest of your code (with minor adjustments)
 
   @override
   Widget build(BuildContext context) {
+    // ... your existing build method
+
     return Scaffold(
       body: Center(
         child: ListView(
           padding: EdgeInsets.all(16),
           children: [
             SizedBox(height: 30),
-            UserProfileWidget(),
+            userImageUrl.isNotEmpty
+                ? CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(userImageUrl),
+                  )
+                : Text('No profile picture'), // Display placeholder if no image
             SizedBox(height: 30),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  isActive = !isActive;
-                });
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(75, 158, 158, 158),
-                  borderRadius: BorderRadius.circular(
-                      10.0), // Adjust the radius as needed
-                  border: Border.all(
-                    color: Colors.black, // Color of the border
-                    width: 1.0, // Width of the border
-                  ),
-                ), // Set background color
-                child: ListTile(
-                  leading: Icon(
-                    Icons.work,
-                    color: Colors.brown,
-                  ),
-                  title: Text(
-                    'Activetion',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: isActive ? Colors.green : Colors.red,
-                    ),
-                  ),
-                  trailing: Switch(
-                    value: isActive,
-                    onChanged: (value) {
-                      setState(() {
-                        isActive = value;
-                      });
-                    },
-                  ),
-                ),
+            // ... rest of your list items
+
+            // Add a button to change user image
+            ElevatedButton(
+              onPressed: () => _changeUserImage(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                fixedSize: Size(200, 50),
               ),
-            ),
-            SizedBox(height: 10),
-            Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(75, 158, 158, 158),
-                borderRadius:
-                    BorderRadius.circular(10.0), // Adjust the radius as needed
-                border: Border.all(
-                  color: Colors.black, // Color of the border
-                  width: 1.0, // Width of the border
-                ),
-              ),
-              child: ListTile(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AccountSettingUI(),
-                    ),
-                  );
-                },
-                leading: Icon(
-                  Icons.settings,
-                  color: Colors.blue,
-                ),
-                title: Text(
-                  'Account Setting',
-                  style: TextStyle(fontSize: 20, color: Colors.blue),
-                ),
-                trailing: Icon(Icons.arrow_forward),
+              child: Text(
+                'Change Profile Picture',
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ResetPasswordUI()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                fixedSize: Size(200, 50),
-              ),
-              child:
-                  Text('Reset Password', style: TextStyle(color: Colors.white)),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () async {
-                _showSignOutDialog(context);
-                await _authenticationService.signOut();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                fixedSize: Size(200, 50),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.logout,
-                    color: Colors.white,
-                  ),
-                  SizedBox(width: 5),
-                  Text('Logout', style: TextStyle(color: Colors.white)),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-          ],
-        ),
-      ),
+      // ... rest of your code
     );
   }
-}
 
-class UserProfileWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<User?>(
-      future: FirebaseAuth.instance.authStateChanges().first,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data == null) {
-          return Text('User not authenticated');
-        } else {
-          final User user = snapshot.data!;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(user.photoURL ?? ''),
-              ),
-              SizedBox(height: 20),
-              Text('Email: ${user.email}'),
-              // อื่น ๆ ที่คุณต้องการแสดง
-            ],
-          );
+  void _changeUserImage(BuildContext context) async {
+    // Use ImagePicker to select image
+    final imagePicker = ImagePicker();
+    final pickedImage =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      final imageFile = File(pickedImage.path);
+
+      // Upload image to Firebase Storage
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final storage = FirebaseStorage.instance;
+          final filename =
+              '${user.uid}-${DateTime.now().millisecondsSinceEpoch}.jpg';
+          final newImageRef = storage.ref().child('user_images/$filename');
+          await newImageRef.putFile(imageFile);
+
+          // Update userImageUrl and potentially user data if needed
+          setState(() async {
+            userImageUrl = await newImageRef.getDownloadURL();
+          });
         }
-      },
-    );
+      } catch (error) {
+        print(error.toString()); // Handle potential upload errors
+      }
+    }
   }
-}
-
-void _showSignOutDialog(BuildContext context) {
-  final AuthenticationService _authenticationService = AuthenticationService();
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Confirm Log Out"),
-        content: Text("Are you sure you want to Log Out?"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () async {
-              await _authenticationService.signOut();
-              Navigator.pop(context);
-              // Navigate to login screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LoginUI(),
-                ),
-              );
-            },
-            child: Text("Log Out"),
-          ),
-        ],
-      );
-    },
-  );
 }

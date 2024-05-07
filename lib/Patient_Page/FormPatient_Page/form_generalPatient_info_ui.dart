@@ -12,7 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 // เรียกใช้ FirebaseAuth
@@ -41,6 +41,8 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
       FirebaseFirestore.instance.collection('patient');
   CollectionReference _usersCollection1 =
       FirebaseFirestore.instance.collection('users');
+  CollectionReference _usersCollection2 =
+      FirebaseFirestore.instance.collection('caregiver');
   @override
   void initState() {
     super.initState();
@@ -87,6 +89,17 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
     );
   }
 
+  // Future<void> _pickImage() async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     type: FileType.image,
+  //   );
+
+  //   if (result != null) {
+  //     setState(() {
+  //       _selectedFile = result.files.single.name;
+  //     });
+  //   }
+  // }
   Future<void> _pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -254,14 +267,15 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                   ),
                 ),
                 SizedBox(height: 10),
+                // แนบไฟล์รูป
                 Text(
-                  'แนบรูปภาพ : ',
+                  'แนบรูปภาพผู้ป่วย : ',
                   style: TextStyle(
                     fontSize: 18,
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
@@ -270,10 +284,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
 
                     if (result != null) {
                       setState(() {
-                        // _selectedFile = result.files.single.path!;
-                        _selectedFile =
-                            _email!.substring(0, _email!.indexOf('@')) +
-                                '_C.jpg';
+                        _selectedFile = result.files.single.path!;
                       });
 
                       // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
@@ -299,8 +310,8 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                     }
                   },
                   icon: Icon(Icons.attach_file),
-                  // label: Text('เลือกไฟล์ $_selectedFile'),
-                  label: Text('เลือกไฟล์ '),
+                  label: Text('เลือกไฟล์ $_selectedFile'),
+                  // label: Text('เลือกไฟล์ '),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.orange,
@@ -388,7 +399,15 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                             'imagePath': _selectedFile,
                           });
                         }
-
+                        // ถ้าไม่มีฟิลด์ name ในเอกสาร ให้ทำการเพิ่มข้อมูล
+                        await _usersCollection2.doc(user!.email).set({
+                          'name': _name,
+                          'gender': _gender,
+                          'birthDate': _selectedDate,
+                          'address': _address,
+                          'phoneNumber': _phoneNumber,
+                          'imagePath': _selectedFile,
+                        });
                         // เพิ่มข้อมูลลงใน _usersCollection และทำการ navigation หลังจากที่เพิ่มข้อมูลเสร็จสิ้น
                         await _usersCollection.doc(user!.email).set({
                           'name': _name,
@@ -437,11 +456,10 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
     );
   }
 
-// คำสั่งสำหรับอัปโหลดไฟล์รูปภาพไปยัง Firebase Storage
   Future<void> _uploadImage(File file) async {
     // ระบุ path ใน Firebase Storage ที่คุณต้องการจะบันทึกไฟล์
     String storagePath =
-        'images/${_email!.substring(0, _email!.indexOf('@'))}_P.jpg';
+        'images/${_email!.substring(0, _email!.indexOf('@'))}_Patient.jpg';
 
     // อ้างอิง Firebase Storage instance
     final Reference storageReference =

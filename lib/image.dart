@@ -1,139 +1,214 @@
 import 'dart:io';
-
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:path/path.dart';
 
-class ImageUploads extends StatefulWidget {
-  ImageUploads({Key? key}) : super(key: key);
+class RealtimeDatabaseInsert extends StatelessWidget {
+  RealtimeDatabaseInsert({Key? key}) : super(key: key);
 
-  @override
-  _ImageUploadsState createState() => _ImageUploadsState();
-}
+  var nameController = new TextEditingController();
+  var ageController = new TextEditingController();
+  var dlController = new TextEditingController();
+  var adController = new TextEditingController();
+  var phnController = new TextEditingController();
 
-class _ImageUploadsState extends State<ImageUploads> {
-  firebase_storage.FirebaseStorage storage =
-      firebase_storage.FirebaseStorage.instance;
-
-  File? _photo;
-  final ImagePicker _picker = ImagePicker();
-
-  Future imgFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _photo = File(pickedFile.path);
-        uploadFile();
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  Future imgFromCamera() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _photo = File(pickedFile.path);
-        uploadFile();
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  Future uploadFile() async {
-    if (_photo == null) return;
-    final fileName = basename(_photo!.path);
-    final destination = 'files/$fileName';
-
-    try {
-      final ref = firebase_storage.FirebaseStorage.instance
-          .ref(destination)
-          .child('file/');
-      await ref.putFile(_photo!);
-    } catch (e) {
-      print('error occured');
-    }
-  }
+  final firestore = FirebaseFirestore.instance;
+  File? _image;
+  get data => null;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 32,
-          ),
-          Center(
-            child: GestureDetector(
-              onTap: () {
-                _showPicker(context);
-              },
-              child: CircleAvatar(
-                radius: 55,
-                backgroundColor: Color(0xffFDCF09),
-                child: _photo != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Image.file(
-                          _photo!,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.fitHeight,
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(50)),
-                        width: 100,
-                        height: 100,
-                        child: Icon(
-                          Icons.camera_alt,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  void _showPicker(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Gallery'),
-                      onTap: () {
-                        imgFromGallery();
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
-                    onTap: () {
-                      imgFromCamera();
-                      Navigator.of(context).pop();
-                    },
+    return Center(
+        child: Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Text(
+                  'Insert Driver Details',
+                  style: TextStyle(fontSize: 28),
+                ),
+                Text("Add Data"),
+                Container(
+                  height: 150,
+                  width: 300,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ],
-              ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: _image == null
+                                ? Text('No image selected.')
+                                : Image.file(_image!),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final image = await ImagePicker()
+                                .pickImage(source: ImageSource.gallery);
+                            if (image != null) {
+                              _image = File(image.path);
+                            }
+                          },
+                          child: Text('Select image'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                TextFormField(
+                  controller: nameController,
+                  maxLength: 15,
+                  decoration: InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.amber))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  controller: ageController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Age',
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.amber))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  controller: dlController,
+                  maxLength: 20,
+                  decoration: InputDecoration(
+                      labelText: 'Driving Licencse Number',
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.amber))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  controller: adController,
+                  decoration: InputDecoration(
+                      labelText: 'Address',
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.amber))),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  controller: phnController,
+                  maxLength: 10,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Phone No.',
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.amber))),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (nameController.text.isNotEmpty &&
+                        ageController.text.isNotEmpty &&
+                        dlController.text.isNotEmpty &&
+                        adController.text.isNotEmpty &&
+                        phnController.text.isNotEmpty &&
+                        _image.toString().isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Confirmation"),
+                            content: Text(
+                                "Are you sure you want to submit these details?"),
+                            actions: [
+                              TextButton(
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(color: Colors.amber),
+                                ),
+                                onPressed: () {
+                                  nameController.clear();
+                                  ageController.clear();
+                                  dlController.clear();
+                                  adController.clear();
+                                  phnController.clear();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text(
+                                  "Submit",
+                                  style: TextStyle(color: Colors.amber),
+                                ),
+                                onPressed: () async {
+                                  // Upload image file to Firebase Storage
+                                  var imageName = DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString();
+                                  var storageRef = FirebaseStorage.instance
+                                      .ref()
+                                      .child('driver_images/$imageName.jpg');
+                                  var uploadTask = storageRef.putFile(_image!);
+                                  var downloadUrl = await (await uploadTask)
+                                      .ref
+                                      .getDownloadURL();
+
+                                  firestore.collection("Driver Details").add({
+                                    "Name": nameController.text,
+                                    "Age": ageController.text,
+                                    "Driving Licence": dlController.text,
+                                    "Address.": adController.text,
+                                    "Phone No.": phnController.text,
+                                    // Add image reference to document
+                                    "Image": downloadUrl.toString()
+                                  });
+                                  Navigator.of(context).pop();
+                                  nameController.clear();
+                                  ageController.clear();
+                                  dlController.clear();
+                                  adController.clear();
+                                  phnController.clear();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Text(
+                    "Submit Details",
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                )
+              ],
             ),
-          );
-        });
+          ),
+        ),
+      ),
+    ));
   }
 }

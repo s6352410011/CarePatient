@@ -4,6 +4,7 @@ import 'package:care_patient/login_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 
 class CFormWorkUI extends StatefulWidget {
   const CFormWorkUI({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
   String _specificSkills = ''; // ความถนัดและความสามารถเฉพาะ
   String _careExperience = ''; // ประสบการณ์การดูแล
   String _workArea = ''; // เขตที่คุณสามารถไปดูแล
+  String _rateMoney = ''; // เขตที่คุณสามารถไปดูแล
   bool _acceptedPolicy = false;
   bool _allDaysSelected = false;
   bool _mondaySelected = false;
@@ -106,6 +108,26 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                 decoration: InputDecoration(
                   labelText: 'เขตที่คุณสามารถไปดูแล',
                   border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _rateMoney = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'เรทเงินที่ต้องการ',
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(20.0), // กำหนดรูปร่างขอบเส้น
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -309,6 +331,9 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                     if (_workArea == null || _workArea == '') {
                       missingFields += 'เขตที่ดูแล, ';
                     }
+                    if (_rateMoney == null || _rateMoney == '') {
+                      missingFields += 'เรทเงินที่ต้องการ, ';
+                    }
                     if (missingFields != '') {
                       // แสดงข้อความแจ้งเตือนถ้ามีข้อมูลที่ไม่ถูกกรอก
                       showDialog(
@@ -419,6 +444,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                                                 'careExperience':
                                                     _careExperience,
                                                 'workArea': _workArea,
+                                                'rateMoney': _rateMoney,
                                                 'availableDays': {
                                                   'allDays': _allDaysSelected,
                                                   'monday': _mondaySelected,
