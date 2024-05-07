@@ -29,79 +29,62 @@ class _RegisterUIState extends State<RegisterUI> {
   bool isDataComplete = false;
   bool rememberMe = false;
   bool isValid = false;
-
+  bool isExistingEmail = false;
   UserType selectedUserType = UserType.caregiver; // Default selected type
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
 
+  void _checkEmailValidaty() {
+    setState(() {
+      isValid = EmailValidator.validate(_emailController.text.trim());
+    });
+  }
+
   void _signUp() async {
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
-    String confirmPassword = _confirmPasswordController.text.trim();
-
-    // ตรวจสอบว่า Email, Password, และ Confirm Password ไม่ว่าง
-    if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
-      if (password == confirmPassword) {
-        try {
-          // ตรวจสอบว่ามีผู้ใช้งานอีเมลนี้อยู่แล้วหรือไม่
-          bool isExistingUser = await _checkExistingUser(email);
-          if (!isExistingUser) {
-            // สร้างผู้ใช้ใน Firebase Authentication
-            UserCredential userCredential =
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: email,
-              password: password,
-            );
-
-            // เพิ่มข้อมูลผู้ใช้ลงใน Firebase Firestore
-            await _usersCollection.doc(email).set({
-              'email': email,
-            });
-
-            print(
-                'User registered successfully: ${userCredential.user!.email}');
-          } else {
-            _showAlertDialogSignUp("Email exists",
-                "The email is already registered. Please use a different email.");
-          }
-        } catch (e) {
-          print('Error registering user: $e');
-          _showAlertDialogSignUp(
-              "Sign up failed", "Unable to sign up. Please try again.");
-        }
+    try {
+      // ตรวจสอบว่าอีเมลซ้ำใน Firestore หรือไม่
+      isExistingEmail = await _checkExistingEmail(_emailController.text.trim());
+      if (!isExistingEmail) {
+        // ถ้าไม่ซ้ำ ทำการเพิ่มข้อมูลลงใน Firestore
+        await _usersCollection.doc(_emailController.text.trim()).set({
+          'email': _emailController.text.trim(),
+          // เพิ่มข้อมูลเพิ่มเติมตามต้องการ
+        });
+        // ทำการสร้างบัญชีผู้ใช้ใน Authentication
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+        // แสดง AlertDialog หรือทำงานอื่นตามที่ต้องการ
       } else {
-        _showAlertDialogSignUp(
-            "Password Mismatch", "Password and Confirm Password do not match");
+        // ถ้าซ้ำ แสดงข้อความว่าอีเมลซ้ำ
+        _showAlertDialogSignUp("Email Exists",
+            "This email is already registered. Please use a different email.");
       }
-    } else {
-      _showAlertDialogSignUp("Missing Information",
-          "Please enter email, password, and confirm password");
+    } catch (e) {
+      print("Error signing up: $e");
+      // สามารถแสดง AlertDialog หรือทำการจัดการเพิ่มเติมได้ตามความเหมาะสม
+    }
+  }
+
+  Future<bool> _checkExistingEmail(String email) async {
+    try {
+      DocumentSnapshot snapshot = await _usersCollection.doc(email).get();
+      return snapshot.exists;
+    } catch (e) {
+      print("Error checking existing user: $e");
+      return false;
     }
   }
 
   Future<bool> _checkExistingUser(String email) async {
     try {
-      // ค้นหาผู้ใช้ที่ใช้อีเมลเดียวกันใน Firebase Firestore
-      QuerySnapshot querySnapshot = await _usersCollection
-          .where('email', isEqualTo: email)
-          .limit(1)
-          .get();
-
-      // ถ้าไม่มีผู้ใช้งานในระบบ
-      if (querySnapshot.docs.isEmpty) {
-        // เพิ่มข้อมูลผู้ใช้ใหม่ใน Firestore
-        await _usersCollection.doc(email).set({
-          'email': email,
-        });
-        // แจ้งว่าไม่มีผู้ใช้ในระบบและสามารถลงทะเบียนได้
-        return true;
-      } else {
-        // มีผู้ใช้งานในระบบแล้ว
-        return false;
-      }
+      QuerySnapshot querySnapshot =
+          await _usersCollection.where('email', isEqualTo: email).get();
+      return querySnapshot.docs.isNotEmpty;
     } catch (e) {
-      print('Error checking existing user: $e');
+      print("Error checking existing email: $e");
       return false;
     }
   }
@@ -119,12 +102,6 @@ class _RegisterUIState extends State<RegisterUI> {
     } catch (e) {
       print("Error initializing Firebase: $e");
     }
-  }
-
-  void _checkEmailValidaty() {
-    setState(() {
-      isValid = EmailValidator.validate(_emailController.text.trim());
-    });
   }
 
   @override
