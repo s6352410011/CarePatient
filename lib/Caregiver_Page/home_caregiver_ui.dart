@@ -13,6 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:care_patient/class/AuthenticationService.dart';
 
 // สร้างหน้าจอหลักของผู้ป่วย
 class HomeCaregiverUI extends StatefulWidget {
@@ -26,7 +27,6 @@ class _HomePatientUIState extends State<HomeCaregiverUI> {
   final PageController controller =
       PageController(viewportFraction: 0.8, keepPage: true);
   int _currentPage = 0;
-
   @override
   void initState() {
     super.initState();
@@ -79,13 +79,13 @@ class _HomePatientUIState extends State<HomeCaregiverUI> {
   }
 }
 
-//ดึงชื่อผู้ใช้จาก Firebase
-Future<String> getName() async {
-  String email = FirebaseAuth.instance.currentUser!.email!;
-  DocumentSnapshot userDoc =
-      await FirebaseFirestore.instance.collection('caregiver').doc(email).get();
-  return userDoc['name'];
-}
+// //ดึงชื่อผู้ใช้จาก Firebase
+// Future<String> getName() async {
+//   String email = FirebaseAuth.instance.currentUser!.email!;
+//   DocumentSnapshot userDoc =
+//       await FirebaseFirestore.instance.collection('caregiver').doc(email).get();
+//   return userDoc['name'];
+// }
 
 //AppBar ที่แสดงชื่อผู้ใช้
 class AppBarWidget extends StatelessWidget {
@@ -93,10 +93,12 @@ class AppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthenticationService _authenticationService =
+        AuthenticationService();
     return AppBar(
       automaticallyImplyLeading: false, // กำหนดให้ไม่แสดงปุ่ม back
       title: FutureBuilder(
-        future: getName(),
+        future: _authenticationService.getName(),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Text('สวัสดี');
