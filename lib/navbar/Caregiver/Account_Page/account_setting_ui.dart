@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,12 +24,15 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  String? _selectedFile; // Define selected file variable
+  String? _userProfileImageUrl;
   @override
   void initState() {
     super.initState();
     // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
     _loadUserData();
+    _selectedFile = null;
+    _fetchUserProfileImage();
   }
 
   Future<void> _loadUserData() async {
@@ -83,6 +90,65 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     }
   }
 
+  // Define _pickImage method
+  Future<void> _pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFile = result.files.single.path!;
+      });
+    }
+  }
+
+  Future<void> _uploadImage(File file) async {
+    String storagePath =
+        'images/${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}_Patient.jpg';
+
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(storagePath);
+
+    try {
+      await storageReference.putFile(file);
+      String downloadURL = await storageReference.getDownloadURL();
+
+      // Perform actions with downloadURL if needed
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
+  Future<void> _fetchUserProfileImage() async {
+    String? userProfileImage = await getUserProfileImage();
+    if (userProfileImage != null) {
+      setState(() {
+        _userProfileImageUrl = userProfileImage;
+      });
+    }
+  }
+
+  Future<String?> getUserProfileImage() async {
+    // ระบุ path ใน Firebase Storage ที่เก็บรูปโปรไฟล์
+    String storagePath =
+        'images/${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}_Patient.jpg';
+
+    try {
+      // อ้างอิง Firebase Storage instance
+      final Reference storageReference =
+          FirebaseStorage.instance.ref().child(storagePath);
+
+      // ดึง URL ของรูปโปรไฟล์จาก Firebase Storage
+      String downloadURL = await storageReference.getDownloadURL();
+
+      return downloadURL;
+    } catch (e) {
+      print('เกิดข้อผิดพลาดในการดึงรูปโปรไฟล์: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +163,51 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 20),
-              UserPhotoWidget(),
+              FutureBuilder(
+                future: Future.value(
+                    _userProfileImageUrl), // ใช้ Future.value เพื่อให้ FutureBuilder รอค่าเดียวเท่านั้น
+                builder:
+                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else {
+                    if (snapshot.hasData && snapshot.data != null) {
+                      return Padding(
+                        padding: EdgeInsets.all(16),
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundImage: NetworkImage(snapshot.data!),
+                        ),
+                      );
+                    } else {
+                      return Icon(Icons.person, size: 150);
+                    }
+                  }
+                },
+              ),
+              GestureDetector(
+                onTap: () async {
+                  await _pickImage();
+                  if (_selectedFile != null) {
+                    await _uploadImage(File(_selectedFile!));
+                    setState(() {});
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Change Profile Picture',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(height: 20),
               TextFormField(
                 controller: _nameController,
@@ -300,37 +410,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
             ),
           ],
         );
-      },
-    );
-  }
-}
-
-class UserPhotoWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<User?>(
-      future: FirebaseAuth.instance.authStateChanges().first,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data == null) {
-          return Text('User not authenticated');
-        } else {
-          final User user = snapshot.data!;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(user.photoURL ?? ''),
-              ),
-              // Other information to display
-            ],
-          );
-        }
       },
     );
   }

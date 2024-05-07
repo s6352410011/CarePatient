@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:care_patient/navbar/Patient/Account_Page/account_setting_ui.dart';
 import 'package:care_patient/Password_Page/reset_password.dart';
 import 'package:care_patient/login_ui.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,13 +20,53 @@ final AuthenticationService _authenticationService = AuthenticationService();
 
 class _AccountUIState extends State<AccountUI> {
   bool isActive = true;
-  late User? _currentUser;
-
+  String? _selectedFile; // Define selected file variable
+  String? _userProfileImageUrl;
   @override
   void initState() {
     super.initState();
     // ดึงข้อมูลผู้ใช้ปัจจุบันทันทีเมื่อ State ถูกสร้าง
-    _currentUser = FirebaseAuth.instance.currentUser;
+    _selectedFile = null;
+    _fetchUserProfileImage();
+  }
+
+  // Define _pickImage method
+  Future<void> _pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFile = result.files.single.path!;
+      });
+    }
+  }
+
+  Future<void> _uploadImage(File file) async {
+    String storagePath =
+        'images/${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}_Patient.jpg';
+
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(storagePath);
+
+    try {
+      await storageReference.putFile(file);
+      String downloadURL = await storageReference.getDownloadURL();
+
+      // Perform actions with downloadURL if needed
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
+  Future<void> _fetchUserProfileImage() async {
+    String? userProfileImage = await getUserProfileImage();
+    if (userProfileImage != null) {
+      setState(() {
+        _userProfileImageUrl = userProfileImage;
+      });
+    }
   }
 
   @override
@@ -33,8 +77,50 @@ class _AccountUIState extends State<AccountUI> {
           padding: EdgeInsets.all(16),
           children: [
             SizedBox(height: 30),
-            UserProfileWidget(
-                user: _currentUser), // ส่งข้อมูลผู้ใช้ไปยัง Widget
+            FutureBuilder(
+              future: Future.value(
+                  _userProfileImageUrl), // ใช้ Future.value เพื่อให้ FutureBuilder รอค่าเดียวเท่านั้น
+              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    return Padding(
+                      padding: EdgeInsets.all(16),
+                      child: CircleAvatar(
+                        radius: 70,
+                        backgroundImage: NetworkImage(snapshot.data!),
+                      ),
+                    );
+                  } else {
+                    return Icon(Icons.person, size: 150);
+                  }
+                }
+              },
+            ),
+            GestureDetector(
+              onTap: () async {
+                await _pickImage();
+                if (_selectedFile != null) {
+                  await _uploadImage(File(_selectedFile!));
+                  setState(() {});
+                }
+              },
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    'Change Profile Picture',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ),
+            ),
             SizedBox(height: 30),
             GestureDetector(
               onTap: () {
@@ -155,30 +241,25 @@ class _AccountUIState extends State<AccountUI> {
       ),
     );
   }
-}
 
-class UserProfileWidget extends StatelessWidget {
-  final User? user;
+  Future<String?> getUserProfileImage() async {
+    // ระบุ path ใน Firebase Storage ที่เก็บรูปโปรไฟล์
+    String storagePath =
+        'images/${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}_Patient.jpg';
 
-  const UserProfileWidget({Key? key, required this.user}) : super(key: key);
+    try {
+      // อ้างอิง Firebase Storage instance
+      final Reference storageReference =
+          FirebaseStorage.instance.ref().child(storagePath);
 
-  @override
-  Widget build(BuildContext context) {
-    return user != null
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(user!.photoURL ?? ''),
-              ),
-              SizedBox(height: 20),
-              Text('Email: ${user!.email}'),
-              // อื่น ๆ ที่คุณต้องการแสดง
-            ],
-          )
-        : CircularProgressIndicator();
+      // ดึง URL ของรูปโปรไฟล์จาก Firebase Storage
+      String downloadURL = await storageReference.getDownloadURL();
+
+      return downloadURL;
+    } catch (e) {
+      print('เกิดข้อผิดพลาดในการดึงรูปโปรไฟล์: $e');
+      return null;
+    }
   }
 }
 
