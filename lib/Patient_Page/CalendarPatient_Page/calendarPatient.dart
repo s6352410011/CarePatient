@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,7 +18,7 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   late DateTime _selectedDay;
   DateTime _focusedMonth = DateTime.now();
-  List<Event> _eventsForMonth = [];
+  Stream<List<Event>> _eventsForMonth = const Stream.empty();
 
   @override
   void initState() {
@@ -28,10 +30,7 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
   }
 
   Future<void> _initializeEvents() async {
-    final events = await _getEventsForMonth(DateTime.now());
-    setState(() {
-      _eventsForMonth = events;
-    });
+    _eventsForMonth = _getEventsForMonth(DateTime.now());
   }
 
   void _onPageChanged(DateTime focusedDay) {
@@ -42,10 +41,7 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
   }
 
   Future<void> _updateEvents(DateTime month) async {
-    final events = await _getEventsForMonth(month);
-    setState(() {
-      _eventsForMonth = events;
-    });
+    _eventsForMonth = _getEventsForMonth(month);
   }
 
   void _deleteEvent(Event event) async {
@@ -99,19 +95,28 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
 
   Widget _markerBuilder(
       BuildContext context, DateTime day, List<Event> events) {
-    final hasEvent = _eventsForMonth.any((event) => isSameDay(event.date, day));
-    if (hasEvent) {
-      return Container(
-        margin: EdgeInsets.only(bottom: 4),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.blue,
-        ),
-        width: 6,
-        height: 6,
-      );
-    }
-    return SizedBox.shrink();
+    return StreamBuilder<List<Event>>(
+      stream: _eventsForMonth,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final eventsForMonth = snapshot.data!;
+          final hasEvent =
+              eventsForMonth.any((event) => isSameDay(event.date, day));
+          if (hasEvent) {
+            return Container(
+              margin: EdgeInsets.only(bottom: 4),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue,
+              ),
+              width: 6,
+              height: 6,
+            );
+          }
+        }
+        return SizedBox.shrink();
+      },
+    );
   }
 
   @override
@@ -149,38 +154,45 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
           ),
           SizedBox(height: 10),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
-              valueListenable: _selectedEvents,
-              builder: (context, events, _) {
-                return ListView.builder(
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    final event = events[index];
-                    return ListTile(
-                      title: Text(event.title),
-                      subtitle: Text(event.time),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              // เรียกใช้ฟังก์ชันแก้ไขเหตุการณ์ที่นี่
-                              _editEvent(event);
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              // เรียกใช้ฟังก์ชันลบเหตุการณ์ที่นี่
-                              _deleteEvent(event);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
+            child: StreamBuilder<List<Event>>(
+              stream: _fetchEventsForDay(_selectedDay),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final events = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return ListTile(
+                        title: Text(event.title),
+                        subtitle: Text(event.time),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                // เรียกใช้ฟังก์ชันแก้ไขเหตุการณ์ที่นี่
+                                _editEvent(event);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                // เรียกใช้ฟังก์ชันลบเหตุการณ์ที่นี่
+                                _deleteEvent(event);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return CircularProgressIndicator();
+                }
               },
             ),
           ),
@@ -203,55 +215,57 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     );
   }
 
-  Future<List<Event>> _getEventsForMonth(DateTime month) async {
+  Stream<List<Event>> _getEventsForMonth(DateTime month) {
     final startOfMonth = DateTime(month.year, month.month, 1);
     final endOfMonth = DateTime(month.year, month.month + 1, 0);
-    final snapshot = await FirebaseFirestore.instance
+    return FirebaseFirestore.instance
         .collection('patient')
         .doc(_user!.email)
         .collection('calendar')
         .where('date',
             isGreaterThanOrEqualTo: startOfMonth, isLessThan: endOfMonth)
-        .get();
-    return snapshot.docs.map((doc) {
-      final data = doc.data();
-      final eventDate = (data['date'] as Timestamp).toDate();
-      return Event(
-        title: data['title'],
-        time: data['time'],
-        date: eventDate,
-      );
-    }).toList();
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        final eventDate = (data['date'] as Timestamp).toDate();
+        return Event(
+          title: data['title'],
+          time: data['time'],
+          date: eventDate,
+        );
+      }).toList();
+    });
   }
 
-  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) async {
-    final events = await _fetchEventsForDay(selectedDay);
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
-      _selectedEvents.value = events;
       _selectedDay = selectedDay;
     });
   }
 
-  Future<List<Event>> _fetchEventsForDay(DateTime selectedDay) async {
+  Stream<List<Event>> _fetchEventsForDay(DateTime selectedDay) {
     final startOfDay =
         DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
     final endOfDay =
         DateTime(selectedDay.year, selectedDay.month, selectedDay.day + 1);
-    final snapshot = await FirebaseFirestore.instance
+    return FirebaseFirestore.instance
         .collection('patient')
         .doc(_user!.email)
         .collection('calendar')
         .where('date', isGreaterThanOrEqualTo: startOfDay, isLessThan: endOfDay)
-        .get();
-    return snapshot.docs.map((doc) {
-      final data = doc.data();
-      final eventDate = (data['date'] as Timestamp).toDate();
-      return Event(
-        title: data['title'],
-        time: data['time'],
-        date: eventDate,
-      );
-    }).toList();
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        final eventDate = (data['date'] as Timestamp).toDate();
+        return Event(
+          title: data['title'],
+          time: data['time'],
+          date: eventDate,
+        );
+      }).toList();
+    });
   }
 }
 
