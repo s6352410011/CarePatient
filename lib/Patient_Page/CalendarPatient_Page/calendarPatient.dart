@@ -14,25 +14,36 @@ class CalendarPatientUI extends StatefulWidget {
 }
 
 class _CalendarPatientUIState extends State<CalendarPatientUI> {
+  // สร้างตัวแปรเพื่อเก็บข้อมูลของผู้ใช้ปัจจุบัน
   late final User? _user;
+  // สร้าง ValueNotifier เพื่อติดตามเหตุการณ์ที่ถูกเลือก
   late final ValueNotifier<List<Event>> _selectedEvents;
+  // เก็บวันที่ที่ถูกเลือก
   late DateTime _selectedDay;
+  // เก็บเดือนที่โฟกัส
   DateTime _focusedMonth = DateTime.now();
+  // สตรีมเหตุการณ์สำหรับเดือนนั้นๆ
   Stream<List<Event>> _eventsForMonth = const Stream.empty();
 
   @override
   void initState() {
     super.initState();
+    // รับข้อมูลผู้ใช้ปัจจุบัน
     _user = FirebaseAuth.instance.currentUser;
+    // กำหนดค่าเริ่มต้นของ ValueNotifier
     _selectedEvents = ValueNotifier([]);
+    // กำหนดวันที่เริ่มต้นเป็นวันปัจจุบัน
     _selectedDay = DateTime.now();
+    // เตรียมข้อมูลเหตุการณ์สำหรับเดือนปัจจุบัน
     _initializeEvents();
   }
 
+  // เตรียมข้อมูลเหตุการณ์สำหรับเดือนปัจจุบัน
   Future<void> _initializeEvents() async {
     _eventsForMonth = _getEventsForMonth(DateTime.now());
   }
 
+  // เมื่อเปลี่ยนหน้าเดือนในปฏิทิน
   void _onPageChanged(DateTime focusedDay) {
     setState(() {
       _focusedMonth = focusedDay;
@@ -40,10 +51,12 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     _updateEvents(focusedDay);
   }
 
+  // อัปเดตเหตุการณ์สำหรับเดือนที่กำลังโฟกัส
   Future<void> _updateEvents(DateTime month) async {
     _eventsForMonth = _getEventsForMonth(month);
   }
 
+  // ลบเหตุการณ์ที่เลือก
   void _deleteEvent(Event event) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -76,10 +89,12 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     }
   }
 
+  // อัปเดตปฏิทินหลังจากที่มีการแก้ไขเหตุการณ์
   void refreshCalendar() {
     setState(() {});
   }
 
+  // แก้ไขเหตุการณ์
   void _editEvent(Event event) async {
     final result = await Navigator.push(
       context,
@@ -93,6 +108,7 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     }
   }
 
+  // สร้างมาร์เกอร์สำหรับวันในปฏิทิน
   Widget _markerBuilder(
       BuildContext context, DateTime day, List<Event> events) {
     return StreamBuilder<List<Event>>(
@@ -120,6 +136,7 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
   }
 
   @override
+  // สร้างหน้า UI ของปฏิทิน
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -153,6 +170,8 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
             ),
           ),
           SizedBox(height: 10),
+
+          //แสดงกิจกรรม
           Expanded(
             child: StreamBuilder<List<Event>>(
               stream: _fetchEventsForDay(_selectedDay),
@@ -215,6 +234,7 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     );
   }
 
+  // ดึงข้อมูลเหตุการณ์สำหรับเดือนที่กำลังโฟกัส
   Stream<List<Event>> _getEventsForMonth(DateTime month) {
     final startOfMonth = DateTime(month.year, month.month, 1);
     final endOfMonth = DateTime(month.year, month.month + 1, 0);
@@ -238,12 +258,14 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
     });
   }
 
+  // อัปเดตวันที่ที่เลือกและโหลดเหตุการณ์สำหรับวันที่ถูกเลือก
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
       _selectedDay = selectedDay;
     });
   }
 
+  // ดึงข้อมูลเหตุการณ์สำหรับวันที่ถูกเลือก
   Stream<List<Event>> _fetchEventsForDay(DateTime selectedDay) {
     final startOfDay =
         DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
@@ -348,7 +370,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
               SizedBox(height: 20),
               Row(
                 children: [
-                  Text('Event Date: '),
+                  Text('Event Date : '),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.calendar_today),
+                  ),
                   TextButton(
                     onPressed: () async {
                       final selectedDate = await showDatePicker(
@@ -364,7 +390,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       }
                     },
                     child: Text(
-                      '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}',
+                      '${_selectedDate.day} / ${_selectedDate.month} / ${_selectedDate.year}',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -386,6 +412,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     );
   }
 
+  // เพิ่มเหตุการณ์ใหม่
   void _addEvent() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -504,7 +531,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
                     }
                   },
                   child: Text(
-                    DateFormat('yyyy-MM-dd').format(_selectedDate),
+                    '${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -523,6 +550,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
     );
   }
 
+  // อัปเดตเหตุการณ์
   void _updateEvent() async {
     try {
       final user = FirebaseAuth.instance.currentUser;

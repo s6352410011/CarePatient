@@ -64,12 +64,12 @@ class _HomePatientUIState extends State<HomePatientUI> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 15.0),
+          //const SizedBox(height: 15.0),
           AppBarWidget(),
           PageViewWidget(controller: controller),
           buildIconButtonRow(context),
           buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
-          const SizedBox(height: 15.0),
+          //const SizedBox(height: 15.0),
           UserDataWidget(),
           const SizedBox(height: 15.0),
         ],
@@ -125,7 +125,7 @@ class PageViewWidget extends StatelessWidget {
       pages: [
         GestureDetector(
           onTap: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => CalendarPatientUI()),
             );
@@ -134,7 +134,7 @@ class PageViewWidget extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HistoryWorkPage()),
             );
@@ -143,7 +143,7 @@ class PageViewWidget extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HistoryWorkPage()),
             );
@@ -370,9 +370,9 @@ class PageViewWithIndicator extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        SizedBox(height: 16),
+        //SizedBox(height: 5),
         SizedBox(
-          height: 240,
+          height: 150,
           child: PageView.builder(
             controller: controller,
             itemCount: pages.length,
@@ -382,7 +382,7 @@ class PageViewWithIndicator extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 5,
+          height: 15,
         ),
         Container(
           child: Center(
@@ -393,7 +393,7 @@ class PageViewWithIndicator extends StatelessWidget {
                 activeDotDecoration: DotDecoration(
                   width: 100, //ความยาว dots
                   height: 12,
-                  color: colors[0], // สี dots สถานะที่ 1
+                  color: AllColor.Primary, // สี dots สถานะที่ 1
                   rotationAngle: 180,
                   verticalOffset: -10,
                   borderRadius: BorderRadius.circular(24),
@@ -412,7 +412,7 @@ class PageViewWithIndicator extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 20.0),
+        //const SizedBox(height: 20.0),
       ],
     );
   }
@@ -421,7 +421,7 @@ class PageViewWithIndicator extends StatelessWidget {
 // ฟังก์ชัน helper สำหรับสร้างแถวของปุ่ม IconButton
 Widget buildIconButtonRow(BuildContext context) {
   return Padding(
-    padding: const EdgeInsets.all(15.0),
+    padding: const EdgeInsets.only(bottom: 5, right: 20, left: 20, top: 10),
     child: IconButtonRow(
       buttonDataList: [
         IconButtonData(

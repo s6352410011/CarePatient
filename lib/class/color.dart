@@ -15,9 +15,14 @@ class AllColor {
 
   //-------------------------------------
   //Color For App *Primary Caregiver
+
   static const Color Backgroud_C = Colors.white;
-  static const Color Primary_C = Color(0xFF067a8a);
-  static const Color Secondary_C = Color(0xFF89e1d2);
+  static const Color Primary_C = Color(0xFFa0db8e);
+  static const Color Secondary_C = Color(0xFF065535);
+
+  // static const Color Backgroud_C = Colors.white;
+  // static const Color Primary_C = Color(0xFF067a8a);
+  // static const Color Secondary_C = Color(0xFF89e1d2);
 
   //-------------------------------------
   //Color For Dots
@@ -40,6 +45,7 @@ class AllColor {
   static const Color IconThird = Color.fromARGB(255, 22, 26, 83);
   static const Color IconFour = Color.fromARGB(255, 80, 38, 119);
   static const Color IconFive = Color(0xFFF08080);
-  static const Color IconSix = Color(0xFF067a8a);
+  static const Color IconSix = Color(0xFF065535);
+  //static const Color IconSix = Color(0xFF067a8a);
   static const Color IconSeven = Color(0xFF114b6e);
 }

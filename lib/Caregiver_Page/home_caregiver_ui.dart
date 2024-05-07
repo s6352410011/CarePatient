@@ -33,7 +33,7 @@ class _HomePatientUIState extends State<HomeCaregiverUI> {
     _startLoop();
   }
 
-// เริ่มการเลื่อนหน้าอัตโนมัติ
+// เริ่มการเลื่อนหน้าอัตโนมัติ PageViewWidget
   void _startLoop() {
     Timer.periodic(Duration(seconds: 10), (_) {
       if (_currentPage < 2) {
@@ -70,8 +70,8 @@ class _HomePatientUIState extends State<HomeCaregiverUI> {
           AppBarWidget(),
           PageViewWidget(controller: controller),
           buildIconButtonRow(context),
-          buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
-          UserDataWidget(),
+          //buildRowWithNames(context, ['รายชื่อผู้ดูแล', 'รายชื่อทั้งหมด']),
+          //UserDataWidget(),
           const SizedBox(height: 15.0),
         ],
       ),
@@ -164,195 +164,188 @@ class PageViewWidget extends StatelessWidget {
 }
 
 // Widget ที่แสดงข้อมูลของผู้ดูแลทั้งหมด
-class UserDataWidget extends StatefulWidget {
-  const UserDataWidget({Key? key}) : super(key: key);
 
-  @override
-  _UserDataWidgetState createState() => _UserDataWidgetState();
-}
+// class UserDataWidget extends StatefulWidget {
+//   const UserDataWidget({Key? key}) : super(key: key);
+//   @override
+//   _UserDataWidgetState createState() => _UserDataWidgetState();
+// }
 
-class _UserDataWidgetState extends State<UserDataWidget> {
-  late Future<List<String>> _userDataFuture;
-  late final PageController _pageController;
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _userDataFuture = _loadUserData();
-    _pageController =
-        PageController(viewportFraction: 0.8, initialPage: _currentPage);
-    _startAutoScroll();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-// เริ่มการเลื่อนอัตโนมัติของหน้า UserDataWidget
-  void _startAutoScroll() {
-    Timer.periodic(Duration(seconds: 20), (timer) {
-      if (_currentPage < 3) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
-      if (mounted) {
-        _pageController.animateToPage(
-          _currentPage,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
-
-// ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
-  Future<List<String>> _loadUserData() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('caregiver').get();
-    List<String> names = [];
-    querySnapshot.docs.forEach((doc) {
-      final data = doc.data();
-      if (data != null) {
-        final name = (data as Map<String, dynamic>)['name'] as String?;
-        if (name != null) {
-          names.add(name);
-        }
-      }
-    });
-    return names;
-  }
-
-// เมื่อคลิกที่ Card ไปหน้าข้อมูลของผู้ดูแล
-  void _onCardClicked() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DataCaregiverUI(),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _userDataFuture,
-      builder: (context, AsyncSnapshot<List<String>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        }
-        if (snapshot.hasError) {
-          return Text('เกิดข้อผิดพลาด: ${snapshot.error}');
-        }
-        List<String> names = snapshot.data!;
-        return Expanded(
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: names.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: _onCardClicked,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Card(
-                    color: AllColor.Secondary_C,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: ListTile(
-                      leading: Icon(Icons.account_circle,
-                          color: AllColor.IconPrimary),
-                      title: Text(
-                        names[index],
-                        style: TextStyle(
-                          color: AllColor.TextPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-}
+// class _UserDataWidgetState extends State<UserDataWidget> {
+//   late Future<List<String>> _userDataFuture;
+//   late final PageController _pageController;
+//   int _currentPage = 0;
+//   @override
+//   void initState() {
+//     super.initState();
+//     _userDataFuture = _loadUserData();
+//     _pageController =
+//         PageController(viewportFraction: 0.8, initialPage: _currentPage);
+//     _startAutoScroll();
+//   }
+//   @override
+//   void dispose() {
+//     _pageController.dispose();
+//     super.dispose();
+//   }
+// // เริ่มการเลื่อนอัตโนมัติของหน้า UserDataWidget
+//   void _startAutoScroll() {
+//     Timer.periodic(Duration(seconds: 20), (timer) {
+//       if (_currentPage < 3) {
+//         _currentPage++;
+//       } else {
+//         _currentPage = 0;
+//       }
+//       if (mounted) {
+//         _pageController.animateToPage(
+//           _currentPage,
+//           duration: Duration(milliseconds: 500),
+//           curve: Curves.easeInOut,
+//         );
+//       }
+//     });
+//   }
+// // ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
+//   Future<List<String>> _loadUserData() async {
+//     QuerySnapshot querySnapshot =
+//         await FirebaseFirestore.instance.collection('caregiver').get();
+//     List<String> names = [];
+//     querySnapshot.docs.forEach((doc) {
+//       final data = doc.data();
+//       if (data != null) {
+//         final name = (data as Map<String, dynamic>)['name'] as String?;
+//         if (name != null) {
+//           names.add(name);
+//         }
+//       }
+//     });
+//     return names;
+//   }
+// // เมื่อคลิกที่ Card ไปหน้าข้อมูลของผู้ดูแล
+//   void _onCardClicked() {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => DataCaregiverUI(),
+//       ),
+//     );
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     return FutureBuilder(
+//       future: _userDataFuture,
+//       builder: (context, AsyncSnapshot<List<String>> snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return CircularProgressIndicator();
+//         }
+//         if (snapshot.hasError) {
+//           return Text('เกิดข้อผิดพลาด: ${snapshot.error}');
+//         }
+//         List<String> names = snapshot.data!;
+//         return Expanded(
+//           child: PageView.builder(
+//             controller: _pageController,
+//             itemCount: names.length,
+//             itemBuilder: (context, index) {
+//               return GestureDetector(
+//                 onTap: _onCardClicked,
+//                 child: Container(
+//                   width: MediaQuery.of(context).size.width * 0.8,
+//                   height: MediaQuery.of(context).size.height * 0.3,
+//                   child: Card(
+//                     color: AllColor.Secondary_C,
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(15),
+//                     ),
+//                     child: ListTile(
+//                       leading: Icon(Icons.account_circle,
+//                           color: AllColor.IconPrimary),
+//                       title: Text(
+//                         names[index],
+//                         style: TextStyle(
+//                           color: AllColor.TextPrimary,
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               );
+//             },
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
 
 // สร้างแถวของไอคอนและข้อความ
-Widget buildRowWithNames(BuildContext context, List<String> labels) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: labels.map((label) {
-      IconData iconData;
-      Color iconColor;
-      double iconSize; // เพิ่มตัวแปรเก็บขนาดของไอคอน
 
-      if (label == 'รายชื่อผู้ดูแล') {
-        iconData = Icons.recent_actors;
-        iconColor = AllColor.IconSix;
-        iconSize = 30.0; // กำหนดขนาดของไอคอน
-      } else if (label == 'รายชื่อทั้งหมด') {
-        iconData = Icons.list;
-        iconColor = AllColor.IconSix;
-        iconSize = 30.0; // กำหนดขนาดของไอคอน
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AllCareGiverUI(),
-              ),
-            );
-          },
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Icon(
-              iconData,
-              color: iconColor,
-              size: iconSize, // กำหนดขนาดของไอคอน
-            ),
-          ),
-        );
-      } else {
-        iconData = Icons.error;
-        iconColor = Colors.grey;
-        iconSize = 20.0; // กำหนดขนาดของไอคอน
-      }
-
-      return InkWell(
-        onTap: () {},
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Icon(
-                iconData,
-                color: iconColor,
-                size: iconSize, // กำหนดขนาดของไอคอน
-              ),
-              SizedBox(width: 5),
-              Text(
-                label,
-                style: TextStyle(
-                  color: AllColor.TextSecondary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }).toList(),
-  );
-}
+// Widget buildRowWithNames(BuildContext context, List<String> labels) {
+//   return Row(
+//     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//     children: labels.map((label) {
+//       IconData iconData;
+//       Color iconColor;
+//       double iconSize; // เพิ่มตัวแปรเก็บขนาดของไอคอน
+//       if (label == 'รายชื่อผู้ดูแล') {
+//         iconData = Icons.recent_actors;
+//         iconColor = AllColor.IconSix;
+//         iconSize = 30.0; // กำหนดขนาดของไอคอน
+//       } else if (label == 'รายชื่อทั้งหมด') {
+//         iconData = Icons.list;
+//         iconColor = AllColor.IconSix;
+//         iconSize = 30.0; // กำหนดขนาดของไอคอน
+//         return InkWell(
+//           onTap: () {
+//             Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                 builder: (context) => AllCareGiverUI(),
+//               ),
+//             );
+//           },
+//           child: Container(
+//             padding: const EdgeInsets.all(20),
+//             child: Icon(
+//               iconData,
+//               color: iconColor,
+//               size: iconSize, // กำหนดขนาดของไอคอน
+//             ),
+//           ),
+//         );
+//       } else {
+//         iconData = Icons.error;
+//         iconColor = Colors.grey;
+//         iconSize = 20.0; // กำหนดขนาดของไอคอน
+//       }
+//       return InkWell(
+//         onTap: () {},
+//         child: Container(
+//           padding: const EdgeInsets.all(20),
+//           child: Row(
+//             children: [
+//               Icon(
+//                 iconData,
+//                 color: iconColor,
+//                 size: iconSize, // กำหนดขนาดของไอคอน
+//               ),
+//               SizedBox(width: 5),
+//               Text(
+//                 label,
+//                 style: TextStyle(
+//                   color: AllColor.TextSecondary,
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 20,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       );
+//     }).toList(),
+//   );
+// }
 
 // สร้าง PageView ที่มีตัวบ่งชี้เป็น Dots
 class PageViewWithIndicator extends StatelessWidget {

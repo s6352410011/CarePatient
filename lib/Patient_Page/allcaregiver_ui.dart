@@ -55,7 +55,7 @@ class UserDataWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             final userData = users[index].data() as Map<String, dynamic>;
             final name = userData['name'];
-            final email = userData['email'];
+            final email = userData['email']; //
             final careExperience = userData['careExperience'];
             final relatedSkills = userData['relatedSkills'];
             final imagePath = userData['imagePath'];
@@ -85,12 +85,6 @@ class UserDataWidget extends StatelessWidget {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'อีเมล: $email',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
                         Text(
                           'ประสบการณ์ด้านการดูแล: $careExperience',
                           style: TextStyle(

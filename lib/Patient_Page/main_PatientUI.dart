@@ -74,11 +74,12 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
                         await SharedPreferences.getInstance();
                     prefs.clear();
                     // โหลดหน้า LoginUI ใหม่
-                    Navigator.pushAndRemoveUntil(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => LoginUI()),
-                      (route) =>
-                          false, // predicate ที่ให้เป็นเท็จเพื่อลบทุกหน้าใน stack
+                      // MaterialPageRoute(builder: (context) => LoginUI()),
+                      // (route) =>
+                      //     false, // predicate ที่ให้เป็นเท็จเพื่อลบทุกหน้าใน stack
                     );
                   },
                   child: Text("ออกจากระบบ"),
@@ -123,7 +124,7 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
           child: SafeArea(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
               child: GNav(
                 rippleColor:
                     Colors.grey[300]!, // สีของเส้นสัมผัสเมื่อแตะที่แท็บ

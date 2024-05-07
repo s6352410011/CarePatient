@@ -441,7 +441,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
   Future<void> _uploadImage(File file) async {
     // ระบุ path ใน Firebase Storage ที่คุณต้องการจะบันทึกไฟล์
     String storagePath =
-        'images/${_email!.substring(0, _email!.indexOf('@'))}_C.jpg';
+        'images/${_email!.substring(0, _email!.indexOf('@'))}_P.jpg';
 
     // อ้างอิง Firebase Storage instance
     final Reference storageReference =

@@ -125,7 +125,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
           child: SafeArea(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
               child: GNav(
                 rippleColor:
                     Colors.grey[300]!, // สีของเส้นสัมผัสเมื่อแตะที่แท็บ
