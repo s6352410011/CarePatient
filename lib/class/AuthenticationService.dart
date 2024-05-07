@@ -1,5 +1,6 @@
 import 'package:care_patient/class/user_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -196,6 +197,54 @@ class AuthenticationService {
         await FirebaseFirestore.instance.collection('patient').doc(email).get();
 
     return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
+  }
+
+  //ดึงชื่อผู้ใช้จาก Firebase
+  Future<String> getName() async {
+    String email = FirebaseAuth.instance.currentUser!.email!;
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('caregiver')
+        .doc(email)
+        .get();
+    return userDoc['name'];
+  }
+
+  Future<void> saveDataToFirestore(
+      BuildContext context, String selectedDate, String content) async {
+    try {
+      await Firebase.initializeApp();
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // ดึง user email ที่ล็อกอินเข้าสู่ระบบ
+      String? userEmail = FirebaseAuth.instance.currentUser?.email;
+
+      if (userEmail != null) {
+        // สร้าง document reference ใน collection caregiver > document user.email > collection writeDaily
+        DocumentReference dailyRef = firestore
+            .collection('caregiver')
+            .doc(userEmail)
+            .collection('writeDaily')
+            .doc();
+
+        // ข้อมูลที่ต้องการบันทึก
+        Map<String, dynamic> data = {
+          'date': selectedDate, // วันที่
+          'content': content, // เนื้อหาบันทึก
+          // เพิ่มข้อมูลอื่น ๆ ตามต้องการ
+        };
+
+        // บันทึกข้อมูลลงใน Firestore
+        await dailyRef.set(data);
+
+        // แสดงข้อความว่าบันทึกสำเร็จ
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('บันทึกสำเร็จ')));
+      }
+    } catch (error) {
+      // แสดงข้อความว่ามีข้อผิดพลาดเกิดขึ้น
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึก')));
+    }
   }
 }
 
