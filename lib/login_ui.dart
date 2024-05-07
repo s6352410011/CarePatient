@@ -293,7 +293,7 @@ class _LoginUIState extends State<LoginUI> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
-                                              Navigator.pushReplacement(
+                                              Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -318,7 +318,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else if (caregiverAcceptedPolicy) {
                                   print("Redirecting to HomeMainCareUI");
-                                  Navigator.pushReplacement(
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormWorkUI(),
@@ -346,7 +346,7 @@ class _LoginUIState extends State<LoginUI> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
-                                              Navigator.pushReplacement(
+                                              Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -390,7 +390,7 @@ class _LoginUIState extends State<LoginUI> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
-                                              Navigator.pushReplacement(
+                                              Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -418,7 +418,7 @@ class _LoginUIState extends State<LoginUI> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
-                                              Navigator.pushReplacement(
+                                              Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -446,7 +446,7 @@ class _LoginUIState extends State<LoginUI> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
-                                              Navigator.pushReplacement(
+                                              Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -604,7 +604,7 @@ class _LoginUIState extends State<LoginUI> {
 
                                 if (!generalPhoneNumberExists) {
                                   // ไม่พบหมายเลขโทรศัพท์ในระบบ นำผู้ใช้ไปยังหน้า CFormInfoUI
-                                  Navigator.pushReplacement(
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormInfoUI(),
@@ -612,7 +612,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else if (!caregiverAcceptedPolicy) {
                                   // หมายเลขโทรศัพท์มีอยู่แต่ผู้ดูแลรับผิดชอบยังไม่ยอมรับนโยบาย นำผู้ใช้ไปยังหน้า CFormWorkUI
-                                  Navigator.pushReplacement(
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormWorkUI(),
@@ -639,7 +639,7 @@ class _LoginUIState extends State<LoginUI> {
 
                                 if (!generalPhoneNumberExists) {
                                   // ไม่พบหมายเลขโทรศัพท์ในระบบ นำผู้ใช้ไปยังหน้า PFormInfoUI
-                                  Navigator.pushReplacement(
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PFormInfoUI(),
@@ -647,7 +647,7 @@ class _LoginUIState extends State<LoginUI> {
                                   );
                                 } else if (!patientAcceptedPolicy) {
                                   // หมายเลขโทรศัพท์มีอยู่แต่ผู้ป่วยยังไม่ยอมรับนโยบาย นำผู้ใช้ไปยังหน้า PFormMedicalUI
-                                  Navigator.pushReplacement(
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => PFormMedicalUI(),
