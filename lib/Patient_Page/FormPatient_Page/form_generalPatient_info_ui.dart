@@ -457,12 +457,13 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                                 .containsKey('name')) {
                           // ถ้ามีฟิลด์ name ในเอกสารอยู่แล้ว ให้ทำการอัปเดตข้อมูล
                           await _usersCollection1.doc(user!.email).update({
-                            'name': _name,
-                            'gender': _gender,
-                            'birthDate': _selectedDate,
-                            'address': _address,
-                            'phoneNumber': _phoneNumber,
-                            'imagePath': _selectedFile,
+                          'name': _name,
+                          'gender': _gender,
+                          'birthDate': _selectedDate,
+                          'address': _address,
+                          'phoneNumber': _phoneNumber,
+                          'email': _email,
+                          'imagePath': _selectedFile,
                           });
                         } else {
                           // ถ้าไม่มีฟิลด์ name ในเอกสาร ให้ทำการเพิ่มข้อมูล
@@ -472,6 +473,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                             'birthDate': _selectedDate,
                             'address': _address,
                             'phoneNumber': _phoneNumber,
+                            'email': _email,
                             'imagePath': _selectedFile,
                           });
                         }
@@ -482,6 +484,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                           'birthDate': _selectedDate,
                           'address': _address,
                           'phoneNumber': _phoneNumber,
+                          'email': _email,
                           'imagePath': _selectedFile,
                         });
                         // เพิ่มข้อมูลลงใน _usersCollection และทำการ navigation หลังจากที่เพิ่มข้อมูลเสร็จสิ้น

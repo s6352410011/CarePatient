@@ -455,6 +455,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                           });
                         }
                         await _usersCollection2.doc(user!.email).set({
+                          'email': _email,
                           'name': _name,
                           'gender': _gender,
                           'birthDate': _selectedDate,

@@ -230,9 +230,7 @@ class _LoginUIState extends State<LoginUI> {
                           if (emailError != null) {
                             print("Email Error: $emailError");
                             // Show error dialog
-                            showDialog(
-                              // โค้ด showDialog อยู่นอกเครื่องหมาย await ให้เปลี่ยนเป็น await showDialog
-                              // และใส่ async ในปีกกาของฟังก์ชัน onPressed
+                            await showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
@@ -255,32 +253,25 @@ class _LoginUIState extends State<LoginUI> {
                           // Check email and password
                           if (_emailController.text.isNotEmpty &&
                               _passwordController.text.isNotEmpty) {
-                            dynamic result = await _authenticationService
+                            dynamic user = await _authenticationService
                                 .signInWithEmailPassword(_emailController.text,
                                     _passwordController.text);
-                            if (result != null) {
+                            if (user != null) {
                               print("Sign in successful");
 
                               if (_selectedOption == 0) {
                                 bool generalPhoneNumberExists =
                                     await _authenticationService
                                         .checkUserPhoneNumberExists(
-                                            _emailController.text);
+                                            user.email!);
                                 bool caregiverAcceptedPolicy =
                                     await _authenticationService
                                         .checkCaregiverAcceptedPolicy(
-                                            _emailController.text);
+                                            user.email!);
                                 bool patientAcceptedPolicy =
                                     await _authenticationService
                                         .checkPatientAcceptedPolicy(
-                                            _emailController.text);
-
-                                print(
-                                    "General Phone Number Exists: $generalPhoneNumberExists");
-                                print(
-                                    "Caregiver Accepted Policy: $caregiverAcceptedPolicy");
-                                print(
-                                    "Patient Accepted Policy: $patientAcceptedPolicy");
+                                            user.email!);
 
                                 if (!generalPhoneNumberExists) {
                                   print("Redirecting to CFormInfoUI");
@@ -295,7 +286,6 @@ class _LoginUIState extends State<LoginUI> {
                                           TextButton(
                                             onPressed: () {
                                               Navigator.pop(context);
-                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -320,21 +310,13 @@ class _LoginUIState extends State<LoginUI> {
                                     ),
                                   );
                                 } else if (caregiverAcceptedPolicy) {
-                                  print("Redirecting to HomeMainCareUI");
+                                  print("Redirecting to CFormWorkUI");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CFormWorkUI(),
                                     ),
                                   );
-                                  // } else if (patientAcceptedPolicy) {
-                                  //   print("Redirecting to HomeMainPatientUI");
-                                  //   Navigator.pushReplacement(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //       builder: (context) => HomeMainPatientUI(),
-                                  //     ),
-                                  //   );
                                 } else {
                                   print("Redirecting to CFormInfoUI");
                                   showDialog(
@@ -348,7 +330,6 @@ class _LoginUIState extends State<LoginUI> {
                                           TextButton(
                                             onPressed: () {
                                               Navigator.pop(context);
-                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -374,11 +355,6 @@ class _LoginUIState extends State<LoginUI> {
                                         .checkPatientAcceptedPolicy(
                                             _emailController.text);
 
-                                print(
-                                    "General Phone Number Exists: $generalPhoneNumberExists");
-                                print(
-                                    "Patient Accepted Policy: $patientAcceptedPolicy");
-
                                 if (!generalPhoneNumberExists) {
                                   print("Redirecting to PFormInfoUI");
                                   showDialog(
@@ -392,7 +368,6 @@ class _LoginUIState extends State<LoginUI> {
                                           TextButton(
                                             onPressed: () {
                                               Navigator.pop(context);
-                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -408,7 +383,7 @@ class _LoginUIState extends State<LoginUI> {
                                     },
                                   );
                                 } else if (!patientAcceptedPolicy) {
-                                  print("Redirecting to HomeMainCareUI");
+                                  print("Redirecting to PFormMedicalUI");
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -420,7 +395,6 @@ class _LoginUIState extends State<LoginUI> {
                                           TextButton(
                                             onPressed: () {
                                               Navigator.pop(context);
-                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -436,46 +410,25 @@ class _LoginUIState extends State<LoginUI> {
                                     },
                                   );
                                 } else {
-                                  print("Redirecting to PFormMedicalUI");
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('แจ้งเตือน'),
-                                        content: Text(
-                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PFormMedicalUI(),
-                                                ),
-                                              );
-                                            },
-                                            child: Text('แบบฟอร์ม'),
-                                          ),
-                                        ],
-                                      );
-                                    },
+                                  print("Redirecting to HomeMainPatientUI");
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeMainPatientUI(),
+                                    ),
                                   );
                                 }
                               }
                             } else {
                               print(
                                   "Sign in failed: Invalid email or password");
-                              showDialog(
+                              await showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text('Error'),
                                     content: Text(
-                                      'Invalid email or password. Please try again.',
-                                    ),
+                                        'Invalid email or password. Please try again.'),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
@@ -491,14 +444,13 @@ class _LoginUIState extends State<LoginUI> {
                           } else {
                             print(
                                 "Sign in failed: Please enter both email and password");
-                            showDialog(
+                            await showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: Text('Error'),
                                   content: Text(
-                                    'Please enter both email and password.',
-                                  ),
+                                      'Please enter both email and password.'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
