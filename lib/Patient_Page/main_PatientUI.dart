@@ -27,7 +27,7 @@ class _HomeMainPatientUIState extends State<HomeMainPatientUI> {
     HomePatientUI(),
     NotificationsUI(),
     ChatHome(),
-    AccountUI(),
+    AccountPatientUI(),
   ];
   final List<String> _titles = ['Home', 'Notifications', 'Messages', 'Account'];
 

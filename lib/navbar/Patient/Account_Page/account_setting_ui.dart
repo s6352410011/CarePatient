@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
 import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
+import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:care_patient/navbar/Patient/Account_Page/account_ui.dart';
@@ -12,14 +13,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class AccountSettingUI extends StatefulWidget {
-  const AccountSettingUI({Key? key}) : super(key: key);
+class AccountSettingPatientUI extends StatefulWidget {
+  const AccountSettingPatientUI({Key? key}) : super(key: key);
 
   @override
-  State<AccountSettingUI> createState() => _AccountSettingUIState();
+  State<AccountSettingPatientUI> createState() =>
+      _AccountSettingPatientUIState();
 }
 
-class _AccountSettingUIState extends State<AccountSettingUI> {
+class _AccountSettingPatientUIState extends State<AccountSettingPatientUI> {
   String? _name = '';
   String? _address = '';
   String? _phoneNumber = '';
@@ -179,6 +181,16 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
       appBar: AppBar(
         backgroundColor: AllColor.Primary,
         title: const Text('Account Setting'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => HomeMainPatientUI()),
+              ModalRoute.withName('/'),
+            );
+          },
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
