@@ -349,11 +349,11 @@ class _LoginUIState extends State<LoginUI> {
                                 bool generalPhoneNumberExists =
                                     await _authenticationService
                                         .checkUserPhoneNumberExists(
-                                            _emailController.text);
+                                            user.email!);
                                 bool patientAcceptedPolicy =
                                     await _authenticationService
                                         .checkPatientAcceptedPolicy(
-                                            _emailController.text);
+                                            user.email!);
 
                                 if (!generalPhoneNumberExists) {
                                   print("Redirecting to PFormInfoUI");
