@@ -32,7 +32,7 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
   final TextEditingController _passwordController = TextEditingController();
   String? _selectedFile; // Define selected file variable
   String? _userProfileImageUrl;
-  bool isActive = true;
+  bool isActive = false;
   @override
   void initState() {
     super.initState();
@@ -101,6 +101,38 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
     }
   }
 
+  void updateStatus(bool isActive) async {
+    try {
+      // Get current user email
+      String? userEmail = FirebaseAuth.instance.currentUser?.email;
+      if (userEmail != null) {
+        // Query Firestore for document with matching email
+        var querySnapshot = await FirebaseFirestore.instance
+            .collection('caregiver')
+            .where('email', isEqualTo: userEmail)
+            .get();
+
+        // Check if there is a document with the user's email
+        if (querySnapshot.docs.isNotEmpty) {
+          // Get the document ID
+          String docId = querySnapshot.docs[0].id;
+
+          // Update the "Status" field in Firestore
+          await FirebaseFirestore.instance
+              .collection('caregiver')
+              .doc(docId)
+              .set({'Status': isActive}, SetOptions(merge: true));
+
+          print('Status updated successfully!');
+        } else {
+          print('No document found for the user email: $userEmail');
+        }
+      }
+    } catch (e) {
+      print('Error updating status: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,25 +171,25 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                   onTap: () {
                     setState(() {
                       isActive = !isActive;
+                      updateStatus(isActive);
                     });
                   },
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(75, 158, 158, 158),
-                      borderRadius: BorderRadius.circular(
-                          10.0), // Adjust the radius as needed
+                      borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
-                        color: Colors.black, // Color of the border
-                        width: 1.0, // Width of the border
+                        color: Colors.black,
+                        width: 1.0,
                       ),
-                    ), // Set background color
+                    ),
                     child: ListTile(
                       leading: Icon(
                         Icons.work,
                         color: Colors.brown,
                       ),
                       title: Text(
-                        'Activetion',
+                        'Activation',
                         style: TextStyle(
                           fontSize: 20,
                           color: isActive ? Colors.green : Colors.red,
@@ -168,6 +200,7 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                         onChanged: (value) {
                           setState(() {
                             isActive = value;
+                            updateStatus(isActive);
                           });
                         },
                       ),
