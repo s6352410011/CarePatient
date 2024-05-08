@@ -1,6 +1,5 @@
 import 'package:care_patient/Caregiver_Page/formCaregiverInfo_ui.dart';
 import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
-import 'package:care_patient/Patient_Page/FormPatient_Page/form_HistoryMedical_ui.dart';
 import 'package:care_patient/Patient_Page/FormPatient_Page/formPatientInfo_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
