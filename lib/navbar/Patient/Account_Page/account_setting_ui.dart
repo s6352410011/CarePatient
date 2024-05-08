@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/login_ui.dart';
+import 'package:care_patient/navbar/Patient/Account_Page/account_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,52 +33,44 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
   void initState() {
     super.initState();
     // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
-    _loadUserData();
+
     _selectedFile = null;
     _fetchUserProfileImage();
-  }
-
-  Future<void> _loadUserData() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // โหลดข้อมูลผู้ใช้จาก Firestore และกำหนดค่าให้กับตัวแปร state
-        DocumentSnapshot userData = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        setState(() {
-          _name = userData['name'];
-          _phoneNumber = userData['phoneNumber'];
-          _address = userData['address'];
-        });
-      }
-    } catch (e) {
-      print('Error loading user data: $e');
-    }
   }
 
   void _updateUserData() async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        // อัปเดตข้อมูลใน Firestore
-        await FirebaseFirestore.instance
-            .collection('caregiver')
-            .doc(user.email) // ใช้ email เป็น Document ID
-            .update({
-          'name': _nameController.text,
-          'phoneNumber': _phoneController.text,
-          'address': _addressController.text,
-        });
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.email) // ใช้ email เป็น Document ID
-            .update({
-          'name': _nameController.text,
-          'phoneNumber': _phoneController.text,
-          'address': _addressController.text,
-        });
+        Map<String, dynamic> updatedData = {};
+
+        // Check if name is updated
+        if (_name != _nameController.text) {
+          updatedData['name'] = _nameController.text;
+        }
+
+        // Check if phone number is updated
+        if (_phoneNumber != _phoneController.text) {
+          updatedData['phoneNumber'] = _phoneController.text;
+        }
+
+        // Check if address is updated
+        if (_address != _addressController.text) {
+          updatedData['address'] = _addressController.text;
+        }
+
+        // Only update Firestore if there's any change
+        if (updatedData.isNotEmpty) {
+          // อัปเดตข้อมูลใน Firestore
+          await FirebaseFirestore.instance
+              .collection('patient')
+              .doc(user.email) // ใช้ email เป็น Document ID
+              .update(updatedData);
+          // await FirebaseFirestore.instance
+          //     .collection('users')
+          //     .doc(user.email) // ใช้ email เป็น Document ID
+          //     .update(updatedData);
+        }
 
         // แสดงข้อความแจ้งเตือนเมื่ออัปเดตข้อมูลสำเร็จ
         ScaffoldMessenger.of(context).showSnackBar(
@@ -113,9 +108,7 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     try {
       await storageReference.putFile(file);
       String downloadURL = await storageReference.getDownloadURL();
-      setState(() {
-        _userProfileImageUrl = downloadURL;
-      });
+
       // Perform actions with downloadURL if needed
     } catch (e) {
       print('Error uploading image: $e');
@@ -157,6 +150,15 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
       appBar: AppBar(
         backgroundColor: AllColor.Primary,
         title: const Text('Account Setting'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeMainCareUI()),
+            );
+          },
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -190,6 +192,10 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
               GestureDetector(
                 onTap: () async {
                   await _pickImage();
+                  if (_selectedFile != null) {
+                    await _uploadImage(File(_selectedFile!));
+                    setState(() {});
+                  }
                 },
                 child: Container(
                   width: double.infinity,
@@ -260,7 +266,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                 bool isGoogleSignIn = user.providerData
                     .any((provider) => provider.providerId == 'google.com');
                 if (isGoogleSignIn) {
-                  // Show pop-up for successful update
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -269,8 +274,11 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                         content: Text('Your data has been updated.'),
                         actions: [
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
                               _updateUserData();
+                              // Refresh the profile image
+                              await _fetchUserProfileImage();
+                              setState(() {}); // Refresh UI
                               Navigator.of(context).pop(); // Close dialog
                             },
                             child: Text('OK'),
@@ -280,7 +288,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                     },
                   );
                 } else {
-                  // Show pop-up to confirm identity with password
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -293,7 +300,8 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                                 'Please enter your password to confirm your identity.'),
                             TextFormField(
                               obscureText: true,
-                              // Add controller and decoration as needed
+                              controller: _passwordController, // Add controller
+                              // Add decoration as needed
                             ),
                           ],
                         ),
@@ -307,28 +315,24 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                           TextButton(
                             onPressed: () async {
                               try {
-                                // Verify password and update data if successful
                                 final String password =
                                     _passwordController.text;
-                                // Add your logic to verify password
-                                // For example, you can use FirebaseAuth signInWithEmailAndPassword
-                                // to sign in with email and password
                                 await FirebaseAuth.instance
                                     .signInWithEmailAndPassword(
                                   email: user.email!,
                                   password: password,
                                 );
-                                // If sign in successful, update user data
                                 _updateUserData();
-                                // Close dialog
-                                Navigator.of(context).pop();
+                                // Refresh the profile image
+                                await _fetchUserProfileImage();
+                                setState(() {}); // Refresh UI
+                                Navigator.of(context).pop(); // Close dialog
                               } catch (e) {
                                 print('Error verifying password: $e');
-                                // Show error message
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content:
-                                          Text('Error verifying password')),
+                                    content: Text('Error verifying password'),
+                                  ),
                                 );
                               }
                             },
