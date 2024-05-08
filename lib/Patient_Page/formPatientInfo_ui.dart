@@ -904,9 +904,9 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                   if (_phoneNumber == null || _phoneNumber == '') {
                     missingFields += 'เบอร์โทรศัพท์, ';
                   }
-                  // if (_selectedFile == null || _selectedFile == '') {
-                  //   missingFields += 'รูปภาพ, ';
-                  // }
+                  if (_selectedFile == null || _selectedFile == '') {
+                    missingFields += 'รูปภาพ, ';
+                  }
 
                   if (_namerelative == null || _namerelative == '') {
                     missingFields += 'ชื่อผู้ติดต่อ, ';
@@ -939,7 +939,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                     );
                   }
                   // ตรวจสอบการกรอกข้อมูลในช่อง "โปรดระบุ" หากมีประวัติการแพ้ยา
-                  else if (_allergicToMedication &&
+                  if (_allergicToMedication &&
                       _allergicToMedicationDetailController.text.isEmpty) {
                     showDialog(
                       context: context,
@@ -958,33 +958,33 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                         );
                       },
                     );
-                  } else if (!_allDaysSelected &&
-                      !_mondaySelected &&
-                      !_tuesdaySelected &&
-                      !_wednesdaySelected &&
-                      !_thursdaySelected &&
-                      !_fridaySelected &&
-                      !_saturdaySelected &&
-                      !_sundaySelected) {
-                    // ถ้าไม่มีการเลือกวันใดเลย
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text('แจ้งเตือน'),
-                          content: Text(
-                              'กรุณาเลือกวันที่ต้องการความดูแลอย่างน้อย 1 วัน'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('ตกลง'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                    // } else if (!_allDaysSelected &&
+                    //     !_mondaySelected &&
+                    //     !_tuesdaySelected &&
+                    //     !_wednesdaySelected &&
+                    //     !_thursdaySelected &&
+                    //     !_fridaySelected &&
+                    //     !_saturdaySelected &&
+                    //     !_sundaySelected) {
+                    //   // ถ้าไม่มีการเลือกวันใดเลย
+                    //   showDialog(
+                    //     context: context,
+                    //     builder: (context) {
+                    //       return AlertDialog(
+                    //         title: Text('แจ้งเตือน'),
+                    //         content: Text(
+                    //             'กรุณาเลือกวันที่ต้องการความดูแลอย่างน้อย 1 วัน'),
+                    //         actions: [
+                    //           TextButton(
+                    //             onPressed: () {
+                    //               Navigator.of(context).pop();
+                    //             },
+                    //             child: Text('ตกลง'),
+                    //           ),
+                    //         ],
+                    //       );
+                    //     },
+                    //   );
                   } else {
                     // ถ้าข้อมูลถูกกรอกครบทุกช่อง ให้เรียกหน้าแบบฟอร์มการแพทย์ต่อไป
                     showDialog(

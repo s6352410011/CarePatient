@@ -1,10 +1,6 @@
-import 'package:care_patient/Caregiver_Page/formCaregiverInfo_ui.dart';
-import 'package:care_patient/Patient_Page/CalendarPatient_Page/calendarPatient.dart';
-import 'package:care_patient/image.dart';
 import 'package:care_patient/login_ui.dart';
 import 'package:care_patient/class/firebase_options.dart';
 import 'package:care_patient/test.dart';
-
 import 'package:flutter/material.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -39,7 +35,7 @@ class Main extends StatelessWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
               borderSide: const BorderSide(
-                color: Colors.red,
+                color: AllColor.Third,
                 width: 3.0,
               ),
             ),

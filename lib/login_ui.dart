@@ -1,6 +1,6 @@
 import 'package:care_patient/Caregiver_Page/formCaregiverInfo_ui.dart';
 import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
-import 'package:care_patient/Patient_Page/FormPatient_Page/formPatientInfo_ui.dart';
+import 'package:care_patient/Patient_Page/formPatientInfo_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/Password_Page/forgot_password.dart';
 import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
@@ -90,7 +90,7 @@ class _LoginUIState extends State<LoginUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: AllColor.Backgroud,
       body: SingleChildScrollView(
         child: Container(
           child: Column(

@@ -6,6 +6,7 @@ class AllColor {
   static const Color Backgroud = Colors.white;
   static const Color Primary = Color(0xFF114b6e);
   static const Color Secondary = Color(0xFF6ca4c4);
+  static const Color Third = Color(0xFFA93226);
 
   //-------------------------------------
   //Color For App *Primary Patient

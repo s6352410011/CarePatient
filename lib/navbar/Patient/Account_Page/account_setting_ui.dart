@@ -24,12 +24,12 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? _selectedFile; // Define selected file variable
+  String? _selectedFile;
   String? _userProfileImageUrl;
+
   @override
   void initState() {
     super.initState();
-    // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
     _loadUserData();
     _selectedFile = null;
     _fetchUserProfileImage();
@@ -39,7 +39,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // โหลดข้อมูลผู้ใช้จาก Firestore และกำหนดค่าให้กับตัวแปร state
         DocumentSnapshot userData = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
@@ -59,23 +58,35 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        // อัปเดตข้อมูลใน Firestore
-        await FirebaseFirestore.instance
-            .collection('caregiver')
-            .doc(user.email) // ใช้ email เป็น Document ID
-            .update({
-          'name': _nameController.text,
-          'phoneNumber': _phoneController.text,
-          'address': _addressController.text,
-        });
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.email) // ใช้ email เป็น Document ID
-            .update({
-          'name': _nameController.text,
-          'phoneNumber': _phoneController.text,
-          'address': _addressController.text,
-        });
+        Map<String, dynamic> updatedData = {};
+
+        // Check if name is updated
+        if (_name != _nameController.text) {
+          updatedData['name'] = _nameController.text;
+        }
+
+        // Check if phone number is updated
+        if (_phoneNumber != _phoneController.text) {
+          updatedData['phoneNumber'] = _phoneController.text;
+        }
+
+        // Check if address is updated
+        if (_address != _addressController.text) {
+          updatedData['address'] = _addressController.text;
+        }
+
+        // Only update Firestore if there's any change
+        if (updatedData.isNotEmpty) {
+          // อัปเดตข้อมูลใน Firestore
+          await FirebaseFirestore.instance
+              .collection('patient')
+              .doc(user.email) // ใช้ email เป็น Document ID
+              .update(updatedData);
+          // await FirebaseFirestore.instance
+          //     .collection('users')
+          //     .doc(user.email) // ใช้ email เป็น Document ID
+          //     .update(updatedData);
+        }
 
         // แสดงข้อความแจ้งเตือนเมื่ออัปเดตข้อมูลสำเร็จ
         ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +101,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     }
   }
 
-  // Define _pickImage method
   Future<void> _pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -113,8 +123,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     try {
       await storageReference.putFile(file);
       String downloadURL = await storageReference.getDownloadURL();
-
-      // Perform actions with downloadURL if needed
     } catch (e) {
       print('Error uploading image: $e');
     }
@@ -127,25 +135,36 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
         _userProfileImageUrl = userProfileImage;
       });
     }
+    // Call _updateUserProfileImage() to update profile image immediately after upload
+    _updateUserProfileImage();
   }
 
   Future<String?> getUserProfileImage() async {
-    // ระบุ path ใน Firebase Storage ที่เก็บรูปโปรไฟล์
     String storagePath =
         'images/${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}_Patient.jpg';
 
     try {
-      // อ้างอิง Firebase Storage instance
       final Reference storageReference =
           FirebaseStorage.instance.ref().child(storagePath);
-
-      // ดึง URL ของรูปโปรไฟล์จาก Firebase Storage
       String downloadURL = await storageReference.getDownloadURL();
-
       return downloadURL;
     } catch (e) {
-      print('เกิดข้อผิดพลาดในการดึงรูปโปรไฟล์: $e');
+      print('Error fetching user profile image: $e');
       return null;
+    }
+  }
+
+  Future<void> _updateUserProfileImage() async {
+    try {
+      if (_selectedFile != null) {
+        File file = File(_selectedFile!);
+        await _uploadImage(file);
+        setState(() {
+          _fetchUserProfileImage();
+        });
+      }
+    } catch (e) {
+      print('Error updating profile image: $e');
     }
   }
 
@@ -154,7 +173,12 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AllColor.Primary,
-        title: const Text('Account Setting'),
+        title: Text(
+          'Account Setting',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -163,49 +187,41 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 20),
-              FutureBuilder(
-                future: Future.value(
-                    _userProfileImageUrl), // ใช้ Future.value เพื่อให้ FutureBuilder รอค่าเดียวเท่านั้น
-                builder:
-                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else {
-                    if (snapshot.hasData && snapshot.data != null) {
-                      return Padding(
-                        padding: EdgeInsets.all(16),
-                        child: CircleAvatar(
-                          radius: 70,
-                          backgroundImage: NetworkImage(snapshot.data!),
-                        ),
-                      );
-                    } else {
-                      return Icon(Icons.person, size: 150);
-                    }
-                  }
-                },
-              ),
               GestureDetector(
                 onTap: () async {
                   await _pickImage();
                   if (_selectedFile != null) {
-                    await _uploadImage(File(_selectedFile!));
-                    setState(() {});
+                    await _updateUserProfileImage();
                   }
                 },
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Change Profile Picture',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.grey, width: 2),
+                      ),
+                      child: _userProfileImageUrl != null
+                          ? CircleAvatar(
+                              radius: 70,
+                              backgroundImage:
+                                  NetworkImage(_userProfileImageUrl!),
+                            )
+                          : Icon(Icons.person, size: 150),
                     ),
-                  ),
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black54,
+                      ),
+                      child: Icon(Icons.edit, color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 20),
@@ -258,11 +274,9 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
             onPressed: () async {
               final User? user = FirebaseAuth.instance.currentUser;
               if (user != null) {
-                // Check if user signed in with Google
                 bool isGoogleSignIn = user.providerData
                     .any((provider) => provider.providerId == 'google.com');
                 if (isGoogleSignIn) {
-                  // Show pop-up for successful update
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -271,8 +285,11 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                         content: Text('Your data has been updated.'),
                         actions: [
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
                               _updateUserData();
+                              // Refresh the profile image
+                              await _fetchUserProfileImage();
+                              setState(() {}); // Refresh UI
                               Navigator.of(context).pop(); // Close dialog
                             },
                             child: Text('OK'),
@@ -282,7 +299,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                     },
                   );
                 } else {
-                  // Show pop-up to confirm identity with password
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -295,38 +311,31 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                                 'Please enter your password to confirm your identity.'),
                             TextFormField(
                               obscureText: true,
-                              // Add controller and decoration as needed
+                              controller: _passwordController,
                             ),
                           ],
                         ),
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop(); // Close dialog
+                              Navigator.of(context).pop();
                             },
                             child: Text('Cancel'),
                           ),
                           TextButton(
                             onPressed: () async {
                               try {
-                                // Verify password and update data if successful
                                 final String password =
                                     _passwordController.text;
-                                // Add your logic to verify password
-                                // For example, you can use FirebaseAuth signInWithEmailAndPassword
-                                // to sign in with email and password
                                 await FirebaseAuth.instance
                                     .signInWithEmailAndPassword(
                                   email: user.email!,
                                   password: password,
                                 );
-                                // If sign in successful, update user data
                                 _updateUserData();
-                                // Close dialog
                                 Navigator.of(context).pop();
                               } catch (e) {
                                 print('Error verifying password: $e');
-                                // Show error message
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                       content:
@@ -344,26 +353,25 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: AllColor.Primary,
               fixedSize: Size(200, 50),
             ),
             child: Text(
               'Save',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: AllColor.TextPrimary),
             ),
           ),
           SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
-              // เรียกใช้งานเมธอดสำหรับลบบัญชีผู้ใช้
               deleteUserAccount();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AllColor.Third,
               fixedSize: Size(200, 50),
             ),
-            child:
-                Text('Delete Account', style: TextStyle(color: Colors.white)),
+            child: Text('Delete Account',
+                style: TextStyle(color: AllColor.TextPrimary)),
           ),
         ],
       ),
@@ -380,7 +388,7 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: Text('Cancel'),
             ),
@@ -389,7 +397,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                 try {
                   final User? user = FirebaseAuth.instance.currentUser;
                   if (user != null) {
-                    // ลบบัญชีผู้ใช้
                     await user.delete();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Account deleted successfully')),

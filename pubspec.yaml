@@ -60,6 +60,7 @@ dependencies:
   easy_date_timeline: ^1.0.6
   firebase_storage: ^11.7.4
   path: ^1.9.0
+  editable_image: ^2.0.0
   # flutter_facebook_auth: ^6.1.1
   
   # The following adds the Cupertino Icons font to your application.
