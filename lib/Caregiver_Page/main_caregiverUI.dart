@@ -42,13 +42,6 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
     });
   }
 
-  Future<void> clearUserData() async {
-    UserData.email = null;
-    UserData.username = null;
-    UserData.uid = null;
-    UserData.imageUrl = null;
-  }
-
   final AuthenticationService _authenticationService = AuthenticationService();
   @override
   Widget build(BuildContext context) {
@@ -71,7 +64,6 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
                 TextButton(
                   onPressed: () async {
                     // ทำการเคลียร์ข้อมูลใน UserData และล้าง SharedPreferences ตามต้องการ
-                    clearUserData();
                     await _authenticationService.signOut();
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();

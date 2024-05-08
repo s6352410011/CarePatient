@@ -137,12 +137,12 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
     }
   }
 
-  Future<void> clearUserData() async {
-    UserData.email = null;
-    UserData.username = null;
-    UserData.uid = null;
-    UserData.imageUrl = null;
-  }
+  // Future<void> clearUserData() async {
+  //   UserData.email = null;
+  //   UserData.username = null;
+  //   UserData.uid = null;
+  //   UserData.imageUrl = null;
+  // }
 
   final AuthenticationService _authenticationService = AuthenticationService();
   @override
@@ -166,7 +166,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 TextButton(
                   onPressed: () async {
                     // ทำการเคลียร์ข้อมูลใน UserData และล้าง SharedPreferences ตามต้องการ
-                    clearUserData();
+                    // clearUserData();
                     await _authenticationService.signOut();
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();

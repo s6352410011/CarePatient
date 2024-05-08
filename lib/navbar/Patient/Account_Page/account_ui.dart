@@ -20,6 +20,7 @@ class AccountPatientUI extends StatefulWidget {
 }
 
 final AuthenticationService _authenticationService = AuthenticationService();
+final AuthenticationService _sharedPreferencesService = AuthenticationService();
 
 class _AccountPatientUIState extends State<AccountPatientUI> {
   String? _name = '';
@@ -32,12 +33,13 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
   String? _selectedFile; // Define selected file variable
   String? _userProfileImageUrl;
   bool isActive = true;
+  String? _userEmail;
   @override
   void initState() {
     super.initState();
     // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
-
     _selectedFile = null;
+    _getUserEmail();
     _fetchUserProfileImage();
   }
 
@@ -116,6 +118,13 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
     }
   }
 
+  Future<void> _getUserEmail() async {
+    String? email = await _sharedPreferencesService.getEmail();
+    setState(() {
+      _userEmail = email;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,26 +159,9 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
                   },
                 ),
                 SizedBox(height: 20),
-                FutureBuilder(
-                  future: getUserEmail(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else {
-                      if (snapshot.hasData && snapshot.data != null) {
-                        return Text(
-                          snapshot.data!,
-                          style: TextStyle(fontSize: 18),
-                        );
-                      } else {
-                        return Text(
-                          'No Email',
-                          style: TextStyle(fontSize: 18),
-                        );
-                      }
-                    }
-                  },
+                Text(
+                  'Email: ${_userEmail ?? "Loading..."}',
+                  style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 20),
                 // GestureDetector(

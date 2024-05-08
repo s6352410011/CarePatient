@@ -32,19 +32,19 @@ class _LoginUIState extends State<LoginUI> {
   void initState() {
     setState(() {});
     super.initState();
-    clearUserData();
+    // clearUserData();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      clearUserData();
+      // clearUserData();
       checkLoggedIn(context);
     });
   }
 
-  Future<void> clearUserData() async {
-    UserData.email = null;
-    UserData.username = null;
-    UserData.uid = null;
-    UserData.imageUrl = null;
-  }
+  // Future<void> clearUserData() async {
+  //   UserData.email = null;
+  //   UserData.username = null;
+  //   UserData.uid = null;
+  //   UserData.imageUrl = null;
+  // }
 
   Future<void> checkLoggedIn(BuildContext context) async {
     final bool isLoggedIn = await _authenticationService.isLoggedIn();

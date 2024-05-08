@@ -12,7 +12,12 @@ class AuthenticationService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
-
+  // SharedPreferences key
+  static const String _loggedInKey = 'isLoggedIn';
+  static const String _emailKey = 'email';
+  static const String _usernameKey = 'username';
+  static const String _uidKey = 'uid';
+  static const String _imageUrlKey = 'imageUrl';
   User? chat() {
     return _auth.currentUser;
   }
@@ -22,14 +27,44 @@ class AuthenticationService {
     return user?.uid;
   }
 
+  String? getEmail() {
+    User? user = _auth.currentUser;
+    return user?.email;
+  }
+
+  Future<void> _setUserDataInSharedPreferences({
+    String? email,
+    String? username,
+    String? uid,
+    String? imageUrl,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_emailKey, email ?? '');
+    await prefs.setString(_usernameKey, username ?? '');
+    await prefs.setString(_uidKey, uid ?? '');
+    await prefs.setString(_imageUrlKey, imageUrl ?? '');
+  }
+
   // Method สำหรับ SignIn **loging ด้วย เมลล์
+  // Method to sign in with email and password
   Future<User?> signInWithEmailPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
-      UserData.uid = user?.uid;
-      return user;
+
+      if (user != null) {
+        // Set logged in status
+        await _setLoggedIn(true);
+
+        // Set user data in SharedPreferences
+        await _setUserDataInSharedPreferences(
+          email: user.email,
+          uid: user.uid,
+        );
+
+        return user;
+      }
     } catch (e) {
       print(e.toString());
       return null;
@@ -60,24 +95,37 @@ class AuthenticationService {
         if (!userDocSnapshot.exists) {
           // If the user does not exist, add their data to Firestore
           await userDoc.set({
-            'email': user.email, // เพิ่มฟิลด์ email ลงในเอกสาร
-            // เพิ่มฟิลด์อื่น ๆ ตามต้องการ
+            'email': user.email, // Add email field to the document
+            // Add other fields as needed
           });
         }
 
         // Set logged in status
         await _setLoggedIn(true);
 
-        // Set user data locally
-        UserData.email = user.email;
-        UserData.username = user.displayName;
-        UserData.uid = user.uid;
-        UserData.imageUrl = user.photoURL;
+        // Set user data in SharedPreferences
+        await _setUserDataInSharedPreferences(
+          email: user.email,
+          username: user.displayName,
+          uid: user.uid,
+          imageUrl: user.photoURL,
+        );
 
         return user;
       }
     }
     return null;
+  }
+
+  // Method to get user data from SharedPreferences
+  Future<UserData> getUserDataFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return UserData(
+      email: prefs.getString(_emailKey) ?? '',
+      username: prefs.getString(_usernameKey) ?? '',
+      uid: prefs.getString(_uidKey) ?? '',
+      imageUrl: prefs.getString(_imageUrlKey) ?? '',
+    );
   }
 
   Future<void> signOut() async {
@@ -267,4 +315,18 @@ void showEmailAlreadyInUseDialog(BuildContext context) {
       );
     },
   );
+}
+
+class UserData {
+  final String email;
+  final String username;
+  final String uid;
+  final String imageUrl;
+
+  UserData({
+    required this.email,
+    required this.username,
+    required this.uid,
+    required this.imageUrl,
+  });
 }

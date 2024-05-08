@@ -118,12 +118,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
     }
   }
 
-  Future<void> clearUserData() async {
-    UserData.email = null;
-    UserData.username = null;
-    UserData.uid = null;
-    UserData.imageUrl = null;
-  }
+
 
   final AuthenticationService _authenticationService = AuthenticationService();
   @override
@@ -147,7 +142,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 TextButton(
                   onPressed: () async {
                     // ทำการเคลียร์ข้อมูลใน UserData และล้าง SharedPreferences ตามต้องการ
-                    clearUserData();
+
                     await _authenticationService.signOut();
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();

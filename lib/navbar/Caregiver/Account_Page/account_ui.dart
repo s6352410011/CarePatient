@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:care_patient/Patient_Page/home_patient_ui.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/Caregiver/Account_Page/account_setting_ui.dart';
 import 'package:care_patient/navbar/Patient/Account_Page/account_setting_ui.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountCaregiverUI extends StatefulWidget {
   const AccountCaregiverUI({Key? key}) : super(key: key);
@@ -21,24 +23,20 @@ class AccountCaregiverUI extends StatefulWidget {
 }
 
 final AuthenticationService _authenticationService = AuthenticationService();
+final AuthenticationService _sharedPreferencesService = AuthenticationService();
 
 class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
-  String? _name = '';
-  String? _address = '';
-  String? _phoneNumber = '';
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   String? _selectedFile; // Define selected file variable
   String? _userProfileImageUrl;
   bool isActive = false;
+  String? _userEmail;
+
   @override
   void initState() {
     super.initState();
     // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
-
     _selectedFile = null;
+    _getUserEmail();
     _fetchUserProfileImage();
   }
 
@@ -133,20 +131,11 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
     }
   }
 
-  Future<String?> getUserEmail() async {
-    try {
-      // ใช้ currentUser เพื่อให้สามารถดึงข้อมูลผู้ใช้ปัจจุบัน
-      User? user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        return user.email;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print('เกิดข้อผิดพลาดในการดึงอีเมล: $e');
-      return null;
-    }
+  Future<void> _getUserEmail() async {
+    String? email = await _sharedPreferencesService.getEmail();
+    setState(() {
+      _userEmail = email;
+    });
   }
 
   @override
@@ -183,26 +172,9 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                   },
                 ),
                 SizedBox(height: 20),
-                FutureBuilder(
-                  future: getUserEmail(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else {
-                      if (snapshot.hasData && snapshot.data != null) {
-                        return Text(
-                          snapshot.data!,
-                          style: TextStyle(fontSize: 18),
-                        );
-                      } else {
-                        return Text(
-                          'No Email',
-                          style: TextStyle(fontSize: 18),
-                        );
-                      }
-                    }
-                  },
+                Text(
+                  'Email: ${_userEmail ?? "Loading..."}',
+                  style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 20),
                 GestureDetector(
