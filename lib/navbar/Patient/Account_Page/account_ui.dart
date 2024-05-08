@@ -134,45 +134,45 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
                   },
                 ),
                 SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isActive = !isActive;
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(75, 158, 158, 158),
-                      borderRadius: BorderRadius.circular(
-                          10.0), // Adjust the radius as needed
-                      border: Border.all(
-                        color: Colors.black, // Color of the border
-                        width: 1.0, // Width of the border
-                      ),
-                    ), // Set background color
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.work,
-                        color: Colors.brown,
-                      ),
-                      title: Text(
-                        'Activetion',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: isActive ? Colors.green : Colors.red,
-                        ),
-                      ),
-                      trailing: Switch(
-                        value: isActive,
-                        onChanged: (value) {
-                          setState(() {
-                            isActive = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ),
+                // GestureDetector(
+                //   onTap: () {
+                //     setState(() {
+                //       isActive = !isActive;
+                //     });
+                //   },
+                //   child: Container(
+                //     decoration: BoxDecoration(
+                //       color: const Color.fromARGB(75, 158, 158, 158),
+                //       borderRadius: BorderRadius.circular(
+                //           10.0), // Adjust the radius as needed
+                //       border: Border.all(
+                //         color: Colors.black, // Color of the border
+                //         width: 1.0, // Width of the border
+                //       ),
+                //     ), // Set background color
+                //     child: ListTile(
+                //       leading: Icon(
+                //         Icons.work,
+                //         color: Colors.brown,
+                //       ),
+                //       title: Text(
+                //         'Activetion',
+                //         style: TextStyle(
+                //           fontSize: 20,
+                //           color: isActive ? Colors.green : Colors.red,
+                //         ),
+                //       ),
+                //       trailing: Switch(
+                //         value: isActive,
+                //         onChanged: (value) {
+                //           setState(() {
+                //             isActive = value;
+                //           });
+                //         },
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
