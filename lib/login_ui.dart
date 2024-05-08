@@ -9,6 +9,7 @@ import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/register.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
@@ -224,245 +225,246 @@ class _LoginUIState extends State<LoginUI> {
                       duration: Duration(milliseconds: 1900),
                       child: ElevatedButton(
                         onPressed: () async {
-                          // Validate email
-                          final emailError =
-                              validateEmail(_emailController.text);
-                          if (emailError != null) {
-                            print("Email Error: $emailError");
-                            // Show error dialog
-                            await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Error'),
-                                  content: Text(emailError),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                            return;
-                          }
+                          _loginWithEmailPassword();
+                          // // Validate email
+                          // final emailError =
+                          //     validateEmail(_emailController.text);
+                          // if (emailError != null) {
+                          //   print("Email Error: $emailError");
+                          //   // Show error dialog
+                          //   await showDialog(
+                          //     context: context,
+                          //     builder: (BuildContext context) {
+                          //       return AlertDialog(
+                          //         title: Text('Error'),
+                          //         content: Text(emailError),
+                          //         actions: [
+                          //           TextButton(
+                          //             onPressed: () {
+                          //               Navigator.pop(context);
+                          //             },
+                          //             child: Text('OK'),
+                          //           ),
+                          //         ],
+                          //       );
+                          //     },
+                          //   );
+                          //   return;
+                          // }
 
-                          // Check email and password
-                          if (_emailController.text.isNotEmpty &&
-                              _passwordController.text.isNotEmpty) {
-                            dynamic user = await _authenticationService
-                                .signInWithEmailPassword(_emailController.text,
-                                    _passwordController.text);
-                            if (user != null) {
-                              print("Sign in successful");
+                          // // Check email and password
+                          // if (_emailController.text.isNotEmpty &&
+                          //     _passwordController.text.isNotEmpty) {
+                          //   dynamic user = await _authenticationService
+                          //       .signInWithEmailPassword(_emailController.text,
+                          //           _passwordController.text);
+                          //   if (user != null) {
+                          //     print("Sign in successful");
 
-                              if (_selectedOption == 0) {
-                                bool generalPhoneNumberExists =
-                                    await _authenticationService
-                                        .checkUserPhoneNumberExists(
-                                            user.email!);
-                                bool caregiverAcceptedPolicy =
-                                    await _authenticationService
-                                        .checkCaregiverAcceptedPolicy(
-                                            user.email!);
-                                bool patientAcceptedPolicy =
-                                    await _authenticationService
-                                        .checkPatientAcceptedPolicy(
-                                            user.email!);
+                          //     if (_selectedOption == 0) {
+                          //       bool generalPhoneNumberExists =
+                          //           await _authenticationService
+                          //               .checkUserPhoneNumberExists(
+                          //                   user.email!);
+                          //       bool caregiverAcceptedPolicy =
+                          //           await _authenticationService
+                          //               .checkCaregiverAcceptedPolicy(
+                          //                   user.email!);
+                          //       bool patientAcceptedPolicy =
+                          //           await _authenticationService
+                          //               .checkPatientAcceptedPolicy(
+                          //                   user.email!);
 
-                                if (!generalPhoneNumberExists) {
-                                  print("Redirecting to CFormInfoUI");
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('แจ้งเตือน'),
-                                        content: Text(
-                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      CFormInfoUI(),
-                                                ),
-                                              );
-                                            },
-                                            child: Text('แบบฟอร์ม'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                } else if (caregiverAcceptedPolicy &&
-                                    patientAcceptedPolicy) {
-                                  print("Redirecting to HomeMainCareUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeMainCareUI(),
-                                    ),
-                                  );
-                                } else if (caregiverAcceptedPolicy) {
-                                  print("Redirecting to CFormWorkUI");
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CFormWorkUI(),
-                                    ),
-                                  );
-                                } else {
-                                  print("Redirecting to CFormInfoUI");
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('แจ้งเตือน'),
-                                        content: Text(
-                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      CFormInfoUI(),
-                                                ),
-                                              );
-                                            },
-                                            child: Text('แบบฟอร์ม'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                }
-                              } else if (_selectedOption == 1) {
-                                bool generalPhoneNumberExists =
-                                    await _authenticationService
-                                        .checkUserPhoneNumberExists(
-                                            user.email!);
-                                bool patientAcceptedPolicy =
-                                    await _authenticationService
-                                        .checkPatientAcceptedPolicy(
-                                            user.email!);
+                          //       if (!generalPhoneNumberExists) {
+                          //         print("Redirecting to CFormInfoUI");
+                          //         showDialog(
+                          //           context: context,
+                          //           builder: (BuildContext context) {
+                          //             return AlertDialog(
+                          //               title: Text('แจ้งเตือน'),
+                          //               content: Text(
+                          //                   'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                          //               actions: <Widget>[
+                          //                 TextButton(
+                          //                   onPressed: () {
+                          //                     Navigator.pop(context);
+                          //                     Navigator.push(
+                          //                       context,
+                          //                       MaterialPageRoute(
+                          //                         builder: (context) =>
+                          //                             CFormInfoUI(),
+                          //                       ),
+                          //                     );
+                          //                   },
+                          //                   child: Text('แบบฟอร์ม'),
+                          //                 ),
+                          //               ],
+                          //             );
+                          //           },
+                          //         );
+                          //       } else if (caregiverAcceptedPolicy &&
+                          //           patientAcceptedPolicy) {
+                          //         print("Redirecting to HomeMainCareUI");
+                          //         Navigator.pushReplacement(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) => HomeMainCareUI(),
+                          //           ),
+                          //         );
+                          //       } else if (caregiverAcceptedPolicy) {
+                          //         print("Redirecting to CFormWorkUI");
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) => CFormWorkUI(),
+                          //           ),
+                          //         );
+                          //       } else {
+                          //         print("Redirecting to CFormInfoUI");
+                          //         showDialog(
+                          //           context: context,
+                          //           builder: (BuildContext context) {
+                          //             return AlertDialog(
+                          //               title: Text('แจ้งเตือน'),
+                          //               content: Text(
+                          //                   'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                          //               actions: <Widget>[
+                          //                 TextButton(
+                          //                   onPressed: () {
+                          //                     Navigator.pop(context);
+                          //                     Navigator.push(
+                          //                       context,
+                          //                       MaterialPageRoute(
+                          //                         builder: (context) =>
+                          //                             CFormInfoUI(),
+                          //                       ),
+                          //                     );
+                          //                   },
+                          //                   child: Text('แบบฟอร์ม'),
+                          //                 ),
+                          //               ],
+                          //             );
+                          //           },
+                          //         );
+                          //       }
+                          //     } else if (_selectedOption == 1) {
+                          //       bool generalPhoneNumberExists =
+                          //           await _authenticationService
+                          //               .checkUserPhoneNumberExists(
+                          //                   user.email!);
+                          //       bool patientAcceptedPolicy =
+                          //           await _authenticationService
+                          //               .checkPatientAcceptedPolicy(
+                          //                   user.email!);
 
-                                if (!generalPhoneNumberExists) {
-                                  print("Redirecting to PFormInfoUI");
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('แจ้งเตือน'),
-                                        content: Text(
-                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PFormInfoUI(),
-                                                ),
-                                              );
-                                            },
-                                            child: Text('แบบฟอร์ม'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                } else if (!patientAcceptedPolicy) {
-                                  print("Redirecting to PFormMedicalUI");
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('แจ้งเตือน'),
-                                        content: Text(
-                                            'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PFormMedicalUI(),
-                                                ),
-                                              );
-                                            },
-                                            child: Text('แบบฟอร์ม'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  print("Redirecting to HomeMainPatientUI");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeMainPatientUI(),
-                                    ),
-                                  );
-                                }
-                              }
-                            } else {
-                              print(
-                                  "Sign in failed: Invalid email or password");
-                              await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Error'),
-                                    content: Text(
-                                        'Invalid email or password. Please try again.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          } else {
-                            print(
-                                "Sign in failed: Please enter both email and password");
-                            await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Error'),
-                                  content: Text(
-                                      'Please enter both email and password.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
+                          //       if (!generalPhoneNumberExists) {
+                          //         print("Redirecting to PFormInfoUI");
+                          //         showDialog(
+                          //           context: context,
+                          //           builder: (BuildContext context) {
+                          //             return AlertDialog(
+                          //               title: Text('แจ้งเตือน'),
+                          //               content: Text(
+                          //                   'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                          //               actions: <Widget>[
+                          //                 TextButton(
+                          //                   onPressed: () {
+                          //                     Navigator.pop(context);
+                          //                     Navigator.push(
+                          //                       context,
+                          //                       MaterialPageRoute(
+                          //                         builder: (context) =>
+                          //                             PFormInfoUI(),
+                          //                       ),
+                          //                     );
+                          //                   },
+                          //                   child: Text('แบบฟอร์ม'),
+                          //                 ),
+                          //               ],
+                          //             );
+                          //           },
+                          //         );
+                          //       } else if (!patientAcceptedPolicy) {
+                          //         print("Redirecting to PFormMedicalUI");
+                          //         showDialog(
+                          //           context: context,
+                          //           builder: (BuildContext context) {
+                          //             return AlertDialog(
+                          //               title: Text('แจ้งเตือน'),
+                          //               content: Text(
+                          //                   'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                          //               actions: <Widget>[
+                          //                 TextButton(
+                          //                   onPressed: () {
+                          //                     Navigator.pop(context);
+                          //                     Navigator.push(
+                          //                       context,
+                          //                       MaterialPageRoute(
+                          //                         builder: (context) =>
+                          //                             PFormMedicalUI(),
+                          //                       ),
+                          //                     );
+                          //                   },
+                          //                   child: Text('แบบฟอร์ม'),
+                          //                 ),
+                          //               ],
+                          //             );
+                          //           },
+                          //         );
+                          //       } else {
+                          //         print("Redirecting to HomeMainPatientUI");
+                          //         Navigator.pushReplacement(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) => HomeMainPatientUI(),
+                          //           ),
+                          //         );
+                          //       }
+                          //     }
+                          //   } else {
+                          //     print(
+                          //         "Sign in failed: Invalid email or password");
+                          //     await showDialog(
+                          //       context: context,
+                          //       builder: (BuildContext context) {
+                          //         return AlertDialog(
+                          //           title: Text('Error'),
+                          //           content: Text(
+                          //               'Invalid email or password. Please try again.'),
+                          //           actions: [
+                          //             TextButton(
+                          //               onPressed: () {
+                          //                 Navigator.pop(context);
+                          //               },
+                          //               child: Text('OK'),
+                          //             ),
+                          //           ],
+                          //         );
+                          //       },
+                          //     );
+                          //   }
+                          // } else {
+                          //   print(
+                          //       "Sign in failed: Please enter both email and password");
+                          //   await showDialog(
+                          //     context: context,
+                          //     builder: (BuildContext context) {
+                          //       return AlertDialog(
+                          //         title: Text('Error'),
+                          //         content: Text(
+                          //             'Please enter both email and password.'),
+                          //         actions: [
+                          //           TextButton(
+                          //             onPressed: () {
+                          //               Navigator.pop(context);
+                          //             },
+                          //             child: Text('OK'),
+                          //           ),
+                          //         ],
+                          //       );
+                          //     },
+                          //   );
+                          // }
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(200, 10),
@@ -710,6 +712,197 @@ class _LoginUIState extends State<LoginUI> {
         ),
       ),
     );
+  }
+
+  Future<void> _loginWithEmailPassword() async {
+    try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      final emailError = validateEmail(_emailController.text);
+      if (emailError != null) {
+        print("Email Error: $emailError");
+        // Show error dialog
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text(emailError),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+      if (userCredential.user != null) {
+        // Login success, now check phoneNumber and caregiver policy
+        bool phoneNumberExists =
+            await checkUserPhoneNumberExists(userCredential.user!.email!);
+        bool caregiverAcceptedPolicy =
+            await checkCaregiverAcceptedPolicy(userCredential.user!.email!);
+        bool patientrAcceptedPolicy =
+            await checkPatientAcceptedPolicy(userCredential.user!.email!);
+        if (_selectedOption == 0) {
+          if (!phoneNumberExists) {
+            // No phone number, navigate to CFormInfoUI
+            print("Redirecting to CFormInfoUI");
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('แจ้งเตือน'),
+                  content: Text(
+                      'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CFormInfoUI(),
+                          ),
+                        );
+                      },
+                      child: Text('แบบฟอร์ม'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else if (!caregiverAcceptedPolicy) {
+            // Phone number exists but caregiver has not accepted policy, navigate to CFormWorkUI
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CFormWorkUI()),
+            );
+          } else {
+            // Both phone number and caregiver policy accepted, navigate to HomeMainCareUI
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeMainCareUI()),
+            );
+          }
+        } else if (_selectedOption == 1) {
+          if (!phoneNumberExists) {
+            // No phone number, navigate to CFormInfoUI
+            print("Redirecting to CFormInfoUI");
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('แจ้งเตือน'),
+                  content: Text(
+                      'รบกวนกรอกแบบฟอร์มเพื่อลงทะเบียนการรับงานและว่าจ้าง'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // เพิ่มโค้ดที่นำผู้ใช้ไปยังหน้า Form ที่ต้องการ
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PFormInfoUI(),
+                          ),
+                        );
+                      },
+                      child: Text('แบบฟอร์ม'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else if (!patientrAcceptedPolicy) {
+            // Phone number exists but caregiver has not accepted policy, navigate to CFormWorkUI
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => PFormInfoUI()),
+            );
+          } else {
+            // Both phone number and caregiver policy accepted, navigate to HomeMainCareUI
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeMainPatientUI()),
+            );
+          }
+        } else {
+          print("Sign in failed: Invalid email or password");
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text(
+                  'Invalid email or password. Please try again.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      }
+    } catch (e) {
+      // Error occurred during login, show error message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Login Error"),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<bool> checkUserPhoneNumberExists(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(email).get();
+
+    return snapshot.exists && snapshot.data()!['phoneNumber'] != null;
+  }
+
+  Future<bool> checkCaregiverAcceptedPolicy(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('caregiver')
+        .doc(email)
+        .get();
+
+    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
+  }
+
+  Future<bool> checkPatientAcceptedPolicy(String email) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('patient').doc(email).get();
+
+    return snapshot.exists && snapshot.data()!['acceptedPolicy'] == true;
   }
 }
 

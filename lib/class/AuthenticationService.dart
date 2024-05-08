@@ -22,6 +22,20 @@ class AuthenticationService {
     return user?.uid;
   }
 
+  // Method สำหรับ SignIn **loging ด้วย เมลล์
+  Future<User?> signInWithEmailPassword(String email, String password) async {
+    try {
+      UserCredential result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      User? user = result.user;
+      UserData.uid = user?.uid;
+      return user;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
   // Method to sign in with Google
   Future<User?> signInWithGoogle() async {
     final GoogleSignInAccount? googleSignInAccount =
@@ -82,20 +96,6 @@ class AuthenticationService {
   Future<bool> isLoggedIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('isLoggedIn') ?? false;
-  }
-
-  // Method สำหรับ SignIn **loging ด้วย เมลล์
-  Future signInWithEmailPassword(String email, String password) async {
-    try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      User? user = result.user;
-      UserData.uid = user?.uid;
-      return user;
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
   }
 
   // Method สำหรับตรวจสอบสถานะการเข้าสู่ระบบ
