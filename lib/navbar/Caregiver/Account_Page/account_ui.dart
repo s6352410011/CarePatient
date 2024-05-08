@@ -16,7 +16,6 @@
 //   @override
 //   State<AccountUI> createState() => _AccountUIState();
 // }
-
 // final AuthenticationService _authenticationService = AuthenticationService();
 
 // class _AccountUIState extends State<AccountUI> {

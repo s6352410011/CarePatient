@@ -27,7 +27,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
 
   final List<Widget> _pages = [
     HomeCaregiverUI(),
-    NotificationsUI(),
+    NotificationsUI_C(),
     ChatHome(),
     AccountUI(),
   ];
