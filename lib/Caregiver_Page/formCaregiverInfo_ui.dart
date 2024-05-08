@@ -1,7 +1,9 @@
-import 'package:care_patient/Patient_Page/FormPatient_Page/form_HistoryMedical_ui.dart';
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
+import 'package:care_patient/class/color.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/login_ui.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,24 +13,19 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-// เรียกใช้ FirebaseAuth
 FirebaseAuth auth = FirebaseAuth.instance;
-// ดึงข้อมูลผู้ใช้ปัจจุบัน
 User? user = auth.currentUser;
 
-class PFormInfoUI extends StatefulWidget {
-  const PFormInfoUI({Key? key}) : super(key: key);
+class CFormInfoUI extends StatefulWidget {
+  const CFormInfoUI({Key? key}) : super(key: key);
 
   @override
-  _PFormInfoUIState createState() => _PFormInfoUIState();
+  _CFormInfoUIState createState() => _CFormInfoUIState();
 }
 
-class _PFormInfoUIState extends State<PFormInfoUI> {
-  // Variables to store user input
+class _CFormInfoUIState extends State<CFormInfoUI> {
   String? _name = '';
   String? _gender = '';
   String? _selectedDate;
@@ -38,25 +35,21 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
   String? _selectedFile = '';
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   CollectionReference _usersCollection =
-      FirebaseFirestore.instance.collection('patient');
+      FirebaseFirestore.instance.collection('caregiver');
   CollectionReference _usersCollection1 =
       FirebaseFirestore.instance.collection('users');
   CollectionReference _usersCollection2 =
-      FirebaseFirestore.instance.collection('caregiver');
+      FirebaseFirestore.instance.collection('patient');
+
   @override
   void initState() {
     super.initState();
-    // Fetch user email from Firebase Authentication
     _fetchUserEmail();
   }
 
-  // Function to fetch user email from Firebase Authentication
   Future<void> _fetchUserEmail() async {
-    // Get current user from FirebaseAuth
     User? user = FirebaseAuth.instance.currentUser;
-    // Check if user is not null
     if (user != null) {
-      // Set the email to the _email variable
       setState(() {
         _email = user.email;
       });
@@ -89,17 +82,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
     );
   }
 
-  // Future<void> _pickImage() async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     type: FileType.image,
-  //   );
-
-  //   if (result != null) {
-  //     setState(() {
-  //       _selectedFile = result.files.single.name;
-  //     });
-  //   }
-  // }
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -182,6 +164,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
             );
           },
         );
+
         return false; // ไม่อนุญาตให้กดปุ่มย้อนกลับได้โดยตรง
       },
       child: Scaffold(
@@ -195,7 +178,8 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
             ),
           ),
           centerTitle: true,
-          backgroundColor: Colors.green,
+          foregroundColor: AllColor.TextPrimary,
+          backgroundColor: AllColor.Primary_C,
         ),
         body: Padding(
           padding: EdgeInsets.all(20.0),
@@ -227,7 +211,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 Row(
                   children: [
                     Radio(
-                      value: 'ชาย',
+                      value: 'M',
                       groupValue: _gender,
                       onChanged: (value) {
                         setState(() {
@@ -237,7 +221,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                     ),
                     Text('ชาย'),
                     Radio(
-                      value: 'หญิง',
+                      value: 'F',
                       groupValue: _gender,
                       onChanged: (value) {
                         setState(() {
@@ -291,61 +275,15 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                   ),
                 ),
                 SizedBox(height: 10),
-                // แนบไฟล์รูป
                 Text(
-                  'แนบรูปภาพผู้ป่วย : ',
+                  'แนบรูปภาพ : ',
                   style: TextStyle(
                     fontSize: 18,
                   ),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
-                // ElevatedButton.icon(
-                //   onPressed: () async {
-                //     FilePickerResult? result =
-                //         await FilePicker.platform.pickFiles();
-                //     await _pickImage();
-                //     if (_selectedFile != null) {
-                //       // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
-                //       await _uploadImage(File(_selectedFile!));
-                //     } else {
-                //       showDialog(
-                //         context: context,
-                //         builder: (context) {
-                //           return AlertDialog(
-                //             title: Text('แจ้งเตือน'),
-                //             content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
-                //             actions: [
-                //               TextButton(
-                //                 onPressed: () {
-                //                   Navigator.of(context).pop();
-                //                 },
-                //                 child: Text('ตกลง'),
-                //               ),
-                //             ],
-                //           );
-                //         },
-                //       );
-                //     }
-                //   },
-                //   icon: Icon(Icons.attach_file),
-                //   label: Text(
-                //       'เลือกไฟล์ ${_selectedFile != null ? _selectedFile!.split('/').last : ""}'), // แสดงชื่อไฟล์ที่เลือก
-                //   // label: Text('เลือกไฟล์ $_selectedFile'),
-                //   // label: Text('เลือกไฟล์ '),
-                //   style: ElevatedButton.styleFrom(
-                //     foregroundColor: Colors.white,
-                //     backgroundColor: Colors.orange,
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(20),
-                //     ),
-                //     padding: EdgeInsets.symmetric(
-                //       horizontal: 20,
-                //       vertical: 15,
-                //     ),
-                //   ),
-                // ),
                 ElevatedButton.icon(
                   onPressed: () {
                     FilePicker.platform
@@ -389,8 +327,8 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                   label: Text(
                       'เลือกไฟล์ ${_selectedFile != null ? _selectedFile!.split('/').last : ""}'), // แสดงชื่อไฟล์ที่เลือก
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.orange,
+                    foregroundColor: AllColor.TextPrimary,
+                    backgroundColor: AllColor.Primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -457,13 +395,12 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                                 .containsKey('name')) {
                           // ถ้ามีฟิลด์ name ในเอกสารอยู่แล้ว ให้ทำการอัปเดตข้อมูล
                           await _usersCollection1.doc(user!.email).update({
-                          'name': _name,
-                          'gender': _gender,
-                          'birthDate': _selectedDate,
-                          'address': _address,
-                          'phoneNumber': _phoneNumber,
-                          'email': _email,
-                          'imagePath': _selectedFile,
+                            'name': _name,
+                            'gender': _gender,
+                            'birthDate': _selectedDate,
+                            'address': _address,
+                            'phoneNumber': _phoneNumber,
+                            'imagePath': _selectedFile,
                           });
                         } else {
                           // ถ้าไม่มีฟิลด์ name ในเอกสาร ให้ทำการเพิ่มข้อมูล
@@ -473,21 +410,18 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                             'birthDate': _selectedDate,
                             'address': _address,
                             'phoneNumber': _phoneNumber,
-                            'email': _email,
                             'imagePath': _selectedFile,
                           });
                         }
-                        // ถ้าไม่มีฟิลด์ name ในเอกสาร ให้ทำการเพิ่มข้อมูล
                         await _usersCollection2.doc(user!.email).set({
+                          'email': _email,
                           'name': _name,
                           'gender': _gender,
                           'birthDate': _selectedDate,
                           'address': _address,
                           'phoneNumber': _phoneNumber,
-                          'email': _email,
                           'imagePath': _selectedFile,
                         });
-                        // เพิ่มข้อมูลลงใน _usersCollection และทำการ navigation หลังจากที่เพิ่มข้อมูลเสร็จสิ้น
                         await _usersCollection.doc(user!.email).set({
                           'name': _name,
                           'gender': _gender,
@@ -500,7 +434,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PFormMedicalUI(),
+                              builder: (context) => CFormWorkUI(),
                             ),
                           );
                         }).catchError((error) {
@@ -517,8 +451,8 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                       ],
                     ),
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.green,
+                      foregroundColor: AllColor.TextPrimary,
+                      backgroundColor: AllColor.Secondary_C,
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       shape: RoundedRectangleBorder(
@@ -533,5 +467,343 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
         ),
       ),
     );
+  }
+}
+
+class CFormWorkUI extends StatefulWidget {
+  const CFormWorkUI({Key? key}) : super(key: key);
+
+  @override
+  _CFormWorkUIState createState() => _CFormWorkUIState();
+}
+
+class _CFormWorkUIState extends State<CFormWorkUI> {
+  late FirebaseAuth auth; // Declare FirebaseAuth variable
+
+  String _relatedSkills = ''; // ทักษะและความสามารถที่เกี่ยวข้อง
+  String _specificSkills = ''; // ความถนัดและความสามารถเฉพาะ
+  String _careExperience = ''; // ประสบการณ์การดูแล
+  String _workArea = ''; // เขตที่คุณสามารถไปดูแล
+  String _rateMoney = ''; // เขตที่คุณสามารถไปดูแล
+  bool _acceptedPolicy = false;
+  User? user; // Declare User variable
+  CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('caregiver');
+
+  @override
+  void initState() {
+    super.initState();
+    auth = FirebaseAuth.instance; // Initialize FirebaseAuth inside initState()
+    user = auth.currentUser; // Assign the current user to the user variable
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('แบบฟอร์มลงทะเบียน'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'ประวัติการทำงาน',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    _relatedSkills = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'ทักษะและความสามารถที่เกี่ยวข้อง',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    _specificSkills = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'ความถนัดและความสามารถเฉพาะ',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    _careExperience = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'ประสบการณ์การดูแล',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    _workArea = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'เขตที่คุณสามารถไปดูแล',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _rateMoney = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'เรทเงินที่ต้องการ',
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(20.0), // กำหนดรูปร่างขอบเส้น
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    String? missingFields = '';
+                    if (_careExperience == null || _careExperience == '') {
+                      missingFields += 'ประสบการณ์, ';
+                    }
+                    if (_relatedSkills == null || _relatedSkills == '') {
+                      missingFields += 'ทักษะความสามารถ, ';
+                    }
+                    if (_specificSkills == null || _specificSkills == '') {
+                      missingFields += 'ความถนัด, ';
+                    }
+                    if (_workArea == null || _workArea == '') {
+                      missingFields += 'เขตที่ดูแล, ';
+                    }
+                    if (_rateMoney == null || _rateMoney == '') {
+                      missingFields += 'เรทเงินที่ต้องการ, ';
+                    }
+                    if (missingFields != '') {
+                      // แสดงข้อความแจ้งเตือนถ้ามีข้อมูลที่ไม่ถูกกรอก
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('แจ้งเตือน'),
+                            content: Text(
+                                'กรุณากรอกข้อมูลให้ครบถ้วน: $missingFields'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('ตกลง'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                title: const Center(child: Text('ข้อตกลง')),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      'ข้อตกลงการรักษาความลับของผู้ป่วยเป็นส่วนสำคัญในการให้บริการด้านสุขภาพ และเป็นปัจจัยหลักในการสร้างความเชื่อมั่นกับผู้รับบริการ ต่อไปนี้คือตัวอย่างข้อความที่สามารถนำไปใช้',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Checkbox(
+                                          checkColor: Colors
+                                              .white, // Color of the check
+                                          activeColor: Colors
+                                              .green, // Background color when checked
+                                          value: _acceptedPolicy,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              _acceptedPolicy = value!;
+                                            });
+                                          },
+                                        ),
+                                        Expanded(
+                                          child: const Text(
+                                            'ยอมรับเงื่อนไขและนโยบายความเป็นส่วนตัว',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  Center(
+                                    child: Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            if (_acceptedPolicy) {
+                                              await _usersCollection
+                                                  .doc(user!.email)
+                                                  .update({
+                                                'acceptedPolicy':
+                                                    _acceptedPolicy,
+                                                'relatedSkills': _relatedSkills,
+                                                'specificSkills':
+                                                    _specificSkills,
+                                                'careExperience':
+                                                    _careExperience,
+                                                'workArea': _workArea,
+                                                'rateMoney': _rateMoney,
+                                              }).then((value) {
+                                                Navigator.pop(context);
+                                              }).catchError((error) {
+                                                print(
+                                                    'Failed to add user: $error');
+                                              });
+
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const HomeMainCareUI(),
+                                                ),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'กรุณายอมรับเงื่อนไข',
+                                                    style:
+                                                        TextStyle(fontSize: 14),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            foregroundColor:
+                                                AllColor.TextPrimary,
+                                            backgroundColor:
+                                                AllColor.Secondary_C,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical:
+                                                    15), // เพิ่มเฉพาะ padding ในแนวตั้ง
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                          ),
+                                          child: const Text('ยืนยัน',
+                                              style: TextStyle(fontSize: 16)),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('ยืนยัน'),
+                    ],
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: AllColor.TextPrimary,
+                    backgroundColor: AllColor.Primary,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Function to save specific user data from 'users' collection to 'Patient' collection
+Future<void> saveUserDataToPatientCollection() async {
+  // Get current user from FirebaseAuth
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    try {
+      // Retrieve specific user data from the 'users' collection
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.email)
+          .get();
+
+      // Check if the document exists
+      if (userSnapshot.exists) {
+        // Get specific fields from the document
+        Map<String, dynamic> userData = {
+          'address': userSnapshot['address'],
+          'birthDate': userSnapshot['birthDate'],
+          'gender': userSnapshot['gender'],
+          'imagePath': userSnapshot['imagePath'],
+          'name': userSnapshot['name'],
+          'phoneNumber': userSnapshot['phoneNumber'],
+        };
+
+        // Save user data to the 'Patient' collection under the document with the user's email
+        await FirebaseFirestore.instance
+            .collection('patient')
+            .doc(user.email)
+            .set(userData);
+
+        print('User data saved to Patient collection for user ${user.email}');
+      } else {
+        print('No user data found in users collection for user ${user.email}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  } else {
+    print('No user signed in.');
   }
 }
