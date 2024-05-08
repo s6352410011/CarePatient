@@ -114,6 +114,9 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
       await storageReference.putFile(file);
       String downloadURL = await storageReference.getDownloadURL();
 
+      setState(() {
+        _userProfileImageUrl = downloadURL;
+      });
       // Perform actions with downloadURL if needed
     } catch (e) {
       print('Error uploading image: $e');
@@ -188,10 +191,6 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
               GestureDetector(
                 onTap: () async {
                   await _pickImage();
-                  if (_selectedFile != null) {
-                    await _uploadImage(File(_selectedFile!));
-                    setState(() {});
-                  }
                 },
                 child: Container(
                   width: double.infinity,
