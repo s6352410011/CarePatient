@@ -301,37 +301,93 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 SizedBox(
                   height: 20,
                 ),
+                // ElevatedButton.icon(
+                //   onPressed: () async {
+                //     FilePickerResult? result =
+                //         await FilePicker.platform.pickFiles();
+                //     await _pickImage();
+                //     if (_selectedFile != null) {
+                //       // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
+                //       await _uploadImage(File(_selectedFile!));
+                //     } else {
+                //       showDialog(
+                //         context: context,
+                //         builder: (context) {
+                //           return AlertDialog(
+                //             title: Text('แจ้งเตือน'),
+                //             content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
+                //             actions: [
+                //               TextButton(
+                //                 onPressed: () {
+                //                   Navigator.of(context).pop();
+                //                 },
+                //                 child: Text('ตกลง'),
+                //               ),
+                //             ],
+                //           );
+                //         },
+                //       );
+                //     }
+                //   },
+                //   icon: Icon(Icons.attach_file),
+                //   label: Text(
+                //       'เลือกไฟล์ ${_selectedFile != null ? _selectedFile!.split('/').last : ""}'), // แสดงชื่อไฟล์ที่เลือก
+                //   // label: Text('เลือกไฟล์ $_selectedFile'),
+                //   // label: Text('เลือกไฟล์ '),
+                //   style: ElevatedButton.styleFrom(
+                //     foregroundColor: Colors.white,
+                //     backgroundColor: Colors.orange,
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(20),
+                //     ),
+                //     padding: EdgeInsets.symmetric(
+                //       horizontal: 20,
+                //       vertical: 15,
+                //     ),
+                //   ),
+                // ),
                 ElevatedButton.icon(
-                  onPressed: () async {
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles();
-                    await _pickImage();
-                    if (_selectedFile != null) {
-                      // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
-                      await _uploadImage(File(_selectedFile!));
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('แจ้งเตือน'),
-                            content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('ตกลง'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
+                  onPressed: () {
+                    FilePicker.platform
+                        .pickFiles()
+                        .then((FilePickerResult? result) {
+                      if (result != null) {
+                        setState(() {
+                          _selectedFile = result.files.single.path!;
+                        });
+
+                        // เรียกใช้งาน _uploadImage โดยไม่รอการอัปโหลดเสร็จสิ้น
+                        _uploadImage(File(_selectedFile!)).then((_) {
+                          // ทำตามสิ่งที่ต้องการหลังจากอัปโหลดเสร็จสิ้น
+                          print('อัปโหลดไฟล์เสร็จสิ้น');
+                        }).catchError((error) {
+                          print('เกิดข้อผิดพลาดในการอัปโหลด: $error');
+                          // ทำสิ่งที่คุณต้องการเมื่อเกิดข้อผิดพลาด
+                        });
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('แจ้งเตือน'),
+                              content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('ตกลง'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    });
                   },
                   icon: Icon(Icons.attach_file),
-                  label: Text('เลือกไฟล์ $_selectedFile'),
-                  // label: Text('เลือกไฟล์ '),
+                  label: Text(
+                      'เลือกไฟล์ ${_selectedFile != null ? _selectedFile!.split('/').last : ""}'), // แสดงชื่อไฟล์ที่เลือก
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.orange,
