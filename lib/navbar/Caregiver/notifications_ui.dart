@@ -31,8 +31,6 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
   }
 }
 
-
-
 class Noti extends StatefulWidget {
   @override
   _NotiState createState() => _NotiState();
@@ -151,5 +149,3 @@ class _NotiState extends State<Noti> {
     );
   }
 }
-
-

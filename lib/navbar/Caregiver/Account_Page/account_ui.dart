@@ -16,11 +16,11 @@ import 'package:flutter/services.dart';
 class AccountCaregiverUI extends StatefulWidget {
   const AccountCaregiverUI({Key? key}) : super(key: key);
 
-//   @override
-//   State<AccountUI> createState() => _AccountUIState();
-// }
+  @override
+  State<AccountCaregiverUI> createState() => _AccountCaregiverUIState();
+}
 
-// final AuthenticationService _authenticationService = AuthenticationService();
+final AuthenticationService _authenticationService = AuthenticationService();
 
 class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
   String? _name = '';
