@@ -100,6 +100,22 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
     }
   }
 
+  Future<String?> getUserEmail() async {
+    try {
+      // ใช้ currentUser เพื่อให้สามารถดึงข้อมูลผู้ใช้ปัจจุบัน
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        return user.email;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('เกิดข้อผิดพลาดในการดึงอีเมล: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,6 +145,28 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
                         );
                       } else {
                         return Icon(Icons.person, size: 150);
+                      }
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                FutureBuilder(
+                  future: getUserEmail(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else {
+                      if (snapshot.hasData && snapshot.data != null) {
+                        return Text(
+                          snapshot.data!,
+                          style: TextStyle(fontSize: 18),
+                        );
+                      } else {
+                        return Text(
+                          'No Email',
+                          style: TextStyle(fontSize: 18),
+                        );
                       }
                     }
                   },
