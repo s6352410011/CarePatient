@@ -13,7 +13,7 @@ class ShowPage2 extends StatelessWidget {
         image: DecorationImage(
           image: AssetImage(
               'assets/images/working.png'), // เพิ่มรูป event.png ที่ต้องการแสดง
-          fit: BoxFit.fill, // ให้รูปครอบคลุมพื้นที่ทั้งหมด
+          fit: BoxFit.cover, // ให้รูปครอบคลุมพื้นที่ทั้งหมด
         ),
       ),
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
