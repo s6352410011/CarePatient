@@ -369,7 +369,7 @@ class PageViewWithIndicator extends StatelessWidget {
       children: <Widget>[
         SizedBox(height: 16),
         SizedBox(
-          height: 300,
+          height: 200,
           child: PageView.builder(
             controller: controller,
             itemCount: pages.length,
