@@ -5,6 +5,7 @@ import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/class/user_data.dart';
 import 'package:care_patient/login_ui.dart';
+import 'package:care_patient/navbar/Caregiver/Account_Page/account_ui.dart';
 import 'package:care_patient/navbar/Patient/Account_Page/account_ui.dart';
 import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
 import 'package:care_patient/navbar/Caregiver/notifications_ui.dart';
@@ -29,7 +30,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
     HomeCaregiverUI(),
     NotificationsUI(),
     ChatHome(),
-    AccountUI(),
+    AccountCaregiverUI(),
   ];
   final List<String> _titles = ['Home', 'Notifications', 'Messages', 'Account'];
 

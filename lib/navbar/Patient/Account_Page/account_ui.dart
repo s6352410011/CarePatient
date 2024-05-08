@@ -12,16 +12,16 @@ import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
-class AccountUI extends StatefulWidget {
-  const AccountUI({Key? key}) : super(key: key);
+class AccountPatientUI extends StatefulWidget {
+  const AccountPatientUI({Key? key}) : super(key: key);
 
   @override
-  State<AccountUI> createState() => _AccountUIState();
+  State<AccountPatientUI> createState() => _AccountPatientUIState();
 }
 
 final AuthenticationService _authenticationService = AuthenticationService();
 
-class _AccountUIState extends State<AccountUI> {
+class _AccountPatientUIState extends State<AccountPatientUI> {
   String? _name = '';
   String? _address = '';
   String? _phoneNumber = '';
@@ -189,7 +189,7 @@ class _AccountUIState extends State<AccountUI> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AccountSettingUI(),
+                          builder: (context) => AccountSettingPatientUI(),
                         ),
                       );
                     },
