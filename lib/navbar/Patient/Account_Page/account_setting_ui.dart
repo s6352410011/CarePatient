@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:care_patient/Caregiver_Page/home_caregiver_ui.dart';
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/login_ui.dart';
+import 'package:care_patient/navbar/Patient/Account_Page/account_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,6 +33,7 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
   @override
   void initState() {
     super.initState();
+    // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
     _loadUserData();
     _selectedFile = null;
     _fetchUserProfileImage();
@@ -39,6 +43,7 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
+        // โหลดข้อมูลผู้ใช้จาก Firestore และกำหนดค่าให้กับตัวแปร state
         DocumentSnapshot userData = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
@@ -173,12 +178,7 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AllColor.Primary,
-        title: Text(
-          'Account Setting',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
+        title: const Text('Account Setting'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -311,7 +311,7 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                                 'Please enter your password to confirm your identity.'),
                             TextFormField(
                               obscureText: true,
-                              controller: _passwordController,
+                              // Add controller and decoration as needed
                             ),
                           ],
                         ),
@@ -333,13 +333,14 @@ class _AccountSettingUIState extends State<AccountSettingUI> {
                                   password: password,
                                 );
                                 _updateUserData();
+                                // Close dialog
                                 Navigator.of(context).pop();
                               } catch (e) {
                                 print('Error verifying password: $e');
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content:
-                                          Text('Error verifying password')),
+                                    content: Text('Error verifying password'),
+                                  ),
                                 );
                               }
                             },
