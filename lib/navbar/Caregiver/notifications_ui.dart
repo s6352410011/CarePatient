@@ -1,5 +1,6 @@
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/navbar/Caregiver/employment_ct.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +24,7 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
           child: Column(
             children: [
               Noti(),
+              UserDataWidget(),
             ],
           ),
         ),
@@ -92,24 +94,12 @@ class _NotiState extends State<Noti> {
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EmpCtd(
-                                    name: name,
-                                    gender: gender,
-                                    phoneNumber: phonenumber,
-                                    imagePath: imagePath,
-                                    address: address,
-                                    phoneFamily: phonefamily,
-                                    historyMed: historyMed,
-                                    specialNeeds: specialneeds,
-                                    birthDate: birthdate,
-                                    historyMedicine:
-                                        historyMed, // แนบ historyMedicine ที่นี่
-                                  ),
-                                ),
-                              );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => EmpCtd(),
+                              //   ),
+                              // );
                             },
                             child: Text('รายละเอียด'),
                           ),
@@ -166,125 +156,210 @@ class _NotiState extends State<Noti> {
   }
 }
 
-class EmpCtd extends StatelessWidget {
-  final String name;
-  final String gender;
-  final String phoneNumber;
-  final String? imagePath;
-  final String phoneFamily;
-  final String address;
-  final String birthDate;
-  final String historyMed;
-  final String specialNeeds;
-  final String historyMedicine;
+// // ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
+// Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
+//   QuerySnapshot querySnapshot =
+//       await FirebaseFirestore.instance.collection('patient').get();
+//   List<Map<String, dynamic>> userDataWithImages = [];
+//   for (var doc in querySnapshot.docs) {
+//     final data = doc.data();
+//     final uid = doc.id; // เพิ่มบรรทัดนี้เพื่อดึง UID ของเอกสาร
+//     if (data != null) {
+//       final name = (data as Map<String, dynamic>)['name'] as String?;
+//       final email = (data as Map<String, dynamic>)['email'] as String?;
+//       final birthDate = (data as Map<String, dynamic>)['birthDate'] as String?;
+//       final phoneNumber =
+//           (data as Map<String, dynamic>)['phoneNumber'] as String?;
+//       final specialNeeds =
+//           (data as Map<String, dynamic>)['specialNeeds'] as String?;
+//       final historyMedicine =
+//           (data as Map<String, dynamic>)['historyMedicine'] as String?;
 
-  const EmpCtd({
-    required this.name,
-    required this.gender,
-    required this.phoneNumber,
-    this.imagePath,
-    required this.phoneFamily,
-    required this.address,
-    required this.birthDate,
-    required this.historyMed,
-    required this.specialNeeds,
-    required this.historyMedicine,
+//       if (name != null &&
+//           email != null &&
+//           birthDate != null &&
+//           phoneNumber != null &&
+//           specialNeeds != null &&
+//           historyMedicine != null) {
+//         String storagePath =
+//             'images/${email.substring(0, email.indexOf('@'))}_Patient.jpg';
+//         final imageUrl = await _getUserProfileImageUrl(storagePath);
+//         userDataWithImages.add({
+//           'uid': uid, // เพิ่ม UID ใน Map ของข้อมูล
+//           'name': name,
+//           'imageUrl': imageUrl,
+//           'birthDate': birthDate,
+//           'phoneNumber': phoneNumber,
+//           'specialNeeds': specialNeeds,
+//           'historyMedicine': historyMedicine,
+//         });
+//       }
+//     }
+//   }
+//   return userDataWithImages;
+// }
+
+// ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
+Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
+  QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('caregiver').get();
+  List<Map<String, dynamic>> userDataWithImages = [];
+  for (var doc in querySnapshot.docs) {
+    final data = doc.data();
+    final uid = doc.id; // เพิ่มบรรทัดนี้เพื่อดึง UID ของเอกสาร
+    if (data != null) {
+      final name = (data as Map<String, dynamic>)['name'] as String?;
+      final email = (data as Map<String, dynamic>)['email'] as String?;
+      final relatedSkills =
+          (data as Map<String, dynamic>)['relatedSkills'] as String?;
+      final careExperience =
+          (data as Map<String, dynamic>)['careExperience'] as String?;
+      final rateMoney = (data as Map<String, dynamic>)['rateMoney'] as String?;
+      final status = (data as Map<String, dynamic>)['Status'] as bool? ??
+          false; // กำหนดค่าเริ่มต้นเป็น false
+
+      if (status &&
+          name != null &&
+          email != null &&
+          relatedSkills != null &&
+          careExperience != null &&
+          rateMoney != null) {
+        String storagePath =
+            'images/${email.substring(0, email.indexOf('@'))}_Patient.jpg';
+        final imageUrl = await _getUserProfileImageUrl(storagePath);
+        userDataWithImages.add({
+          'uid': uid, // เพิ่ม UID ใน Map ของข้อมูล
+          'name': name,
+          'imageUrl': imageUrl,
+          'relatedSkills': relatedSkills,
+          'careExperience': careExperience,
+          'rateMoney': rateMoney,
+        });
+      }
+    }
+  }
+  return userDataWithImages;
+}
+
+Future<List<String>> _loadUserImages() async {
+  QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('caregiver').get();
+  List<String> imageUrls = [];
+  querySnapshot.docs.forEach((doc) {
+    final data = doc.data();
+    if (data != null) {
+      final imageUrl = (data as Map<String, dynamic>)['imageUrl'] as String?;
+      if (imageUrl != null) {
+        imageUrls.add(imageUrl);
+      }
+    }
   });
+  return imageUrls;
+}
 
+Future<String?> _getUserProfileImageUrl(String storagePath) async {
+  try {
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(storagePath);
+    return await storageReference.getDownloadURL();
+  } catch (e) {
+    print('เกิดข้อผิดพลาดในการดึงรูปโปรไฟล์: $e');
+    return null;
+  }
+}
+
+class UserDataWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('รายละเอียดของผู้ว่าจ้าง',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-        
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (imagePath != null)
-              Center(
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: NetworkImage(imagePath!),
-                ),
-              ),
-            SizedBox(height: 40),
-            Text(
-              'ชื่อ : $name',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'เพศ : $gender',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'เบอร์ติดต่อ : $phoneNumber',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'เบอร์ติดต่อญาติ : $phoneFamily',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'ที่อยู่ : $address',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'วันเกิด : $birthDate',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'ประวัติการใช้ยา : $historyMed',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'ความต้องการพิเศษ : $specialNeeds',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                
-                ElevatedButton(
-                  
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AllColor.Primary,
-                    fixedSize: Size(150, 50),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _loadUserDataWithImages(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+        final users = snapshot.data ?? [];
+        final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: ClampingScrollPhysics(),
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final userData = users[index];
+            final name = userData['name'];
+            final uid = userData['uid'];
+            final email = userData['email'];
+            final careExperience = userData['careExperience'];
+            final relatedSkills = userData['relatedSkills'];
+            final rateMoney = userData['rateMoney'];
+            final imageUrl = userData['imageUrl']; // เพิ่มการดึง URL ของรูปภาพ
+
+            if (email != currentUserEmail) {
+              return GestureDetector(
+                onTap: () {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => CaregiverDetailPage(uid: uid)),
+                  // );
+                },
+                child: Card(
+                  color: Colors.blue,
+                  elevation: 20,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  onPressed: () {
-                    // การทำงานเมื่อปุ่ม 'ยอมรับ' ถูกกด
-                  },
-                  child: Text('ยอมรับ',style: TextStyle(color: AllColor.TextPrimary),),
-                  
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AllColor.Third,
-                    fixedSize: Size(150, 50),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          imageUrl != null ? NetworkImage(imageUrl) : null,
+                    ),
+                    title: Text(
+                      'ชื่อ: $name',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'ประสบการณ์ด้านการดูแล: $careExperience',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'ทักษะที่เกี่ยวข้อง: $relatedSkills',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'เรทเงิน: $rateMoney',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  onPressed: () {
-                    // การทำงานเมื่อปุ่ม 'ปฏิเสธ' ถูกกด
-                  },
-                  child: Text('ปฏิเสธ',style: TextStyle(color: AllColor.TextPrimary),),
                 ),
-              ],
-            ),
-          ],
-        ),
-      ),
+              );
+            } else {
+              return SizedBox();
+            }
+          },
+        );
+      },
     );
   }
 }

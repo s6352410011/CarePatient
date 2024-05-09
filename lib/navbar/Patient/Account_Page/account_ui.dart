@@ -43,36 +43,6 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
     _fetchUserProfileImage();
   }
 
-  // Define _pickImage method
-  Future<void> _pickImage() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-
-    if (result != null) {
-      setState(() {
-        _selectedFile = result.files.single.path!;
-      });
-    }
-  }
-
-  Future<void> _uploadImage(File file) async {
-    String storagePath =
-        'images/${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}_Patient.jpg';
-
-    final Reference storageReference =
-        FirebaseStorage.instance.ref().child(storagePath);
-
-    try {
-      await storageReference.putFile(file);
-      String downloadURL = await storageReference.getDownloadURL();
-
-      // Perform actions with downloadURL if needed
-    } catch (e) {
-      print('Error uploading image: $e');
-    }
-  }
-
   Future<void> _fetchUserProfileImage() async {
     String? userProfileImage = await getUserProfileImage();
     if (userProfileImage != null) {
