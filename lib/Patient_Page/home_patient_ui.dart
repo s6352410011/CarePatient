@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:care_patient/Caregiver_Page/writedaily_ui.dart';
 import 'package:care_patient/Pages/historywork_ui.dart';
+import 'package:care_patient/Patient_Page/CaregiverDetail_ui.dart';
+import 'package:care_patient/Patient_Page/TwT.dart';
 import 'package:care_patient/Patient_Page/calendarPatient.dart';
 import 'package:care_patient/ShowPage/page1.dart';
 import 'package:care_patient/ShowPage/page2.dart';
@@ -191,7 +193,7 @@ class _UserDataWidgetState extends State<UserDataWidget> {
     super.dispose();
   }
 
-// เริ่มการเลื่อนอัตโนมัติของหน้า UserDataWidget
+//เริ่มการเลื่อนอัตโนมัติของหน้า UserDataWidget
   // void _startAutoScroll() {
   //   Timer.periodic(Duration(seconds: 20), (timer) {
   //     if (_currentPage < 3) {
@@ -232,14 +234,13 @@ class _UserDataWidgetState extends State<UserDataWidget> {
     // Navigator.push(
     //   context,
     //   MaterialPageRoute(
-    //     builder: (context) => DataCaregiverUI(
+    //     builder: (context) => DataCaregiverU(
     //       caregiverData: caregiverData,
     //       currentUserEmail: currentUserEmail, // ส่ง currentUserEmail ไปยัง DataCaregiverUI
     //     ),
     //   ),
     // );
   }
-
   Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('caregiver').get();
@@ -326,7 +327,14 @@ class _UserDataWidgetState extends State<UserDataWidget> {
             itemBuilder: (context, index) {
               final userData = userDataWithImages[index];
               return GestureDetector(
-                onTap: () => _onCardClicked(userData, currentUserEmail),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CaregiverDetailPage(uid: uid)),
+                  );
+                },
+                //onTap: () => _onCardClicked(userData, currentUserEmail),
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   height: MediaQuery.of(context).size.height * 0.3,

@@ -237,6 +237,18 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                   ],
                 ),
                 SizedBox(height: 30),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _address = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'ที่อยู่',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 30),
                 TextFormField(
                   keyboardType: TextInputType.number,
                   inputFormatters: [
@@ -558,7 +570,7 @@ class _CFormWorkUIState extends State<CFormWorkUI> {
                   });
                 },
                 decoration: InputDecoration(
-                  labelText: 'เรทเงินที่ต้องการ',
+                  labelText: 'เรทเงินที่ต้องการต่อวัน',
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(20.0), // กำหนดรูปร่างขอบเส้น
