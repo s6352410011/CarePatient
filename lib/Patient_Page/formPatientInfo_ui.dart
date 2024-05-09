@@ -260,7 +260,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 10),
                 TextField(
                   onChanged: (value) {
                     setState(() {
@@ -637,7 +637,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 'ประวัติการรักษา',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 25,
                 ),
               ),
             ),
@@ -656,7 +656,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
               ),
             ),
             SizedBox(
-              height: 20,
+              height: 50,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -667,7 +667,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                     'ประวัติการแพ้ยา',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 25,
                     ),
                   ),
                 ),
@@ -736,9 +736,9 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 labelText: 'ความต้องการให้ดูแลเป็นพิเศษ',
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            // SizedBox(
+            //   height: 20,
+            // ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -747,9 +747,9 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 20,
-            ),
+            // SizedBox(
+            //   height: 20,
+            // ),
             //ที่อยู่
             TextField(
               onChanged: (value) {
@@ -761,7 +761,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 labelText: 'ที่อยู่',
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 50),
             // ข้อมูลการติดต่อฉุกเฉิน
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
@@ -769,7 +769,7 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                 'ข้อมูลการติดต่อฉุกเฉิน',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 25,
                 ),
               ),
             ),
