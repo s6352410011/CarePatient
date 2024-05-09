@@ -1,3 +1,4 @@
+import 'package:care_patient/chat/chat_bubble.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:care_patient/class/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,15 +11,18 @@ class ChatPage extends StatelessWidget {
   final String receiverID;
 
   ChatPage({
-    Key? key,
+    super.key,
     required this.receiverEmail,
     required this.receiverID,
-  }) : super(key: key);
+  });
 
   final TextEditingController _messageController = TextEditingController();
 
   final ChatService _chatService = ChatService();
   final AuthenticationService _authService = AuthenticationService();
+
+
+
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
@@ -29,19 +33,12 @@ class ChatPage extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    String senderID = 'your_sender_id'; // Replace with your sender ID
-    String receiverID = 'your_receiver_id'; // Replace with your receiver ID
-    if (senderID == null) {
-      // Handle the case when senderID is null (user not logged in)
-      // You can show a message or redirect to the login page
-      return Scaffold(
-        body: Center(
-          child: Text('User not logged in.'),
-        ),
-      );
-    }
+@override
+Widget build(BuildContext context) {
+  final String? currentUserID = _authService.getCurrentUserID();
+  final String senderID = currentUserID ?? ''; // Use an empty string if currentUserID is null
+
+  if (senderID != null) {
     return Scaffold(
       appBar: AppBar(
         title: Text(receiverEmail),
@@ -53,54 +50,84 @@ class ChatPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget _buildMessageList(String senderID, String receiverID) {
-    return StreamBuilder(
-      stream: _chatService.getMessage(senderID, receiverID),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-        // Filter messages based on senderID (current user's ID) and receiverID
-        List<QueryDocumentSnapshot> messages = snapshot.data!.docs.where((doc) {
-          var data = doc.data()
-              as Map<String, dynamic>?; // Cast to Map<String, dynamic>
-          return data != null &&
-              data['senderID'] == senderID &&
-              data['receiverID'] == receiverID;
-        }).toList();
-
-        return ListView(
-          children: messages.map((doc) => _buildMessageItem(doc)).toList(),
-        );
-      },
-    );
-  }
-
-  Widget _buildMessageItem(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-    String? currentUserID = _authService.getCurrentUserID();
-    bool isCurrentUser =
-        currentUserID != null && data['senderID'] == currentUserID;
-
-    var alignment =
-        isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
-    return Container(
-      alignment: alignment,
-      child: Column(
-        crossAxisAlignment:
-            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Text(data["message"]),
-        ],
+  } else {
+    return Scaffold(
+      body: Center(
+        child: Text('User not logged in.'),
       ),
     );
   }
+}
+
+
+Widget _buildMessageList(String senderID, String receiverID) {
+  return StreamBuilder(
+    stream: _chatService.getMessage(senderID, receiverID),
+    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}');
+      }
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: CircularProgressIndicator());
+      }
+      
+      // Filter messages based on senderID and receiverID
+      List<QueryDocumentSnapshot> messages = snapshot.data!.docs.where((doc) {
+        var data = doc.data() as Map<String, dynamic>?; // Cast to Map<String, dynamic>
+        return data != null &&
+            data['senderID'] == senderID &&
+            data['receiverID'] == receiverID;
+      }).toList();
+
+      // Map each document snapshot to a message widget
+      List<Widget> messageWidgets = messages.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return _buildMessageItem(data);
+      }).toList();
+
+      return ListView(
+        children: messageWidgets,
+      );
+    },
+  );
+}
+
+
+Widget _buildMessageItem(Map<String, dynamic> data) {
+  String message = data["message"];
+  return FutureBuilder<User?>(
+    future: _authService.getCurrentUser(),
+    builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        // แสดงโหลดเมื่อกำลังโหลดข้อมูล
+        return CircularProgressIndicator();
+      }
+      if (snapshot.hasError) {
+        // แสดงข้อผิดพลาดหากเกิดข้อผิดพลาด
+        return Text('Error: ${snapshot.error}');
+      }
+      
+      // เช็คว่าผู้ใช้ปัจจุบันมีการเข้าสู่ระบบหรือไม่
+      bool isCurrentUser = data['senderID'] == snapshot.data?.uid;
+
+      // Adjust styling and alignment based on sender or receiver
+      return Container(
+        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+        margin: EdgeInsets.symmetric(vertical: 10.0),
+        child: Column(
+          crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            ChatBubble(message: message, isCurrentUser: isCurrentUser),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
+
+
 
   Widget _buildUserInput() {
     return Row(
