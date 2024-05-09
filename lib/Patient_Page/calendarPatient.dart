@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:care_patient/class/color.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -78,13 +78,13 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
         // อัพเดท UI ด้วย setState เมื่อมีการลบเหตุการณ์
         setState(() {});
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Event deleted successfully')),
+          SnackBar(content: Text('ลบกิจกรรมเรียบร้อยแล้ว')),
         );
       }
     } catch (error) {
       print('Error deleting event: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete event')),
+        SnackBar(content: Text('ลบกิจกรรมไม่สำเร็จ')),
       );
     }
   }
@@ -123,10 +123,10 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
               margin: EdgeInsets.only(bottom: 4),
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.blue,
+                color: AllColor.DotsThird, //สีจุด Highlights
               ),
-              width: 6,
-              height: 6,
+              width: 10, // ปรับขนาดกว้างของวงกลม
+              height: 10, // ปรับขนาดสูงของวงกลม
             );
           }
         }
@@ -140,7 +140,15 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ปฏิทิน'),
+        title: Text(
+          'ปฏิทิน',
+          style: TextStyle(
+            color: AllColor.TextPrimary, // สีของข้อความ
+            fontWeight: FontWeight.bold, // ตัวหนา
+          ),
+        ),
+        centerTitle: true, // ทำให้ข้อความอยู่ตรงกลาง
+        backgroundColor: AllColor.Primary, // สีพื้นหลัง
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +166,7 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
             ),
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.2),
+                color: AllColor.DotsThird.withOpacity(0.5), //สีที่บอกวันปัจุบัน
                 shape: BoxShape.circle,
               ),
             ),
@@ -173,46 +181,76 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
 
           //แสดงกิจกรรม
           Expanded(
-            child: StreamBuilder<List<Event>>(
-              stream: _fetchEventsForDay(_selectedDay),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final events = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: events.length,
-                    itemBuilder: (context, index) {
-                      final event = events[index];
-                      return ListTile(
-                        title: Text(event.title),
-                        subtitle: Text(event.time),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                // เรียกใช้ฟังก์ชันแก้ไขเหตุการณ์ที่นี่
-                                _editEvent(event);
-                              },
+            child: Container(
+              child: StreamBuilder<List<Event>>(
+                stream: _fetchEventsForDay(_selectedDay),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final events = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: events.length,
+                      itemBuilder: (context, index) {
+                        final event = events[index];
+                        return Container(
+                          margin: EdgeInsets.all(
+                              10), // กำหนดระยะห่างระหว่าง ListTile
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                20), // กำหนดรูปร่างของกรอบ
+                            color: AllColor.Primary, // กำหนดสีพื้นหลังของกรอบ
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              event.title,
+                              style: TextStyle(
+                                color: AllColor.TextPrimary, // กำหนดสีของอักษร
+                              ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () {
-                                // เรียกใช้ฟังก์ชันลบเหตุการณ์ที่นี่
-                                _deleteEvent(event);
-                              },
+                            subtitle: Text(
+                              event.time,
+                              style: TextStyle(
+                                color:
+                                    AllColor.TextSecondary, // กำหนดสีของอักษร
+                              ),
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return CircularProgressIndicator();
-                }
-              },
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.edit,
+                                    color:
+                                        AllColor.IconPrimary, // กำหนดสีของไอคอน
+                                  ),
+                                  onPressed: () {
+                                    // เรียกใช้ฟังก์ชันแก้ไขเหตุการณ์ที่นี่
+                                    _editEvent(event);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color:
+                                        AllColor.IconPrimary, // กำหนดสีของไอคอน
+                                  ),
+                                  onPressed: () {
+                                    // เรียกใช้ฟังก์ชันลบเหตุการณ์ที่นี่
+                                    _deleteEvent(event);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                },
+              ),
             ),
           ),
         ],
@@ -229,6 +267,8 @@ class _CalendarPatientUIState extends State<CalendarPatientUI> {
             _updateEvents(_focusedMonth);
           }
         },
+        backgroundColor: AllColor.Primary, // สีพื้นหลังของปุ่ม
+        foregroundColor: AllColor.IconPrimary, // สีของไอคอนภายในปุ่ม
         child: const Icon(Icons.add),
       ),
     );
@@ -303,6 +343,7 @@ class Event {
   });
 }
 
+// Add Event Page
 class AddEventScreen extends StatefulWidget {
   final DateTime selectedDate;
 
@@ -313,10 +354,12 @@ class AddEventScreen extends StatefulWidget {
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
-  final _formKey = GlobalKey<FormState>();
+  //final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _timeController = TextEditingController();
   late DateTime _selectedDate;
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(); // ตรวจสอบว่าคุณมีส่วนนี้หรือไม่
 
   @override
   void initState() {
@@ -328,7 +371,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Event'),
+        title: Text(
+          'Add Event',
+          style: TextStyle(
+            color: AllColor.TextPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: AllColor.Primary,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -337,12 +388,23 @@ class _AddEventScreenState extends State<AddEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  'กิจกรรมของวันนี้ :',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: 'Event Title'),
+                decoration: InputDecoration(labelText: 'ชื่อของกิจกรรม'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter event title';
+                    return 'โปรดกรอกชื่อของกิจรรมด้วยครับ';
                   }
                   return null;
                 },
@@ -350,10 +412,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
               SizedBox(height: 20),
               TextFormField(
                 controller: _timeController,
-                decoration: InputDecoration(labelText: 'Event Time'),
+                decoration: InputDecoration(labelText: 'เวลาเริ่มกิจกรรม'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter event time';
+                    return 'โปรดเลือกเวลาเริ่มกิจกรรมด้วยครับ';
                   }
                   return null;
                 },
@@ -370,12 +432,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
               SizedBox(height: 20),
               Row(
                 children: [
-                  Text('Event Date : '),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.calendar_today),
+                  Text(
+                    'วันที่เริ่มกิจกรรม : ',
+                    style: TextStyle(fontSize: 20),
                   ),
-                  TextButton(
+                  IconButton(
                     onPressed: () async {
                       final selectedDate = await showDatePicker(
                         context: context,
@@ -389,21 +450,34 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         });
                       }
                     },
+                    icon: Icon(Icons.calendar_today),
+                  ),
+                  TextButton(
+                    onPressed: () {},
                     child: Text(
                       '${_selectedDate.day} / ${_selectedDate.month} / ${_selectedDate.year}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _addEvent();
-                  }
-                },
-                child: Text('Save Event'),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _addEvent();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AllColor.Primary, // กำหนดสีพื้นหลังที่นี่
+                  ),
+                  child: Text(
+                    'บันทึก',
+                    style: TextStyle(fontSize: 20, color: AllColor.TextPrimary),
+                  ),
+                ),
               ),
             ],
           ),
@@ -427,14 +501,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
           'date': Timestamp.fromDate(_selectedDate),
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Event added successfully')),
+          SnackBar(content: Text('เพิ่มกิจกรรมเรียบร้อยแล้ว')),
         );
         Navigator.pop(context, true);
       }
     } catch (error) {
       print('Error adding event: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add event')),
+        SnackBar(content: Text('ไม่สามารถเพิ่มกิจกรรม')),
       );
     }
   }
@@ -478,21 +552,40 @@ class _EditEventScreenState extends State<EditEventScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Event'),
+        title: Text(
+          'Edit Event',
+          style: TextStyle(
+            color: AllColor.TextPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: AllColor.Primary,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                'กิจกรรมของวันนี้ :',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             TextFormField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Event Title'),
+              decoration: InputDecoration(labelText: 'ชื่อของกิจกรรม'),
             ),
             SizedBox(height: 20),
             TextFormField(
               controller: _timeController,
-              decoration: InputDecoration(labelText: 'Event Time'),
+              decoration: InputDecoration(labelText: 'เวลาเริ่มกิจกรรม'),
               onTap: () async {
                 final selectedTime = await showTimePicker(
                   context: context,
@@ -515,8 +608,11 @@ class _EditEventScreenState extends State<EditEventScreen> {
             SizedBox(height: 20),
             Row(
               children: [
-                Text('Event Date: '),
-                TextButton(
+                Text(
+                  'วันที่เริ่มกิจกรรม : ',
+                  style: TextStyle(fontSize: 20),
+                ),
+                IconButton(
                   onPressed: () async {
                     final selectedDate = await showDatePicker(
                       context: context,
@@ -530,19 +626,28 @@ class _EditEventScreenState extends State<EditEventScreen> {
                       });
                     }
                   },
-                  child: Text(
-                    '${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  icon: Icon(Icons.calendar_today),
+                ),
+                Text(
+                  '${_selectedDate.day} / ${_selectedDate.month} / ${_selectedDate.year}',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ],
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _updateEvent();
-              },
-              child: Text('Save Changes'),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  _updateEvent();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AllColor.Primary, // กำหนดสีพื้นหลังที่นี่
+                ),
+                child: Text(
+                  'บันทึกการเปลี่ยนแปลง',
+                  style: TextStyle(fontSize: 20, color: AllColor.TextPrimary),
+                ),
+              ),
             ),
           ],
         ),
@@ -573,14 +678,14 @@ class _EditEventScreenState extends State<EditEventScreen> {
           });
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Event updated successfully')),
+          SnackBar(content: Text('อัปเดตกิจกรรมเรียบร้อยแล้ว')),
         );
         Navigator.pop(context, true);
       }
     } catch (error) {
       print('Error updating event: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update event')),
+        SnackBar(content: Text('ไม่สามารถอัปเดตกิจกรรมได้')),
       );
     }
   }
