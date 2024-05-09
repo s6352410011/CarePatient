@@ -180,7 +180,10 @@ class _AccountSettingPatientUIState extends State<AccountSettingPatientUI> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AllColor.Primary,
-        title: const Text('Account Setting'),
+        title: const Text(
+          'Account Setting',
+          style: TextStyle(color: AllColor.TextPrimary),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -231,7 +234,7 @@ class _AccountSettingPatientUIState extends State<AccountSettingPatientUI> {
                         shape: BoxShape.circle,
                         color: Colors.black54,
                       ),
-                      child: Icon(Icons.edit, color: Colors.white),
+                      child: Icon(Icons.edit, color: AllColor.TextPrimary),
                     ),
                   ],
                 ),
@@ -366,7 +369,7 @@ class _AccountSettingPatientUIState extends State<AccountSettingPatientUI> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AllColor.Primary,
+              backgroundColor: AllColor.Secondary_C,
               fixedSize: Size(200, 50),
             ),
             child: Text(

@@ -203,14 +203,14 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
                 //     ),
                 //   ),
                 // ),
-                SizedBox(height: 20),
+                //SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(75, 158, 158, 158),
+                    color: AllColor.Backgroud,
                     borderRadius: BorderRadius.circular(
                         10.0), // Adjust the radius as needed
                     border: Border.all(
-                      color: Colors.black, // Color of the border
+                      color: AllColor.DotsSecondary, // Color of the border
                       width: 1.0, // Width of the border
                     ),
                   ),
@@ -225,11 +225,12 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
                     },
                     leading: Icon(
                       Icons.settings,
-                      color: Colors.blue,
+                      color: AllColor.IconEight,
                     ),
                     title: Text(
                       'Account Setting',
-                      style: TextStyle(fontSize: 20, color: Colors.blue),
+                      style: TextStyle(
+                          fontSize: 20, color: AllColor.TextSecondary),
                     ),
                     trailing: Icon(Icons.arrow_forward),
                   ),
@@ -252,11 +253,11 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: AllColor.Primary_C,
                 fixedSize: Size(200, 50),
               ),
-              child:
-                  Text('Reset Password', style: TextStyle(color: Colors.white)),
+              child: Text('Reset Password',
+                  style: TextStyle(color: AllColor.TextPrimary)),
             ),
             SizedBox(height: 10),
             ElevatedButton(
@@ -264,7 +265,7 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
                 _showSignOutDialog(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: AllColor.Third,
                 fixedSize: Size(200, 50),
               ),
               child: Row(

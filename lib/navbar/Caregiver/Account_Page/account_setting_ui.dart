@@ -178,8 +178,11 @@ class _AccountSettingCaregiverUIState extends State<AccountSettingCaregiverUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AllColor.Primary,
-        title: const Text('Account Setting'),
+        backgroundColor: AllColor.Primary_C,
+        title: const Text(
+          'Account Setting',
+          style: TextStyle(color: AllColor.TextPrimary),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -230,7 +233,7 @@ class _AccountSettingCaregiverUIState extends State<AccountSettingCaregiverUI> {
                         shape: BoxShape.circle,
                         color: Colors.black54,
                       ),
-                      child: Icon(Icons.edit, color: Colors.white),
+                      child: Icon(Icons.edit, color: AllColor.TextPrimary),
                     ),
                   ],
                 ),
@@ -365,7 +368,7 @@ class _AccountSettingCaregiverUIState extends State<AccountSettingCaregiverUI> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AllColor.Primary,
+              backgroundColor: AllColor.Secondary_C,
               fixedSize: Size(200, 50),
             ),
             child: Text(

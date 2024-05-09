@@ -49,4 +49,5 @@ class AllColor {
   static const Color IconSix = Color(0xFF065535);
   //static const Color IconSix = Color(0xFF067a8a);
   static const Color IconSeven = Color(0xFF114b6e);
+  static const Color IconEight = Color(0xFF5DADE2);
 }

@@ -186,10 +186,10 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(75, 158, 158, 158),
-                      borderRadius: BorderRadius.circular(10.0),
+                      color: AllColor.Backgroud_C,
+                      borderRadius: BorderRadius.circular(20.0),
                       border: Border.all(
-                        color: Colors.black,
+                        color: AllColor.DotsSecondary,
                         width: 1.0,
                       ),
                     ),
@@ -202,7 +202,9 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                         'Activation',
                         style: TextStyle(
                           fontSize: 20,
-                          color: isActive ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              isActive ? AllColor.Secondary_C : AllColor.Third,
                         ),
                       ),
                       trailing: Switch(
@@ -213,6 +215,12 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                             updateStatus(isActive);
                           });
                         },
+                        activeColor: AllColor
+                            .Secondary_C, // กำหนดสีของ Switch เมื่อถูกเลือก
+                        inactiveTrackColor: AllColor
+                            .Third, // กำหนดสีของ Track เมื่อ Switch ไม่ได้ถูกเลือก
+                        inactiveThumbColor: AllColor
+                            .IconFive, // กำหนดสีของ Thumb เมื่อ Switch ไม่ได้ถูกเลือก
                       ),
                     ),
                   ),
@@ -220,11 +228,11 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                 SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(75, 158, 158, 158),
+                    color: AllColor.Backgroud_C,
                     borderRadius: BorderRadius.circular(
-                        10.0), // Adjust the radius as needed
+                        20.0), // Adjust the radius as needed
                     border: Border.all(
-                      color: Colors.black, // Color of the border
+                      color: AllColor.DotsSecondary, // Color of the border
                       width: 1.0, // Width of the border
                     ),
                   ),
@@ -237,15 +245,14 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                         ),
                       );
                     },
-                    leading: Icon(
-                      Icons.settings,
-                      color: Colors.blue,
-                    ),
+                    leading: Icon(Icons.settings, color: AllColor.IconEight),
                     title: Text(
                       'Account Setting',
-                      style: TextStyle(fontSize: 20, color: Colors.blue),
+                      style: TextStyle(
+                          fontSize: 20, color: AllColor.IconSecondary),
                     ),
-                    trailing: Icon(Icons.arrow_forward),
+                    trailing: Icon(Icons.arrow_forward,
+                        color: AllColor.IconSecondary),
                   ),
                 ),
               ],
@@ -266,11 +273,11 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: AllColor.Secondary_C,
                 fixedSize: Size(200, 50),
               ),
-              child:
-                  Text('Reset Password', style: TextStyle(color: Colors.white)),
+              child: Text('Reset Password',
+                  style: TextStyle(color: AllColor.TextPrimary)),
             ),
             SizedBox(height: 10),
             ElevatedButton(
@@ -278,7 +285,7 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
                 _showSignOutDialog(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: AllColor.Third,
                 fixedSize: Size(200, 50),
               ),
               child: Row(

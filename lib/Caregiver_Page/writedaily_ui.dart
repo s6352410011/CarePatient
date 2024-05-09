@@ -1,3 +1,4 @@
+import 'package:care_patient/class/color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,10 +24,10 @@ class _WriteDailyUIState extends State<WriteDailyUI> {
       appBar: AppBar(
         title: Text(
           'เขียนบันทึก',
-          style: TextStyle(color: Colors.white), // สีข้อความ
+          style: TextStyle(color: AllColor.TextPrimary), // สีข้อความ
         ),
         centerTitle: true, // จัดข้อความตรงกลาง
-        backgroundColor: Colors.blue, // สีพื้นหลังของ AppBar
+        backgroundColor: AllColor.Primary_C, // สีพื้นหลังของ AppBar
         leading: IconButton(
           // ปุ่ม back
           icon: Icon(Icons.arrow_back, color: Colors.white), // ไอคอน back
@@ -80,8 +81,8 @@ class _WriteDailyUIState extends State<WriteDailyUI> {
                   },
                   child: Text('บันทึก'), // ข้อความบนปุ่ม
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green, // สีปุ่ม
-                      foregroundColor: Colors.white, // สีอักษร
+                      backgroundColor: AllColor.Secondary_C, // สีปุ่ม
+                      foregroundColor: AllColor.TextPrimary, // สีอักษร
                       textStyle: TextStyle(fontSize: 18) // ขนาดอักษร
                       ),
                 ),
@@ -92,8 +93,8 @@ class _WriteDailyUIState extends State<WriteDailyUI> {
                   },
                   child: Text('ยกเลิก'), // ข้อความบนปุ่ม
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // สีปุ่ม
-                      foregroundColor: Colors.white, // สีอักษร
+                      backgroundColor: AllColor.Third, // สีปุ่ม
+                      foregroundColor: AllColor.TextPrimary, // สีอักษร
                       textStyle: TextStyle(fontSize: 18) // ขนาดอักษร
                       ),
                 ),
