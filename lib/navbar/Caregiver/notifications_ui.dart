@@ -60,11 +60,16 @@ class _NotiState extends State<Noti> {
           physics: ClampingScrollPhysics(),
           children: users.map((userDoc) {
             final userData = userDoc.data() as Map<String, dynamic>;
-            final name = userData['name'];
-            final email = userData['email']; //
-            final gender = userData['gender'];
-            final phonenumber = userData['phoneNumber'];
-            final imagePath = userData['imagePath'];
+            final name = userData['name'] ?? '';
+            final email = userData['email'] ?? '';
+            final gender = userData['gender'] ?? '';
+            final phonenumber = userData['phoneNumber'] ?? '';
+            final phonefamily = userData['phone_number'] ?? '';
+            final imagePath = userData['imagePath'] ?? '';
+            final address = userData['address'] ?? '';
+            final birthdate = userData['birthDate'] ?? '';
+            final historyMed = userData['history_medicine'] ?? '';
+            final specialneeds = userData['special_needs'] ?? '';
 
             if (email != currentUserEmail) {
               return GestureDetector(
@@ -90,7 +95,19 @@ class _NotiState extends State<Noti> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => EMP_CT(),
+                                  builder: (context) => EmpCtd(
+                                    name: name,
+                                    gender: gender,
+                                    phoneNumber: phonenumber,
+                                    imagePath: imagePath,
+                                    address: address,
+                                    phoneFamily: phonefamily,
+                                    historyMed: historyMed,
+                                    specialNeeds: specialneeds,
+                                    birthDate: birthdate,
+                                    historyMedicine:
+                                        historyMed, // แนบ historyMedicine ที่นี่
+                                  ),
                                 ),
                               );
                             },
@@ -109,9 +126,8 @@ class _NotiState extends State<Noti> {
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: imagePath != null
-                          ? NetworkImage(imagePath)
-                          : null, // ตรวจสอบว่า imagePath ไม่เป็น Null ก่อนใช้งาน
+                      backgroundImage:
+                          imagePath != null ? NetworkImage(imagePath) : null,
                     ),
                     title: Text(
                       'ผู้ที่ต้องการว่าจ้าง : $name',
@@ -146,6 +162,129 @@ class _NotiState extends State<Noti> {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+class EmpCtd extends StatelessWidget {
+  final String name;
+  final String gender;
+  final String phoneNumber;
+  final String? imagePath;
+  final String phoneFamily;
+  final String address;
+  final String birthDate;
+  final String historyMed;
+  final String specialNeeds;
+  final String historyMedicine;
+
+  const EmpCtd({
+    required this.name,
+    required this.gender,
+    required this.phoneNumber,
+    this.imagePath,
+    required this.phoneFamily,
+    required this.address,
+    required this.birthDate,
+    required this.historyMed,
+    required this.specialNeeds,
+    required this.historyMedicine,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('รายละเอียดของผู้ว่าจ้าง',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+        
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (imagePath != null)
+              Center(
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage: NetworkImage(imagePath!),
+                ),
+              ),
+            SizedBox(height: 40),
+            Text(
+              'ชื่อ : $name',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'เพศ : $gender',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'เบอร์ติดต่อ : $phoneNumber',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'เบอร์ติดต่อญาติ : $phoneFamily',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'ที่อยู่ : $address',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'วันเกิด : $birthDate',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'ประวัติการใช้ยา : $historyMed',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'ความต้องการพิเศษ : $specialNeeds',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                
+                ElevatedButton(
+                  
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AllColor.Primary,
+                    fixedSize: Size(150, 50),
+                  ),
+                  onPressed: () {
+                    // การทำงานเมื่อปุ่ม 'ยอมรับ' ถูกกด
+                  },
+                  child: Text('ยอมรับ',style: TextStyle(color: AllColor.TextPrimary),),
+                  
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AllColor.Third,
+                    fixedSize: Size(150, 50),
+                  ),
+                  onPressed: () {
+                    // การทำงานเมื่อปุ่ม 'ปฏิเสธ' ถูกกด
+                  },
+                  child: Text('ปฏิเสธ',style: TextStyle(color: AllColor.TextPrimary),),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
