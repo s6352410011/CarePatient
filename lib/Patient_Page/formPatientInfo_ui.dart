@@ -228,7 +228,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 Row(
                   children: [
                     Radio(
-                      value: 'ชาย',
+                      value: 'Male',
                       groupValue: _gender,
                       onChanged: (value) {
                         setState(() {
@@ -238,7 +238,7 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                     ),
                     Text('ชาย'),
                     Radio(
-                      value: 'หญิง',
+                      value: 'Female',
                       groupValue: _gender,
                       onChanged: (value) {
                         setState(() {

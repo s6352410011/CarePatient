@@ -7,6 +7,7 @@ import 'package:care_patient/ShowPage/page2.dart';
 import 'package:care_patient/ShowPage/page4.dart';
 import 'package:care_patient/Patient_Page/dataCaregiver_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:care_patient/Patient_Page/allcaregiver_ui.dart';
@@ -20,6 +21,8 @@ class HomePatientUI extends StatefulWidget {
   @override
   State<HomePatientUI> createState() => _HomePatientUIState();
 }
+
+String currentUserEmail = 'example@example.com';
 
 class _HomePatientUIState extends State<HomePatientUI> {
   final PageController controller =
@@ -171,41 +174,41 @@ class UserDataWidget extends StatefulWidget {
 
 class _UserDataWidgetState extends State<UserDataWidget> {
   late Future<List<String>> _userDataFuture;
-  late final PageController _pageController;
-  int _currentPage = 0;
+  // late final PageController _pageController;
+  // int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
     _userDataFuture = _loadUserData();
-    _pageController =
-        PageController(viewportFraction: 0.8, initialPage: _currentPage);
-    _startAutoScroll();
+    // _pageController =
+    //     PageController(viewportFraction: 0.8, initialPage: _currentPage);
+    // _startAutoScroll();
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    // _pageController.dispose();
     super.dispose();
   }
 
 // เริ่มการเลื่อนอัตโนมัติของหน้า UserDataWidget
-  void _startAutoScroll() {
-    Timer.periodic(Duration(seconds: 20), (timer) {
-      if (_currentPage < 3) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
-      if (mounted) {
-        _pageController.animateToPage(
-          _currentPage,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
+  // void _startAutoScroll() {
+  //   Timer.periodic(Duration(seconds: 20), (timer) {
+  //     if (_currentPage < 3) {
+  //       _currentPage++;
+  //     } else {
+  //       _currentPage = 0;
+  //     }
+  //     if (mounted) {
+  //       _pageController.animateToPage(
+  //         _currentPage,
+  //         duration: Duration(milliseconds: 2000),
+  //         curve: Curves.easeInOut,
+  //       );
+  //     }
+  //   });
+  // }
 
 // ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
   Future<List<String>> _loadUserData() async {
@@ -225,34 +228,106 @@ class _UserDataWidgetState extends State<UserDataWidget> {
   }
 
 // เมื่อคลิกที่ Card ไปหน้าข้อมูลของผู้ดูแล
-  void _onCardClicked() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DataCaregiverUI(),
-      ),
-    );
+  void _onCardClicked(
+      Map<String, dynamic> caregiverData, String currentUserEmail) {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => DataCaregiverUI(
+    //       caregiverData: caregiverData,
+    //       currentUserEmail: currentUserEmail, // ส่ง currentUserEmail ไปยัง DataCaregiverUI
+    //     ),
+    //   ),
+    // );
+  }
+
+  Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('caregiver').get();
+    List<Map<String, dynamic>> userDataWithImages = [];
+    for (var doc in querySnapshot.docs) {
+      final data = doc.data();
+      if (data != null) {
+        final name = (data as Map<String, dynamic>)['name'] as String?;
+        final email = (data as Map<String, dynamic>)['email'] as String?;
+        final relatedSkills =
+            (data as Map<String, dynamic>)['relatedSkills'] as String?;
+        final careExperience =
+            (data as Map<String, dynamic>)['careExperience'] as String?;
+        final rateMoney =
+            (data as Map<String, dynamic>)['rateMoney'] as String?;
+        final status = (data as Map<String, dynamic>)['Status'] as bool? ??
+            false; // กำหนดค่าเริ่มต้นเป็น false
+
+        if (status &&
+            name != null &&
+            email != null &&
+            relatedSkills != null &&
+            careExperience != null &&
+            rateMoney != null) {
+          String storagePath =
+              'images/${email.substring(0, email.indexOf('@'))}_Patient.jpg';
+          final imageUrl = await _getUserProfileImageUrl(storagePath);
+          userDataWithImages.add({
+            'name': name,
+            'imageUrl': imageUrl,
+            'relatedSkills': relatedSkills,
+            'careExperience': careExperience,
+            'rateMoney': rateMoney,
+          });
+        }
+      }
+    }
+    return userDataWithImages;
+  }
+
+  Future<List<String>> _loadUserImages() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('caregiver').get();
+    List<String> imageUrls = [];
+    querySnapshot.docs.forEach((doc) {
+      final data = doc.data();
+      if (data != null) {
+        final imageUrl = (data as Map<String, dynamic>)['imageUrl'] as String?;
+        if (imageUrl != null) {
+          imageUrls.add(imageUrl);
+        }
+      }
+    });
+    return imageUrls;
+  }
+
+  Future<String?> _getUserProfileImageUrl(String storagePath) async {
+    try {
+      final Reference storageReference =
+          FirebaseStorage.instance.ref().child(storagePath);
+      return await storageReference.getDownloadURL();
+    } catch (e) {
+      print('เกิดข้อผิดพลาดในการดึงรูปโปรไฟล์: $e');
+      return null;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _userDataFuture,
-      builder: (context, AsyncSnapshot<List<String>> snapshot) {
+      future: _loadUserDataWithImages(),
+      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
         }
         if (snapshot.hasError) {
           return Text('เกิดข้อผิดพลาด: ${snapshot.error}');
         }
-        List<String> names = snapshot.data!;
+        List<Map<String, dynamic>> userDataWithImages = snapshot.data!;
         return Expanded(
           child: PageView.builder(
-            controller: _pageController,
-            itemCount: names.length,
+            // controller: _pageController,
+            itemCount: userDataWithImages.length,
             itemBuilder: (context, index) {
+              final userData = userDataWithImages[index];
               return GestureDetector(
-                onTap: _onCardClicked,
+                onTap: () => _onCardClicked(userData, currentUserEmail),
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   height: MediaQuery.of(context).size.height * 0.3,
@@ -261,16 +336,68 @@ class _UserDataWidgetState extends State<UserDataWidget> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: ListTile(
-                      leading: Icon(Icons.account_circle,
-                          color: AllColor.IconPrimary),
-                      title: Text(
-                        names[index],
-                        style: TextStyle(
-                          color: AllColor.TextPrimary,
-                          fontWeight: FontWeight.bold,
+                    child: Stack(
+                      children: [
+                        // รูปภาพด้านบนซ้าย
+                        Positioned(
+                          top: 20,
+                          left: 25,
+                          child: Container(
+                            padding: EdgeInsets.only(),
+                            width: 70,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: userData['imageUrl'] != null
+                                    ? NetworkImage(userData['imageUrl'])
+                                    : AssetImage(
+                                            'assets/default_profile_image.jpg')
+                                        as ImageProvider,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        // ข้อมูล
+                        Positioned(
+                          left: 120, // ระยะห่างระหว่างข้อมูลและรูป
+                          top: 16,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Name: ${userData['name']}',
+                                style: TextStyle(
+                                  color: AllColor.TextPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Related Skills: ${userData['relatedSkills']}',
+                                style: TextStyle(
+                                  color: AllColor.TextPrimary,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Care Experience: ${userData['careExperience']}',
+                                style: TextStyle(
+                                  color: AllColor.TextPrimary,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Rate Money: ${userData['rateMoney']}',
+                                style: TextStyle(
+                                  color: AllColor.TextPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

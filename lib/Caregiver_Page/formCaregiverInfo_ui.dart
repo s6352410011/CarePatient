@@ -206,7 +206,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                 Row(
                   children: [
                     Radio(
-                      value: 'M',
+                      value: 'Male',
                       groupValue: _gender,
                       onChanged: (value) {
                         setState(() {
@@ -216,7 +216,7 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                     ),
                     Text('ชาย'),
                     Radio(
-                      value: 'F',
+                      value: 'Female',
                       groupValue: _gender,
                       onChanged: (value) {
                         setState(() {
