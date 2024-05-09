@@ -39,6 +39,7 @@ class _AccountPatientUIState extends State<AccountPatientUI> {
     super.initState();
     // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
     _selectedFile = null;
+
     _getUserEmail();
     _fetchUserProfileImage();
   }

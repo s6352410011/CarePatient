@@ -328,11 +328,11 @@ class _UserDataWidgetState extends State<UserDataWidget> {
               final userData = userDataWithImages[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CaregiverDetailPage(uid: uid)),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => CaregiverDetailPage(uid: uid)),
+                  // );
                 },
                 //onTap: () => _onCardClicked(userData, currentUserEmail),
                 child: Container(

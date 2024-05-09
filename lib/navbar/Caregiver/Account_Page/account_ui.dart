@@ -36,6 +36,7 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
     super.initState();
     // เรียกใช้ฟังก์ชันเมื่อ Widget ถูกสร้าง
     _selectedFile = null;
+    checkActivationStatus();
     _getUserEmail();
     _fetchUserProfileImage();
   }
@@ -96,6 +97,43 @@ class _AccountCaregiverUIState extends State<AccountCaregiverUI> {
     } catch (e) {
       print('เกิดข้อผิดพลาดในการดึงรูปโปรไฟล์: $e');
       return null;
+    }
+  }
+
+  void checkActivationStatus() async {
+    try {
+      // Get current user email
+      String? userEmail = FirebaseAuth.instance.currentUser?.email;
+      if (userEmail != null) {
+        // Query Firestore for document with matching email
+        var querySnapshot = await FirebaseFirestore.instance
+            .collection('caregiver')
+            .where('email', isEqualTo: userEmail)
+            .get();
+
+        // Check if there is a document with the user's email
+        if (querySnapshot.docs.isNotEmpty) {
+          // Get the document data
+          var userData = querySnapshot.docs[0].data();
+
+          // Check the "Status" field in Firestore
+          if (userData.containsKey('Status')) {
+            // Get the value of "Status" field
+            bool status = userData['Status'];
+
+            // Update the local isActive state accordingly
+            setState(() {
+              isActive = status;
+            });
+          } else {
+            print('No "Status" field found in Firestore document');
+          }
+        } else {
+          print('No document found for the user email: $userEmail');
+        }
+      }
+    } catch (e) {
+      print('Error checking activation status: $e');
     }
   }
 
