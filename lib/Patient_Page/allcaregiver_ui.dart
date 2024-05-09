@@ -32,12 +32,16 @@ class _AllCareGiverUIState extends State<AllCareGiverUI> {
 
 // ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
 Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
+  String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+  if (currentUserEmail == null) {
+    return []; // Return empty list if user is not logged in
+  }
+
   QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('caregiver').get();
   List<Map<String, dynamic>> userDataWithImages = [];
   for (var doc in querySnapshot.docs) {
     final data = doc.data();
-    final uid = doc.id; // เพิ่มบรรทัดนี้เพื่อดึง UID ของเอกสาร
     if (data != null) {
       final name = (data as Map<String, dynamic>)['name'] as String?;
       final email = (data as Map<String, dynamic>)['email'] as String?;
@@ -49,7 +53,9 @@ Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
       final status = (data as Map<String, dynamic>)['Status'] as bool? ??
           false; // กำหนดค่าเริ่มต้นเป็น false
 
-      if (status &&
+      // เช็คว่า email ไม่เท่ากับอีเมลของผู้ใช้ที่เข้าสู่ระบบ
+      if (email != currentUserEmail &&
+          status &&
           name != null &&
           email != null &&
           relatedSkills != null &&
@@ -59,7 +65,6 @@ Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
             'images/${email.substring(0, email.indexOf('@'))}_Patient.jpg';
         final imageUrl = await _getUserProfileImageUrl(storagePath);
         userDataWithImages.add({
-          'uid': uid, // เพิ่ม UID ใน Map ของข้อมูล
           'name': name,
           'imageUrl': imageUrl,
           'relatedSkills': relatedSkills,

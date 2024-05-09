@@ -242,6 +242,11 @@ class _UserDataWidgetState extends State<UserDataWidget> {
     // );
   }
   Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
+    String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    if (currentUserEmail == null) {
+      return []; // Return empty list if user is not logged in
+    }
+
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('caregiver').get();
     List<Map<String, dynamic>> userDataWithImages = [];
@@ -259,7 +264,9 @@ class _UserDataWidgetState extends State<UserDataWidget> {
         final status = (data as Map<String, dynamic>)['Status'] as bool? ??
             false; // กำหนดค่าเริ่มต้นเป็น false
 
-        if (status &&
+        // เช็คว่า email ไม่เท่ากับอีเมลของผู้ใช้ที่เข้าสู่ระบบ
+        if (email != currentUserEmail &&
+            status &&
             name != null &&
             email != null &&
             relatedSkills != null &&
