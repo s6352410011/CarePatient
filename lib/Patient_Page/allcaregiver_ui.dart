@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,11 +28,78 @@ class _AllCareGiverUIState extends State<AllCareGiverUI> {
   }
 }
 
+// ดึงข้อมูลของผู้ดูแลทั้งหมดจาก Firebase
+Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
+  QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('caregiver').get();
+  List<Map<String, dynamic>> userDataWithImages = [];
+  for (var doc in querySnapshot.docs) {
+    final data = doc.data();
+    if (data != null) {
+      final name = (data as Map<String, dynamic>)['name'] as String?;
+      final email = (data as Map<String, dynamic>)['email'] as String?;
+      final relatedSkills =
+          (data as Map<String, dynamic>)['relatedSkills'] as String?;
+      final careExperience =
+          (data as Map<String, dynamic>)['careExperience'] as String?;
+      final rateMoney = (data as Map<String, dynamic>)['rateMoney'] as String?;
+      final status = (data as Map<String, dynamic>)['Status'] as bool? ??
+          false; // กำหนดค่าเริ่มต้นเป็น false
+
+      if (status &&
+          name != null &&
+          email != null &&
+          relatedSkills != null &&
+          careExperience != null &&
+          rateMoney != null) {
+        String storagePath =
+            'images/${email.substring(0, email.indexOf('@'))}_Patient.jpg';
+        final imageUrl = await _getUserProfileImageUrl(storagePath);
+        userDataWithImages.add({
+          'name': name,
+          'imageUrl': imageUrl,
+          'relatedSkills': relatedSkills,
+          'careExperience': careExperience,
+          'rateMoney': rateMoney,
+        });
+      }
+    }
+  }
+  return userDataWithImages;
+}
+
+Future<List<String>> _loadUserImages() async {
+  QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('caregiver').get();
+  List<String> imageUrls = [];
+  querySnapshot.docs.forEach((doc) {
+    final data = doc.data();
+    if (data != null) {
+      final imageUrl = (data as Map<String, dynamic>)['imageUrl'] as String?;
+      if (imageUrl != null) {
+        imageUrls.add(imageUrl);
+      }
+    }
+  });
+  return imageUrls;
+}
+
+Future<String?> _getUserProfileImageUrl(String storagePath) async {
+  try {
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child(storagePath);
+    return await storageReference.getDownloadURL();
+  } catch (e) {
+    print('เกิดข้อผิดพลาดในการดึงรูปโปรไฟล์: $e');
+    return null;
+  }
+}
+
 class UserDataWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<QuerySnapshot>(
-      future: FirebaseFirestore.instance.collection('caregiver').get(),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _loadUserDataWithImages(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -43,7 +111,7 @@ class UserDataWidget extends StatelessWidget {
             child: Text('Error: ${snapshot.error}'),
           );
         }
-        final users = snapshot.data!.docs;
+        final users = snapshot.data ?? [];
         final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
 
         return ListView.builder(
@@ -51,12 +119,12 @@ class UserDataWidget extends StatelessWidget {
           physics: ClampingScrollPhysics(),
           itemCount: users.length,
           itemBuilder: (context, index) {
-            final userData = users[index].data() as Map<String, dynamic>;
+            final userData = users[index];
             final name = userData['name'];
             final email = userData['email'];
             final careExperience = userData['careExperience'];
             final relatedSkills = userData['relatedSkills'];
-            final imagePath = userData['imagePath'];
+            final imageUrl = userData['imageUrl']; // เพิ่มการดึง URL ของรูปภาพ
 
             if (email != currentUserEmail) {
               return GestureDetector(
@@ -69,7 +137,7 @@ class UserDataWidget extends StatelessWidget {
                   );
                 },
                 child: Card(
-                  color: Colors.blue, // Change color as needed
+                  color: Colors.blue,
                   elevation: 20,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -77,7 +145,7 @@ class UserDataWidget extends StatelessWidget {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundImage:
-                          imagePath != null ? NetworkImage(imagePath) : null,
+                          imageUrl != null ? NetworkImage(imageUrl) : null,
                     ),
                     title: Text(
                       'ชื่อ: $name',
