@@ -1,3 +1,5 @@
+import 'package:care_patient/Patient_Page/CaregiverDetail_ui.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,6 +37,7 @@ Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
   List<Map<String, dynamic>> userDataWithImages = [];
   for (var doc in querySnapshot.docs) {
     final data = doc.data();
+    final uid = doc.id; // เพิ่มบรรทัดนี้เพื่อดึง UID ของเอกสาร
     if (data != null) {
       final name = (data as Map<String, dynamic>)['name'] as String?;
       final email = (data as Map<String, dynamic>)['email'] as String?;
@@ -56,6 +59,7 @@ Future<List<Map<String, dynamic>>> _loadUserDataWithImages() async {
             'images/${email.substring(0, email.indexOf('@'))}_Patient.jpg';
         final imageUrl = await _getUserProfileImageUrl(storagePath);
         userDataWithImages.add({
+          'uid': uid, // เพิ่ม UID ใน Map ของข้อมูล
           'name': name,
           'imageUrl': imageUrl,
           'relatedSkills': relatedSkills,
@@ -121,9 +125,11 @@ class UserDataWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             final userData = users[index];
             final name = userData['name'];
+            final uid = userData['uid'];
             final email = userData['email'];
             final careExperience = userData['careExperience'];
             final relatedSkills = userData['relatedSkills'];
+            final rateMoney = userData['rateMoney'];
             final imageUrl = userData['imageUrl']; // เพิ่มการดึง URL ของรูปภาพ
 
             if (email != currentUserEmail) {
@@ -132,8 +138,7 @@ class UserDataWidget extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            CaregiverDetailPage(userData: userData)),
+                        builder: (context) => CaregiverDetailPage(uid: uid)),
                   );
                 },
                 child: Card(
@@ -169,6 +174,12 @@ class UserDataWidget extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
+                        Text(
+                          'เรทเงิน: $rateMoney',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -180,101 +191,6 @@ class UserDataWidget extends StatelessWidget {
           },
         );
       },
-    );
-  }
-}
-
-class CaregiverDetailPage extends StatelessWidget {
-  final Map<String, dynamic> userData;
-
-  const CaregiverDetailPage({Key? key, required this.userData})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final name = userData['name'];
-    final careExperience = userData['careExperience'];
-    final relatedSkills = userData['relatedSkills'];
-    final imagePath = userData['imagePath'];
-    final phonenumber = userData['phoneNumber'];
-    final gender = userData['gender'];
-    final address = userData['address'];
-    final ratemoney = userData['rateMoney'];
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('รายละเอียดผู้ดูแล'),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (imagePath != null)
-              Center(
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(imagePath),
-                  radius: 80,
-                ),
-              ),
-            SizedBox(height: 20),
-            Text(
-              'ชื่อ: $name',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'ประสบการณ์ด้านการดูแล: $careExperience',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'ทักษะที่เกี่ยวข้อง: $relatedSkills',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'เบอร์ติดต่อ: $phonenumber',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'เพศ: $gender',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'ที่อยู่: $address',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'เรทเงินที่ต้องการ: $ratemoney',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            // ปุ่ม "จ้างงาน"
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  final email = userData['email']; // email ของคนที่เราจ้างงาน
-                  await FirebaseFirestore.instance
-                      .collection('caregiver')
-                      .doc(
-                          email) // ใช้ email เป็น document ID เพื่อเข้าถึงเอกสารของผู้ดูแลที่เราจ้างงาน
-                      .collection('sendprogress')
-                      .add({'status': 'good'});
-                  // โค้ดเพิ่ม collection และเก็บข้อมูล "good" ในเอกสารของคนที่เราจ้างงาน
-                } catch (e) {
-                  print('Error: $e');
-                  // จัดการข้อผิดพลาดที่เกิดขึ้น
-                }
-              },
-              child: Text('จ้างงาน'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

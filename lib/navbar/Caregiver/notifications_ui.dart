@@ -1,5 +1,3 @@
-import 'package:care_patient/class/color.dart';
-import 'package:care_patient/navbar/Caregiver/employment_ct.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,140 +10,214 @@ class NotificationsUI_C extends StatefulWidget {
 }
 
 class _NotificationsUI_CState extends State<NotificationsUI_C> {
-  static const Color appBarColor = AllColor.Primary_C;
+  List<String> sendProgressData = [];
+  List<String> sendProgressUid = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSendProgress();
+  }
+
+  Future<void> _checkSendProgress() async {
+    // รับอีเมลของผู้ใช้ปัจจุบันจาก Firebase Authentication
+    final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+
+    // ตรวจสอบว่าอีเมลของผู้ใช้ปัจจุบันไม่ใช่ค่าว่าง
+    if (currentUserEmail != null) {
+      // หากมีอีเมลไม่ใช่ค่าว่าง จะดึงข้อมูลจาก Firestore
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('caregiver')
+          .doc(currentUserEmail)
+          .collection('sendProgress')
+          .get();
+
+      // ตรวจสอบว่ามีข้อมูลสถานะการส่งข้อมูลหรือไม่
+      if (querySnapshot.docs.isNotEmpty) {
+        // วนลูปเพื่อดึงข้อมูลและเก็บไว้ใน sendProgressData และ sendProgressUid
+        setState(() {
+          sendProgressData =
+              querySnapshot.docs.map((doc) => doc['status'] as String).toList();
+          sendProgressUid = querySnapshot.docs
+              .map((doc) => doc.id)
+              .toList(); // ดึง UID ของเอกสาร
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Noti(),
-            ],
-          ),
-        ),
+      appBar: AppBar(
+        title: Text('Notifications'),
+      ),
+      body: Center(
+        child: sendProgressData.isNotEmpty
+            ? ListView.builder(
+                itemCount: sendProgressData.length,
+                itemBuilder: (context, index) {
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('caregiver')
+                        .doc(sendProgressUid[index])
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text("เกิดข้อผิดพลาด: ${snapshot.error}");
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      }
+
+                      if (snapshot.hasData && snapshot.data != null) {
+                        var userData = snapshot.data!.data();
+                        if (userData != null &&
+                            userData is Map<String, dynamic>) {
+                          var name = userData['name']; // ชื่อของ caregiver
+                          var gender = userData['gender'];
+                          var phoneNumber = userData['phoneNumber'];
+
+                          return GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Caregiver Details'),
+                                    content: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'UID: ${sendProgressUid[index]}', // แสดง UID ที่ตรงกับข้อมูล
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          'ชื่อ: $name', // แสดงชื่อของ caregiver
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          'เพศ: $gender', // แสดงเพศของ caregiver
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(height: 5),
+                                      ],
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  HiringDetailsPage(
+                                                    name: name,
+                                                    gender: gender,
+                                                    phoneNumber: phoneNumber,
+
+                                                  ), // Replace HiringDetailsPage() with the page you want to navigate to
+                                            ),
+                                          );
+                                        },
+                                        child: Text('รายละเอียดการว่าจ้าง'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Card(
+                              margin: EdgeInsets.all(10),
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'UID: ${sendProgressUid[index]}', // แสดง UID ที่ตรงกับข้อมูล
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'ชื่อ: $name', // แสดงชื่อของ caregiver
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'เพศ: $gender', // แสดงเพศของ caregiver
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(height: 5),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Text('ข้อมูลไม่ถูกต้อง');
+                        }
+                      }
+
+                      return Text('ไม่พบข้อมูล');
+                    },
+                  );
+                },
+              )
+            : Text(
+                'ไม่มีข้อความเพื่อแสดง',
+                style: TextStyle(fontSize: 18),
+              ),
       ),
     );
   }
 }
 
-class Noti extends StatefulWidget {
-  @override
-  _NotiState createState() => _NotiState();
-}
+class HiringDetailsPage extends StatelessWidget {
+  final String name;
+  final String gender;
+  final String phoneNumber;
 
-class _NotiState extends State<Noti> {
+  HiringDetailsPage({required this.name,required this.gender ,required this.phoneNumber});
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<QuerySnapshot>(
-      future: FirebaseFirestore.instance.collection('patient').get(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        }
-        final users = snapshot.data!.docs;
-        final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
-
-        return ListView(
-          shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
-          children: users.map((userDoc) {
-            final userData = userDoc.data() as Map<String, dynamic>;
-            final name = userData['name'];
-            final email = userData['email']; //
-            final gender = userData['gender'];
-            final phonenumber = userData['phoneNumber'];
-            final imagePath = userData['imagePath'];
-
-            if (email != currentUserEmail) {
-              return GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('ข้อมูลเพิ่มเติม'),
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('คุณ: $name'),
-                            Text('ต้องการว่าจ้างกับคุณ'),
-                            Text('คุณสามากดดูรายละเอียดผู้ว่าจ้างได้'),
-                          ],
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EMP_CT(),
-                                ),
-                              );
-                            },
-                            child: Text('รายละเอียด'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: Card(
-                  color: AllColor.Primary,
-                  elevation: 20,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: imagePath != null
-                          ? NetworkImage(imagePath)
-                          : null, // ตรวจสอบว่า imagePath ไม่เป็น Null ก่อนใช้งาน
-                    ),
-                    title: Text(
-                      'ผู้ที่ต้องการว่าจ้าง : $name',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'เพศ : $gender',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          'เบอร์ติดต่อ : $phonenumber',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return SizedBox();
-            }
-          }).toList(),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('รายละเอียดการว่าจ้าง'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'รายละเอียดการว่าจ้าง',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            // Display hiring details
+            Text('ชื่อผู้ว่าจ้าง: $name'),
+            Text('เพศ: $gender'),
+            Text('โทรศัพท์: $phoneNumber'),
+          ],
+        ),
+      ),
     );
   }
 }

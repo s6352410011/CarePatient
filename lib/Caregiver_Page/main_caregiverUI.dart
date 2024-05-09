@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:care_patient/chat/chat_home.dart';
+import 'package:care_patient/chat/chat_home2.dart';
 import 'package:care_patient/class/AuthenticationService.dart';
 import 'package:care_patient/class/color.dart';
 import 'package:care_patient/class/user_data.dart';
@@ -29,7 +30,7 @@ class _HomeMainCareUIState extends State<HomeMainCareUI> {
   final List<Widget> _pages = [
     HomeCaregiverUI(),
     NotificationsUI_C(),
-    ChatHome(),
+    ChatHome2(),
     AccountCaregiverUI(),
   ];
   final List<String> _titles = ['Home', 'Notifications', 'Messages', 'Account'];

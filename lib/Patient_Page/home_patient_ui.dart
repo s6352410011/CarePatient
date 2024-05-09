@@ -5,7 +5,6 @@ import 'package:care_patient/Patient_Page/calendarPatient.dart';
 import 'package:care_patient/ShowPage/page1.dart';
 import 'package:care_patient/ShowPage/page2.dart';
 import 'package:care_patient/ShowPage/page4.dart';
-import 'package:care_patient/Patient_Page/dataCaregiver_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';

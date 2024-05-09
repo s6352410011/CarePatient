@@ -57,7 +57,7 @@ class _LoginUIState extends State<LoginUI> {
     if (_selectedOption == 0) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomeMainPatientUI()),
+        MaterialPageRoute(builder: (context) => HomeMainCareUI()),
       );
     } else if (_selectedOption == 1) {
       Navigator.push(

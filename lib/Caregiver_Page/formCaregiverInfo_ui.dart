@@ -118,8 +118,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
     }
   }
 
-
-
   final AuthenticationService _authenticationService = AuthenticationService();
   @override
   Widget build(BuildContext context) {
@@ -239,18 +237,6 @@ class _CFormInfoUIState extends State<CFormInfoUI> {
                   ],
                 ),
                 SizedBox(height: 30),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _address = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'ที่อยู่',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 10),
                 TextFormField(
                   keyboardType: TextInputType.number,
                   inputFormatters: [
