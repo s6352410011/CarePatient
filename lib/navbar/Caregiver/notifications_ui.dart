@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:care_patient/Patient_Page/main_PatientUI.dart';
 
 class NotificationsUI_C extends StatefulWidget {
-  const NotificationsUI_C({super.key});
+  const NotificationsUI_C({Key? key}) : super(key: key);
 
   @override
   State<NotificationsUI_C> createState() => _NotificationsUI_CState();
@@ -20,27 +21,20 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
   }
 
   Future<void> _checkSendProgress() async {
-    // รับอีเมลของผู้ใช้ปัจจุบันจาก Firebase Authentication
     final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
 
-    // ตรวจสอบว่าอีเมลของผู้ใช้ปัจจุบันไม่ใช่ค่าว่าง
     if (currentUserEmail != null) {
-      // หากมีอีเมลไม่ใช่ค่าว่าง จะดึงข้อมูลจาก Firestore
       final querySnapshot = await FirebaseFirestore.instance
           .collection('caregiver')
           .doc(currentUserEmail)
           .collection('sendProgress')
           .get();
 
-      // ตรวจสอบว่ามีข้อมูลสถานะการส่งข้อมูลหรือไม่
       if (querySnapshot.docs.isNotEmpty) {
-        // วนลูปเพื่อดึงข้อมูลและเก็บไว้ใน sendProgressData และ sendProgressUid
         setState(() {
           sendProgressData =
               querySnapshot.docs.map((doc) => doc['status'] as String).toList();
-          sendProgressUid = querySnapshot.docs
-              .map((doc) => doc.id)
-              .toList(); // ดึง UID ของเอกสาร
+          sendProgressUid = querySnapshot.docs.map((doc) => doc.id).toList();
         });
       }
     }
@@ -59,12 +53,12 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
                 itemBuilder: (context, index) {
                   return FutureBuilder<DocumentSnapshot>(
                     future: FirebaseFirestore.instance
-                        .collection('caregiver')
+                        .collection('patient')
                         .doc(sendProgressUid[index])
                         .get(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
-                        return Text("เกิดข้อผิดพลาด: ${snapshot.error}");
+                        return Text("Error: ${snapshot.error}");
                       }
 
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -75,9 +69,12 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
                         var userData = snapshot.data!.data();
                         if (userData != null &&
                             userData is Map<String, dynamic>) {
-                          var name = userData['name']; // ชื่อของ caregiver
+                          var name = userData['name'];
                           var gender = userData['gender'];
                           var phoneNumber = userData['phoneNumber'];
+                          var birthDate = userData['birthDate'];
+                          var history_medicine = userData['history_medicine'];
+                          var special_needs = userData['special_needs'];
 
                           return GestureDetector(
                             onTap: () {
@@ -91,22 +88,16 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
                                           CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        SizedBox(height: 5),
                                         Text(
-                                          'UID: ${sendProgressUid[index]}', // แสดง UID ที่ตรงกับข้อมูล
+                                          'Name: $name',
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold),
                                         ),
                                         SizedBox(height: 5),
                                         Text(
-                                          'ชื่อ: $name', // แสดงชื่อของ caregiver
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          'เพศ: $gender', // แสดงเพศของ caregiver
+                                          'Gender: $gender',
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold),
@@ -122,15 +113,19 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   HiringDetailsPage(
-                                                    name: name,
-                                                    gender: gender,
-                                                    phoneNumber: phoneNumber,
-
-                                                  ), // Replace HiringDetailsPage() with the page you want to navigate to
+                                                name: name,
+                                                gender: gender,
+                                                phoneNumber: phoneNumber,
+                                                birthDate: birthDate,
+                                                history_medicine:
+                                                    history_medicine,
+                                                special_needs: special_needs,
+                                                uid: sendProgressUid[index],
+                                              ),
                                             ),
                                           );
                                         },
-                                        child: Text('รายละเอียดการว่าจ้าง'),
+                                        child: Text('Hiring Details'),
                                       ),
                                     ],
                                   );
@@ -144,26 +139,21 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // Text(
+                                    //   'UID: ${sendProgressUid[index]}',
+                                    //   style: TextStyle(
+                                    //       fontSize: 16,
+                                    //       fontWeight: FontWeight.bold),
+                                    // ),
+                                    SizedBox(height: 5),
                                     Text(
-                                      'UID: ${sendProgressUid[index]}', // แสดง UID ที่ตรงกับข้อมูล
+                                      'คุณ: $name',
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 5),
-                                    Text(
-                                      'ชื่อ: $name', // แสดงชื่อของ caregiver
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      'เพศ: $gender', // แสดงเพศของ caregiver
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                                    Text('มีข้อเสนอจ้างดูแลผู้ป่วย'),
                                     SizedBox(height: 5),
                                   ],
                                 ),
@@ -171,17 +161,17 @@ class _NotificationsUI_CState extends State<NotificationsUI_C> {
                             ),
                           );
                         } else {
-                          return Text('ข้อมูลไม่ถูกต้อง');
+                          return Text('Data is not valid');
                         }
                       }
 
-                      return Text('ไม่พบข้อมูล');
+                      return Text('Data not found');
                     },
                   );
                 },
               )
             : Text(
-                'ไม่มีข้อความเพื่อแสดง',
+                'No data to display',
                 style: TextStyle(fontSize: 18),
               ),
       ),
@@ -193,28 +183,168 @@ class HiringDetailsPage extends StatelessWidget {
   final String name;
   final String gender;
   final String phoneNumber;
+  final String birthDate;
+  final String special_needs;
+  final String history_medicine;
+  final String uid;
 
-  HiringDetailsPage({required this.name,required this.gender ,required this.phoneNumber});
+  HiringDetailsPage({
+    required this.history_medicine,
+    required this.special_needs,
+    required this.birthDate,
+    required this.name,
+    required this.gender,
+    required this.phoneNumber,
+    required this.uid,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายละเอียดการว่าจ้าง'),
+        title: Text('Hiring Details'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'รายละเอียดการว่าจ้าง',
+              'Hiring Details',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            // Display hiring details
-            Text('ชื่อผู้ว่าจ้าง: $name'),
-            Text('เพศ: $gender'),
-            Text('โทรศัพท์: $phoneNumber'),
+            Text('Name: $name'),
+            Text('Gender: $gender'),
+            Text('Phone: $phoneNumber'),
+            Text('Birth Date: $birthDate'),
+            Text('History of Medicine: $history_medicine'),
+            Text('Special Needs: $special_needs'),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      String userEmail =
+                          FirebaseAuth.instance.currentUser!.email!;
+                      await FirebaseFirestore.instance
+                          .collection('patient')
+                          .doc(uid)
+                          .collection('inprogress')
+                          .doc('accept')
+                          .set({
+                        'Acceptance': 'Confirmed',
+                      });
+
+                      await FirebaseFirestore.instance
+                          .collection('caregiver')
+                          .doc(userEmail)
+                          .collection('inprogress')
+                          .doc('accept_by_me')
+                          .set({
+                        'Acceptance': 'Confirmed',
+                      });
+
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("ยืนยัน"),
+                            content: Text("คุณต้องการยืนยันใข่ไหม"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              HomeMainPatientUI()));
+                                },
+                                child: Text("ยอมรับ"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("ปฎิเศษ"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } catch (e) {
+                      print('Error: $e');
+                    }
+                  },
+                  child: Text('ยอมรับ'),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      String userEmail =
+                          FirebaseAuth.instance.currentUser!.email!;
+                      await FirebaseFirestore.instance
+                          .collection('patient')
+                          .doc(uid)
+                          .collection('inprogress')
+                          .doc('accept')
+                          .set({
+                        'Acceptance': 'cancel',
+                      });
+
+                      await FirebaseFirestore.instance
+                          .collection('caregiver')
+                          .doc(userEmail)
+                          .collection('inprogress')
+                          .doc('accept_by_me')
+                          .set({
+                        'Acceptance': 'cancel',
+                      });
+                      await FirebaseFirestore.instance
+                          .collection('caregiver')
+                          .doc(userEmail)
+                          .collection('inprogress')
+                          .doc('accept_by_me')
+                          .set({
+                        'Acceptance': 'cancel',
+                      });
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("ยืนยัน"),
+                            content: Text("คุณต้องการยืนยันใข่ไหม"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              HomeMainPatientUI()));
+                                },
+                                child: Text("ยอมรับ"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("ปฎิเศษ"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } catch (e) {
+                      print('Error: $e');
+                    }
+                  },
+                  child: Text('ยกเลิก'),
+                ),
+              ],
+            ),
           ],
         ),
       ),

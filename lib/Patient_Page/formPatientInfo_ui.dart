@@ -302,51 +302,6 @@ class _PFormInfoUIState extends State<PFormInfoUI> {
                 SizedBox(
                   height: 20,
                 ),
-                // ElevatedButton.icon(
-                //   onPressed: () async {
-                //     FilePickerResult? result =
-                //         await FilePicker.platform.pickFiles();
-                //     await _pickImage();
-                //     if (_selectedFile != null) {
-                //       // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
-                //       await _uploadImage(File(_selectedFile!));
-                //     } else {
-                //       showDialog(
-                //         context: context,
-                //         builder: (context) {
-                //           return AlertDialog(
-                //             title: Text('แจ้งเตือน'),
-                //             content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
-                //             actions: [
-                //               TextButton(
-                //                 onPressed: () {
-                //                   Navigator.of(context).pop();
-                //                 },
-                //                 child: Text('ตกลง'),
-                //               ),
-                //             ],
-                //           );
-                //         },
-                //       );
-                //     }
-                //   },
-                //   icon: Icon(Icons.attach_file),
-                //   label: Text(
-                //       'เลือกไฟล์ ${_selectedFile != null ? _selectedFile!.split('/').last : ""}'), // แสดงชื่อไฟล์ที่เลือก
-                //   // label: Text('เลือกไฟล์ $_selectedFile'),
-                //   // label: Text('เลือกไฟล์ '),
-                //   style: ElevatedButton.styleFrom(
-                //     foregroundColor: Colors.white,
-                //     backgroundColor: Colors.orange,
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(20),
-                //     ),
-                //     padding: EdgeInsets.symmetric(
-                //       horizontal: 20,
-                //       vertical: 15,
-                //     ),
-                //   ),
-                // ),
                 ElevatedButton.icon(
                   onPressed: () {
                     FilePicker.platform
@@ -825,63 +780,6 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
               ),
             ),
 
-            // แนบไฟล์รูป
-            // Text(
-            //   'แนบรูปภาพผู้ป่วย : ',
-            //   style: TextStyle(
-            //     fontSize: 18,
-            //   ),
-            // ),
-            // SizedBox(
-            //   height: 20,
-            // ),
-            // ElevatedButton.icon(
-            //   onPressed: () async {
-            //     FilePickerResult? result =
-            //         await FilePicker.platform.pickFiles();
-
-            //     if (result != null) {
-            //       setState(() {
-            //         _selectedFile = result.files.single.path!;
-            //       });
-
-            //       // เรียกใช้ฟังก์ชันอัปโหลดไฟล์
-            //       await _uploadImage(File(_selectedFile!));
-            //     } else {
-            //       showDialog(
-            //         context: context,
-            //         builder: (context) {
-            //           return AlertDialog(
-            //             title: Text('แจ้งเตือน'),
-            //             content: Text('คุณยังไม่ได้เลือกไฟล์รูปภาพ'),
-            //             actions: [
-            //               TextButton(
-            //                 onPressed: () {
-            //                   Navigator.of(context).pop();
-            //                 },
-            //                 child: Text('ตกลง'),
-            //               ),
-            //             ],
-            //           );
-            //         },
-            //       );
-            //     }
-            //   },
-            //   icon: Icon(Icons.attach_file),
-            //   // label: Text('เลือกไฟล์ $_selectedFile'),
-            //   label: Text('เลือกไฟล์ '),
-            //   style: ElevatedButton.styleFrom(
-            //     foregroundColor: Colors.white,
-            //     backgroundColor: Colors.orange,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(20),
-            //     ),
-            //     padding: EdgeInsets.symmetric(
-            //       horizontal: 20,
-            //       vertical: 15,
-            //     ),
-            //   ),
-            // ),
             SizedBox(height: 20),
             // ปุ่มถัดไป
             Center(
@@ -958,33 +856,6 @@ class _PFormMedicalUIState extends State<PFormMedicalUI> {
                         );
                       },
                     );
-                    // } else if (!_allDaysSelected &&
-                    //     !_mondaySelected &&
-                    //     !_tuesdaySelected &&
-                    //     !_wednesdaySelected &&
-                    //     !_thursdaySelected &&
-                    //     !_fridaySelected &&
-                    //     !_saturdaySelected &&
-                    //     !_sundaySelected) {
-                    //   // ถ้าไม่มีการเลือกวันใดเลย
-                    //   showDialog(
-                    //     context: context,
-                    //     builder: (context) {
-                    //       return AlertDialog(
-                    //         title: Text('แจ้งเตือน'),
-                    //         content: Text(
-                    //             'กรุณาเลือกวันที่ต้องการความดูแลอย่างน้อย 1 วัน'),
-                    //         actions: [
-                    //           TextButton(
-                    //             onPressed: () {
-                    //               Navigator.of(context).pop();
-                    //             },
-                    //             child: Text('ตกลง'),
-                    //           ),
-                    //         ],
-                    //       );
-                    //     },
-                    //   );
                   } else {
                     // ถ้าข้อมูลถูกกรอกครบทุกช่อง ให้เรียกหน้าแบบฟอร์มการแพทย์ต่อไป
                     showDialog(

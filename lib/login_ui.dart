@@ -35,10 +35,8 @@ class _LoginUIState extends State<LoginUI> {
     super.initState();
     clearUserData();
     // clearUserData();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      // clearUserData();
-      checkLoggedIn(context);
-    });
+
+    checkLoggedIn(context);
   }
 
   Future<void> clearUserData() async {
@@ -47,6 +45,13 @@ class _LoginUIState extends State<LoginUI> {
   }
 
   Future<void> checkLoggedIn(BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? selectedOption = prefs.getInt('selectedOption');
+
+    if (selectedOption != null) {
+      _selectedOption = selectedOption;
+    }
+
     final bool isLoggedIn = await _authenticationService.isLoggedIn();
     if (isLoggedIn) {
       navigateToHome(context);
@@ -70,21 +75,6 @@ class _LoginUIState extends State<LoginUI> {
         MaterialPageRoute(builder: (context) => LoginUI()),
       );
     }
-  }
-
-  String? validateEmail(String? value) {
-    const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
-        r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
-        r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
-        r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
-        r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
-        r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
-        r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
-    final regex = RegExp(pattern);
-
-    return value!.isEmpty || !regex.hasMatch(value)
-        ? 'Enter a valid email address'
-        : null;
   }
 
   @override
@@ -302,6 +292,12 @@ class _LoginUIState extends State<LoginUI> {
                       duration: Duration(milliseconds: 1900),
                       child: ElevatedButton(
                         onPressed: () async {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          await prefs.setInt(
+                              'selectedOption',
+                              _selectedOption ??
+                                  0); // ใช้ ?? 0 เพื่อกำหนดค่าเริ่มต้นเป็น 0 ในกรณีที่ _selectedOption เป็น null
                           final bool isLoggedIn =
                               await _authenticationService.isLoggedIn();
                           if (!isLoggedIn) {
@@ -513,6 +509,11 @@ class _LoginUIState extends State<LoginUI> {
             await checkCaregiverAcceptedPolicy(userCredential.user!.email!);
         bool patientrAcceptedPolicy =
             await checkPatientAcceptedPolicy(userCredential.user!.email!);
+        // ตรวจสอบว่า _selectedOption มีค่าหรือไม่ ถ้ามีให้เก็บลงใน SharedPreferences
+        if (_selectedOption != null) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('selectedOption', _selectedOption!);
+        }
         if (_selectedOption == 0) {
           if (!phoneNumberExists) {
             // No phone number, navigate to CFormInfoUI
@@ -640,6 +641,21 @@ class _LoginUIState extends State<LoginUI> {
         },
       );
     }
+  }
+
+  String? validateEmail(String? value) {
+    const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
+        r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
+        r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
+        r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
+        r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
+        r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
+        r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
+    final regex = RegExp(pattern);
+
+    return value!.isEmpty || !regex.hasMatch(value)
+        ? 'Enter a valid email address'
+        : null;
   }
 
   Future<bool> checkUserPhoneNumberExists(String email) async {
