@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CaregiverDetailPage extends StatefulWidget {
   final String uid;
@@ -86,6 +87,7 @@ class _CaregiverDetailPageState extends State<CaregiverDetailPage> {
           final relatedSkills = userData['relatedSkills'] ?? '';
           final rateMoney = userData['rateMoney'] ?? '';
           final gender = userData['gender'];
+          final phoneNumber = userData['phoneNumber'];
 
           return SingleChildScrollView(
             padding: EdgeInsets.all(20),
@@ -136,6 +138,41 @@ class _CaregiverDetailPageState extends State<CaregiverDetailPage> {
                 Text(
                   'เรทเงิน: $rateMoney',
                   style: TextStyle(fontSize: 18),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    // ตรวจสอบว่ามีหมายเลขโทรศัพท์หรือไม่
+                    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+                      // ใช้ `url_launcher` เพื่อเรียกใช้งานฟังก์ชันโทรของโทรศัพท์
+                      String url = 'tel:$phoneNumber';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'ไม่สามารถโทรได้: $url';
+                      }
+                    } else {
+                      // ถ้าไม่มีหมายเลขโทรศัพท์ให้แจ้งเตือน
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("ข้อผิดพลาด"),
+                            content: Text("ไม่พบหมายเลขโทรศัพท์"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("ตกลง"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Text('โทร'),
                 ),
                 SizedBox(height: 20),
                 Row(
