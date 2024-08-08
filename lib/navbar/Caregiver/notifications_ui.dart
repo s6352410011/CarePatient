@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:care_patient/Patient_Page/main_PatientUI.dart';
-
+import 'package:care_patient/Caregiver_Page/main_caregiverUI.dart';
 class NotificationsUI_C extends StatefulWidget {
   const NotificationsUI_C({Key? key}) : super(key: key);
 
@@ -259,7 +259,7 @@ class HiringDetailsPage extends StatelessWidget {
                                   Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              HomeMainPatientUI()));
+                                              HomeMainCareUI()));
                                 },
                                 child: Text("ยอมรับ"),
                               ),
@@ -323,7 +323,7 @@ class HiringDetailsPage extends StatelessWidget {
                                   Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              HomeMainPatientUI()));
+                                              HomeMainCareUI()));
                                 },
                                 child: Text("ยอมรับ"),
                               ),
